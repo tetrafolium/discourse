@@ -1,0 +1,33 @@
+inspecode:
+  experimental:
+    cache: true
+    incremental: true
+    runtime:
+      go: 1.11
+    ignore:
+      - '**/bindata.go'
+      - 'vendor/'
+
+  thresholds:
+    complexity: 15
+
+  brakeman:
+    thresholds:
+      num-issues: 0
+
+  bundler-audit:
+    thresholds:
+      num-issues: 0
+
+  rails_best_practices:
+    thresholds:
+      num-issues: 0
+
+  reek:
+    ignore: '**/testdata'
+    thresholds:
+      num-issues: 0
+
+  rubocop:
+    thresholds:
+      num-issues: 0
