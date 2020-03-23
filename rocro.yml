@@ -11,50 +11,43 @@ inspecode:
     thresholds: { num-issues: 6 }
   - input:  [ 'app/**/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
   - input:  [ 'lib/**/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
   - input:  [ 'plugins/**/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
   #- input:  [ 'public/**/*.js' ]
   #  options:
-  #    --minimum-tokens:       200
   #    --skip-duplicate-files:
   #    --skip-lexical-errors:
   #  machine: { cpu: 1.5 }
   #  thresholds: { num-issues: 999 }
   - input:  [ 'spec/**/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
   - input:  [ 'test/**/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
   - input:  [ 'vendor/*.js' ]
     options:
-      --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 0 }   # excluded all analyzable files by input/ignore patterns
