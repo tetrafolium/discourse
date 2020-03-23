@@ -8,26 +8,32 @@ inspecode:
   #- thresholds: { num-issues: 999 }
   #  options: [ --skip-lexical-errors ]
   - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files: true
+      --skip-lexical-errors:  true
     machine: { cpu: 1.0 }
+  #- thresholds: { num-issues: 999 }
+  #  options: [ --skip-lexical-errors ]
+  #  machine: { cpu: 1.0 }
+  #  input:  [ 'app/**/*.js' ]
+  #- thresholds: { num-issues: 999 }
+  #  options: [ --skip-lexical-errors ]
+  #  machine: { cpu: 1.0 }
+  #  input:  [ 'vendor/**/*.js' ]
   - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.0 }
-    input:  [ 'app/**/*.js' ]
-  - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.0 }
-    input:  [ 'vendor/**/*.js' ]
-  - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.0 }
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files: true
+      --skip-lexical-errors:  true
+    machine: { cpu: 1.5 }
     input:  [ '**/*.js' ]
-    ignore: [ 'app/', 'vendor/' ]
+    #ignore: [ 'app/', 'vendor/' ]
   - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.0 }
+    #options: [ --skip-lexical-errors ]
+    #machine: { cpu: 1.0 }
     input:  [ '**/*.js.es6' ]
   - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.0 }
+    #options: [ --skip-lexical-errors ]
+    #machine: { cpu: 1.0 }
     input:  [ '**/*.rb' ]
