@@ -19,10 +19,7 @@ inspecode:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 5 }
   - input:  [ 'vendor/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-      --minimum-tokens: 300
+    ignore: [ '**/moment-timezone-names-locale/' ]  # many clones here
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
   #- input:  [ 'public/**/*.js' ]
