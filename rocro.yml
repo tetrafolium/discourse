@@ -10,8 +10,8 @@ inspecode:
   - thresholds: { num-issues: 999 }
     options:
       --minimum-tokens:       200
-      --skip-duplicate-files: true
-      --skip-lexical-errors:  true
+      --skip-duplicate-files:
+      --skip-lexical-errors:
     machine: { cpu: 1.0 }
   #- thresholds: { num-issues: 999 }
   #  options: [ --skip-lexical-errors ]
@@ -24,8 +24,8 @@ inspecode:
   - thresholds: { num-issues: 999 }
     options:
       --minimum-tokens:       200
-      --skip-duplicate-files: true
-      --skip-lexical-errors:  true
+      --skip-duplicate-files:
+      --skip-lexical-errors:
     machine: { cpu: 1.5 }
     input:  [ '**/*.js' ]
     #ignore: [ 'app/', 'vendor/' ]
