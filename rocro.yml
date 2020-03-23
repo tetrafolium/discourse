@@ -13,7 +13,16 @@ inspecode:
   - thresholds: { num-issues: 999 }
     options: [ --skip-lexical-errors ]
     machine: { cpu: 1.0 }
+    input:  [ 'app/**/*.js' ]
+  - thresholds: { num-issues: 999 }
+    options: [ --skip-lexical-errors ]
+    machine: { cpu: 1.0 }
+    input:  [ 'vendor/**/*.js' ]
+  - thresholds: { num-issues: 999 }
+    options: [ --skip-lexical-errors ]
+    machine: { cpu: 1.0 }
     input:  [ '**/*.js' ]
+    ignore: [ 'app/', 'vendor/' ]
   - thresholds: { num-issues: 999 }
     options: [ --skip-lexical-errors ]
     machine: { cpu: 1.0 }
