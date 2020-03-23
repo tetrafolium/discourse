@@ -5,12 +5,12 @@ inspecode:
     auto-fix: true
     thresholds: { num-issues: 999 }   # too many issues detected: 1723 > 1000
   - options: { -style: LLVM }
-    <<: *ClangFormatCommonParams
+    <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
   - options: { -style: Google }
-    <<: *ClangFormatCommonParams
+    <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
   - options: { -style: Chromium }
-    <<: *ClangFormatCommonParams
+    <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
   - options: { -style: Mozilla }
-    <<: *ClangFormatCommonParams
+    <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
   - options: { -style: WebKit }
-    <<: *ClangFormatCommonParams
+    <<: *ClangFormatCommonParams      # too many issues detected: 1741 > 1000
