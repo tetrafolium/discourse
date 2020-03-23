@@ -12,7 +12,13 @@ inspecode:
     machine: { cpu: 1.0 }
   - thresholds: { num-issues: 999 }
     options: [ --skip-lexical-errors ]
-    machine: { cpu: 1.5 }
+    machine: { cpu: 1.0 }
+    input:  [ '**/*.js' ]
   - thresholds: { num-issues: 999 }
     options: [ --skip-lexical-errors ]
-    machine: { cpu: 2.0 }
+    machine: { cpu: 1.0 }
+    input:  [ '**/*.js.es6' ]
+  - thresholds: { num-issues: 999 }
+    options: [ --skip-lexical-errors ]
+    machine: { cpu: 1.0 }
+    input:  [ '**/*.rb' ]
