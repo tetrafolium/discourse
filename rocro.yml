@@ -30,13 +30,13 @@ inspecode:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
     thresholds: { num-issues: 999 }
-  - input:  [ 'public/**/*.js' ]
-    options:
-      --minimum-tokens:       200
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+  #- input:  [ 'public/**/*.js' ]
+  #  options:
+  #    --minimum-tokens:       200
+  #    --skip-duplicate-files:
+  #    --skip-lexical-errors:
+  #  machine: { cpu: 1.5 }
+  #  thresholds: { num-issues: 999 }
   - input:  [ 'spec/**/*.js' ]
     options:
       --minimum-tokens:       200
