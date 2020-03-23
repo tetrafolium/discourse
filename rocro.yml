@@ -20,22 +20,14 @@ inspecode:
 #    machine: { cpu: 1.0 }
 #    thresholds: { num-issues: 169 }
   - input:  [ 'public/javascripts/ace/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
+    ignore: [ '**/mode-*.js', '**/worker-*.js' ]
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
-  - input:  [ 'public/javascripts/workbox/**/.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
+  - input:  [ 'public/javascripts/workbox/**/*.js' ]
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
   - input:  [ 'public/**/*.js' ]
     ignore: [ 'public/javascripts/ace/',
               'public/javascripts/workbox/' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
