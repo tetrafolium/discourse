@@ -5,49 +5,19 @@ inspecode:
   ###   Encountered: "@" (64), after : ""
   cpd:
   - input:  [ '**/*.rb' ]
-    options:
-      --skip-lexical-errors:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 6 }
-  - input:  [ 'app/**/*.js' ]
-    options:
-    #  --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 1 }
-  - input:  [ 'lib/**/*.js' ]
-    #options:
-    #  --skip-duplicate-files:
-    #  --skip-lexical-errors:
+  - input:  [ '**/*.js' ]
+    ignore: [ 'app/', 'public/' ]
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 5 }
-  - input:  [ 'plugins/**/*.js' ]
-    #options:
-    #  --skip-duplicate-files:
-    #  --skip-lexical-errors:
+  - input:  [ 'app/**/*.js' ]
+    options: { --skip-lexical-errors: } # Lexical errors found in 344 files.
     machine: { cpu: 1.0 }
-    thresholds: { num-issues: 0 }
+    thresholds: { num-issues: 1 }
   #- input:  [ 'public/**/*.js' ]
   #  options:
   #    --skip-duplicate-files:
   #    --skip-lexical-errors:
   #  machine: { cpu: 1.0 }
   #  thresholds: { num-issues: 999 }
-  - input:  [ 'spec/**/*.js' ]
-    #options:
-    #  --skip-duplicate-files:
-    #  --skip-lexical-errors:
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 0 }
-  - input:  [ 'test/**/*.js' ]
-    #options:
-    #  --skip-duplicate-files:
-    #  --skip-lexical-errors:
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 0 }
-  - input:  [ 'vendor/*.js' ]
-    #options:
-    #  --skip-duplicate-files:
-    #  --skip-lexical-errors:
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 0 }   # excluded all analyzable files by input/ignore patterns
