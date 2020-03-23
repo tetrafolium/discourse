@@ -15,13 +15,12 @@ inspecode:
   - input:  [ 'lib/**/*.js' ]
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 5 }
+  - input:  [ 'public/**/*.js' ]
+    ignore: [ '**/ace/mode-*.js',     # has many huge clones
+              '**/ace/worker-*.js' ]  # has many huge clones
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 9 }
   - input:  [ 'vendor/**/*.js' ]
     ignore: [ '**/moment-timezone-names-locale/' ]  # many clones under here.
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 169 }
-  #- input:  [ 'public/**/*.js' ]
-  #  options:
-  #    --skip-duplicate-files:
-  #    --skip-lexical-errors:
-  #  machine: { cpu: 1.0 }
-  #  thresholds: { num-issues: 999 }
