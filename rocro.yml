@@ -1,30 +1,41 @@
 inspecode:
 
-  ### net.sourceforge.pmd.lang.ast.TokenMgrError: Lexical error
-  ###   in file ./app/assets/javascripts/admin/components/ace-editor.js at line 13, column 3.
-  ###   Encountered: "@" (64), after : ""
   cpd:
-  - input:  [ '**/*.rb' ]
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 6 }
-  - input:  [ '**/*.js' ]
-    ignore: [ 'app/', 'lib/', 'public/', 'vendor/' ]
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 0 }
-  - input:  [ 'app/**/*.js' ]
-    options: { --skip-lexical-errors: } # Lexical errors found in 344 files.
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 1 }
-  - input:  [ 'lib/**/*.js' ]
-    machine: { cpu: 1.0 }
-    thresholds: { num-issues: 5 }
-  - input:  [ 'vendor/**/*.js' ]
-    ignore: [ '**/moment-timezone-names-locale/' ]  # many clones here
+#  - input:  [ '**/*.rb' ]
+#    machine: { cpu: 1.0 }
+#    thresholds: { num-issues: 6 }
+#  - input:  [ '**/*.js' ]
+#    ignore: [ 'app/', 'lib/', 'public/', 'vendor/' ]
+#    machine: { cpu: 1.0 }
+#    thresholds: { num-issues: 0 }
+#  - input:  [ 'app/**/*.js' ]
+#    options: { --skip-lexical-errors: } # Lexical errors found in 344 files.
+#    machine: { cpu: 1.0 }
+#    thresholds: { num-issues: 1 }
+#  - input:  [ 'lib/**/*.js' ]
+#    machine: { cpu: 1.0 }
+#    thresholds: { num-issues: 5 }
+#  - input:  [ 'vendor/**/*.js' ]
+#    ignore: [ '**/moment-timezone-names-locale/' ]  # many clones under here
+#    machine: { cpu: 1.0 }
+#    thresholds: { num-issues: 169 }
+  - input:  [ 'public/javascripts/ace/**/*.js' ]
+    options:
+      --skip-duplicate-files:
+      --skip-lexical-errors:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
-  #- input:  [ 'public/**/*.js' ]
-  #  options:
-  #    --skip-duplicate-files:
-  #    --skip-lexical-errors:
-  #  machine: { cpu: 1.0 }
-  #  thresholds: { num-issues: 999 }
+  - input:  [ 'public/javascripts/workbox/**/.js' ]
+    options:
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'public/**/*.js' ]
+    ignore: [ 'public/javascripts/ace/',
+              'public/javascripts/workbox/' ]
+    options:
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 999 }
