@@ -8,7 +8,7 @@ inspecode:
     <<: *ClangFormatCommonParams
   - options: { -style: Google }
     <<: *ClangFormatCommonParams
-  - options: { -style: Chrome }
+  - options: { -style: Chromium }
     <<: *ClangFormatCommonParams
   - options: { -style: Mozilla }
     <<: *ClangFormatCommonParams
