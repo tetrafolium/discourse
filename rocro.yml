@@ -8,13 +8,19 @@ inspecode:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 6 }
   - input:  [ '**/*.js' ]
-    ignore: [ 'app/', 'public/' ]
+    ignore: [ 'app/', 'lib/', 'public/', 'vendor/' ]
     machine: { cpu: 1.0 }
-    thresholds: { num-issues: 5 }
+    thresholds: { num-issues: 0 }
   - input:  [ 'app/**/*.js' ]
     options: { --skip-lexical-errors: } # Lexical errors found in 344 files.
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 1 }
+  - input:  [ 'lib/**/*.js' ]
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 5 }
+  - input:  [ 'vendor/**/*.js' ]
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 385 }
   #- input:  [ 'public/**/*.js' ]
   #  options:
   #    --skip-duplicate-files:
