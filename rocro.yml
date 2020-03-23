@@ -1,8 +1,5 @@
 inspecode:
 
-  ### net.sourceforge.pmd.lang.ast.TokenMgrError: Lexical error
-  ###   in file ./app/assets/javascripts/admin/components/ace-editor.js at line 13, column 3.
-  ###   Encountered: "@" (64), after : ""
   cpd:
   - input:  [ '**/*.rb' ]
     machine: { cpu: 1.0 }
@@ -12,16 +9,16 @@ inspecode:
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 0 }
   - input:  [ 'app/**/*.js' ]
-    options: { --skip-lexical-errors: } # Lexical errors found in 344 files.
+    options: { --skip-lexical-errors: } # found Lexical error in 344 files. (skipped)
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 1 }
   - input:  [ 'lib/**/*.js' ]
     machine: { cpu: 1.0 }
     thresholds: { num-issues: 5 }
   - input:  [ 'vendor/**/*.js' ]
-    ignore: [ '**/moment-timezone-names-locale/' ]  # many clones here
+    ignore: [ '**/moment-timezone-names-locale/' ]  # many clones under here.
     machine: { cpu: 1.0 }
-    thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 169 }
   #- input:  [ 'public/**/*.js' ]
   #  options:
   #    --skip-duplicate-files:
