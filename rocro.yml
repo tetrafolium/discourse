@@ -4,9 +4,9 @@ inspecode:
   ###   in file ./app/assets/javascripts/admin/components/ace-editor.js at line 13, column 3.
   ###   Encountered: "@" (64), after : ""
   cpd:
-  - thresholds: { num-issues: 999 }
-  - thresholds: { num-issues: 999 }
-    options: [ --skip-lexical-errors ]
+  #- thresholds: { num-issues: 999 }
+  #- thresholds: { num-issues: 999 }
+  #  options: [ --skip-lexical-errors ]
   - thresholds: { num-issues: 999 }
     options: [ --skip-lexical-errors ]
     machine: { cpu: 1.0 }
