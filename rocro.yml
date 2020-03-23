@@ -4,36 +4,57 @@ inspecode:
   ###   in file ./app/assets/javascripts/admin/components/ace-editor.js at line 13, column 3.
   ###   Encountered: "@" (64), after : ""
   cpd:
-  #- thresholds: { num-issues: 999 }
-  #- thresholds: { num-issues: 999 }
-  #  options: [ --skip-lexical-errors ]
-  - thresholds: { num-issues: 999 }
+  - input:  [ '**/*.rb' ]
     options:
-      --minimum-tokens:       200
-      --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.0 }
-  #- thresholds: { num-issues: 999 }
-  #  options: [ --skip-lexical-errors ]
-  #  machine: { cpu: 1.0 }
-  #  input:  [ 'app/**/*.js' ]
-  #- thresholds: { num-issues: 999 }
-  #  options: [ --skip-lexical-errors ]
-  #  machine: { cpu: 1.0 }
-  #  input:  [ 'vendor/**/*.js' ]
-  - thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 6 }
+  - input:  [ 'app/**/*.js' ]
     options:
       --minimum-tokens:       200
       --skip-duplicate-files:
       --skip-lexical-errors:
     machine: { cpu: 1.5 }
-    input:  [ '**/*.js' ]
-    #ignore: [ 'app/', 'vendor/' ]
-  - thresholds: { num-issues: 999 }
-    #options: [ --skip-lexical-errors ]
-    #machine: { cpu: 1.0 }
-    input:  [ '**/*.js.es6' ]
-  - thresholds: { num-issues: 999 }
-    #options: [ --skip-lexical-errors ]
-    #machine: { cpu: 1.0 }
-    input:  [ '**/*.rb' ]
+    thresholds: { num-issues: 999 }
+  - input:  [ 'lib/**/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'plugins/**/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'public/**/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'spec/**/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'test/**/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
+  - input:  [ 'vendor/*.js' ]
+    options:
+      --minimum-tokens:       200
+      --skip-duplicate-files:
+      --skip-lexical-errors:
+    machine: { cpu: 1.5 }
+    thresholds: { num-issues: 999 }
