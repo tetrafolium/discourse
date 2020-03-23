@@ -11,43 +11,43 @@ inspecode:
     thresholds: { num-issues: 6 }
   - input:  [ 'app/**/*.js' ]
     options:
-      --skip-duplicate-files:
+    #  --skip-duplicate-files:
       --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 1 }
   - input:  [ 'lib/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    #options:
+    #  --skip-duplicate-files:
+    #  --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 5 }
   - input:  [ 'plugins/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    #options:
+    #  --skip-duplicate-files:
+    #  --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 0 }
   #- input:  [ 'public/**/*.js' ]
   #  options:
   #    --skip-duplicate-files:
   #    --skip-lexical-errors:
-  #  machine: { cpu: 1.5 }
+  #  machine: { cpu: 1.0 }
   #  thresholds: { num-issues: 999 }
   - input:  [ 'spec/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    #options:
+    #  --skip-duplicate-files:
+    #  --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 0 }
   - input:  [ 'test/**/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
-    thresholds: { num-issues: 999 }
+    #options:
+    #  --skip-duplicate-files:
+    #  --skip-lexical-errors:
+    machine: { cpu: 1.0 }
+    thresholds: { num-issues: 0 }
   - input:  [ 'vendor/*.js' ]
-    options:
-      --skip-duplicate-files:
-      --skip-lexical-errors:
-    machine: { cpu: 1.5 }
+    #options:
+    #  --skip-duplicate-files:
+    #  --skip-lexical-errors:
+    machine: { cpu: 1.0 }
     thresholds: { num-issues: 0 }   # excluded all analyzable files by input/ignore patterns
