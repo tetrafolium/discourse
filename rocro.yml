@@ -90,7 +90,8 @@ inspecode:
     thresholds: { num-issues: 403 }
 
   reek:
-    thresholds: { num-issues: 999 }   # too many issues detected: 17628 > 1000
+    config-file: inspecode-reek.yml
+    thresholds: { num-issues: 335 }
 
   ### /usr/local/lib/ruby/2.6.0/rubygems.rb:283:in `find_spec_for_exe': Could not find 'bundler' (2.1.4) required by your ./Gemfile.lock. (Gem::GemNotFoundException)
   rubocop:
