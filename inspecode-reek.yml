@@ -13,3 +13,8 @@ detectors:
   ControlParameter:             { enabled: false }
   UnusedParameters:             { enabled: false }
   BooleanParameter:             { enabled: false }
+  RepeatedConditional:          { enabled: false }
+  LongParameterList:            { enabled: false }
+  MissingSafeMethod:            { enabled: false }
+  TooManyMethods:               { enabled: false }
+  TooManyInstanceVariables:     { enabled: false }
