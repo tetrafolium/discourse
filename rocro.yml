@@ -39,6 +39,7 @@ inspecode:
   ### ESLint couldn't find the config "eslint-config-discourse" to extend from.
   ### Please check that the name of the config is correct.
   ### The config "eslint-config-discourse" was referenced from the config file in ".eslintrc".
+  ### -> tractrix/codelift#1790
   eslint:
     auto-fix: true
     thresholds: { num-issues: 999 }
@@ -59,7 +60,8 @@ inspecode:
       ### -> tractrix/codelift#1785
 
   jshint:
-    thresholds: { num-issues: 999 }   # too many issues detected: 24341 > 1000
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 999 }   # too many issues detected: 4814 > 1000
 
   misspell:
     auto-fix: true
