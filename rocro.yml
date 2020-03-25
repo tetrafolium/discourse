@@ -4,8 +4,11 @@ inspecode:
     options:
       --standard: PEAR
       --exclude:
-      - PEAR.WhiteSpace.ScopeIndent
-      #- PEAR.Functions.FunctionDeclaration
+      - Generic.Commenting.DocComment
+      - Generic.ControlStructures.InlineControlStructure
+      - PEAR.ControlStructures.MultiLineCondition
+      - PEAR.Functions.FunctionDeclaration
       - PEAR.Functions.FunctionCallSignature
+      - PEAR.WhiteSpace.ScopeIndent
     auto-fix: true
     thresholds: { num-issues: 999 }   # the console log exceeds the maximum size
