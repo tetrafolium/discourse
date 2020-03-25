@@ -77,8 +77,18 @@ inspecode:
     thresholds: { num-issues: 0 }
 
   phpcs:
+    options:
+      --standard: PEAR
+      --exclude:
+      - Generic.Commenting.DocComment
+      - Generic.ControlStructures.InlineControlStructure
+      - Generic.WhiteSpace.DisallowTabIndent
+      - PEAR.ControlStructures.MultiLineCondition
+      - PEAR.Functions.FunctionDeclaration
+      - PEAR.Functions.FunctionCallSignature
+      - PEAR.WhiteSpace.ScopeIndent
     auto-fix: true
-    thresholds: { num-issues: 999 }   # the console log exceeds the maximum size
+    thresholds: { num-issues: 504 }
 
   ### Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
   pmd:
