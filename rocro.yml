@@ -2,7 +2,10 @@ inspecode:
 
   phpcs:
     options:
+      --standard: PEAR
       --exclude:
-      - PEAR.WhiteSpace
+      - PEAR.WhiteSpace.ScopeIndent
+      #- PEAR.Functions.FunctionDeclaration
+      - PEAR.Functions.FunctionCallSignature
     auto-fix: true
     thresholds: { num-issues: 999 }   # the console log exceeds the maximum size
