@@ -107,7 +107,7 @@ inspecode:
 
   ### /usr/local/lib/ruby/2.6.0/rubygems.rb:283:in `find_spec_for_exe': Could not find 'bundler' (2.1.4) required by your ./Gemfile.lock. (Gem::GemNotFoundException)
   rubocop:
-    auto-fix: true
+    auto-fix: false
     thresholds: { num-issues: 999 }
 
   unused:
