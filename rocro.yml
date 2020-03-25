@@ -41,7 +41,7 @@ inspecode:
   ### The config "eslint-config-discourse" was referenced from the config file in ".eslintrc".
   ### -> tractrix/codelift#1790
   eslint:
-    auto-fix: true
+    auto-fix: false
     thresholds: { num-issues: 999 }
 
   flow:
