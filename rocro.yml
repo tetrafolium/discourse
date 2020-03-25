@@ -6,6 +6,7 @@ inspecode:
       --exclude:
       - Generic.Commenting.DocComment
       - Generic.ControlStructures.InlineControlStructure
+      - Generic.WhiteSpace.DisallowTabIndent
       - PEAR.ControlStructures.MultiLineCondition
       - PEAR.Functions.FunctionDeclaration
       - PEAR.Functions.FunctionCallSignature
