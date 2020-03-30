@@ -13,27 +13,27 @@ inspecode:
 
   cpd:
   - input:  [ '**/*.rb' ]
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 6 }
   - input:  [ '**/*.js' ]
     ignore: [ 'app/', 'lib/', 'public/', 'vendor/' ]
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 0 }
   - input:  [ 'app/**/*.js' ]
     options: { --skip-lexical-errors: } # found Lexical error in 344 files. (skipped)
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 1 }
   - input:  [ 'lib/**/*.js' ]
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 5 }
   - input:  [ 'public/**/*.js' ]
     ignore: [ '**/ace/mode-*.js',     # has many huge clones
               '**/ace/worker-*.js' ]  # has many huge clones
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 9 }
   - input:  [ 'vendor/**/*.js' ]
     ignore: [ '**/moment-timezone-names-locale/' ]  # many clones under here.
-    machine: { cpu: 1.0 }
+    machine: { cpu: 0.75 }
     thresholds: { num-issues: 169 }
 
   ### ESLint couldn't find the config "eslint-config-discourse" to extend from.
