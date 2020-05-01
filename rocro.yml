@@ -2,15 +2,19 @@ inspecode:
 
   clang-format:
   - &ClangFormatCommonParams
+    ignore:
+    - node_modules/
+    - vendor/
+    - '**/*.min.js'
     auto-fix: true
     thresholds: { num-issues: 999 }   # too many issues detected: 1723 > 1000
-  - options: { -style: LLVM }
-    <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
-  - options: { -style: Google }
-    <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
-  - options: { -style: Chromium }
-    <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
-  - options: { -style: Mozilla }
-    <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
-  - options: { -style: WebKit }
-    <<: *ClangFormatCommonParams      # too many issues detected: 1741 > 1000
+  #- options: { -style: LLVM }
+  #  <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
+  #- options: { -style: Google }
+  #  <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
+  #- options: { -style: Chromium }
+  #  <<: *ClangFormatCommonParams      # too many issues detected: 1755 > 1000
+  #- options: { -style: Mozilla }
+  #  <<: *ClangFormatCommonParams      # too many issues detected: 1723 > 1000
+  #- options: { -style: WebKit }
+  #  <<: *ClangFormatCommonParams      # too many issues detected: 1741 > 1000
