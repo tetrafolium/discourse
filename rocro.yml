@@ -49,8 +49,11 @@ inspecode:
   fossology:
     thresholds: { num-issues: 66 }
 
-  grep:
-    thresholds: { num-issues: 152 }
+  ### Stop Aborted tasks --- avoid skipping other tasks.
+  ###  + Aborted on Enterprise environment.
+  ###  + Succeeded on SaaS environment.
+  #grep:
+  #  thresholds: { num-issues: 152 }
 
   jscpd:
     thresholds: { num-issues: 771 }   # 771 = 61 + 474 + 236
