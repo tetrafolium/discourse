@@ -4,6 +4,7 @@ inspecode:
     thresholds: { num-issues: 125 }
 
   ### /usr/local/lib/ruby/2.6.0/rubygems/dependency.rb:313:in `to_specs': Could not find 'bundler' (2.1.4) required by your /home/rocro/src/github.com/tetrafolium/discourse/Gemfile.lock. (Gem::MissingSpecVersionError)
+  ### -> tractrix/codelift#1787
   bundler-audit:
     thresholds: { num-issues: 999 }
 
