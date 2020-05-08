@@ -8,8 +8,19 @@ inspecode:
     thresholds: { num-issues: 999 }
 
   clang-format:
+  - input:
+    - app/assets/javascripts/
+    #config-file: .clang-format   # (auto-detected)
     auto-fix: true
-    thresholds: { num-issues: 999 }   # too many issues detected: 1723 > 1000
+    thresholds: { num-issues: 870 }
+  - ignore:
+    - app/assets/javascripts/
+    - node_modules/
+    - vendor/
+    - '**/*.min.js'
+    #config-file: .clang-format   # (auto-detected)
+    auto-fix: true
+    thresholds: { num-issues: 320 }
 
   cpd:
   - input:  [ '**/*.rb' ]
@@ -60,8 +71,41 @@ inspecode:
       ### -> tractrix/codelift#1785
 
   jshint:
+  - input:
+    - app/assets/javascripts/
+    ignore:
+    - app/assets/javascripts/discourse/
     config-file: inspecode-jshintrc
-    thresholds: { num-issues: 999 }   # too many issues detected: 4814 > 1000
+    thresholds: { num-issues: 572 }
+  - input:
+    - app/assets/javascripts/discourse/
+    ignore:
+    - app/assets/javascripts/discourse/components/
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 944 }
+  - input:
+    - app/assets/javascripts/discourse/components/
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 576 }
+  - input:
+    - public/javascripts/ace/
+    ignore:
+    - public/javascripts/ace/mode-*
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 587 }
+  - input:
+    - public/javascripts/ace/mode-[a-l]*
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 568 }
+  - input:
+    - public/javascripts/ace/mode-[m-z]*
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 577 }
+  - ignore:
+    - app/assets/javascripts/
+    - public/javascripts/ace/
+    config-file: inspecode-jshintrc
+    thresholds: { num-issues: 754 }
 
   misspell:
     auto-fix: true

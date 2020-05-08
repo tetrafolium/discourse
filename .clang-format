@@ -1,0 +1,14 @@
+---
+Language:     JavaScript
+BasedOnStyle: LLVM
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
+BreakStringLiterals: false
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+Cpp11BracedListStyle: false
+ReflowComments: false
+SortIncludes: false
+SortUsingDeclarations: false
+SpacesInContainerLiterals: false
+...
