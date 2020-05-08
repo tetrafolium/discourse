@@ -9,7 +9,7 @@ inspecode:
     - public/javascripts/ace/
     config-file: inspecode-jshintrc
     thresholds: { num-issues: 999 }   # too many issues detected: 4578 > 1000
-  - input:
+  - ignore:
     - app/assets/javascripts/discourse/
     - public/javascripts/ace/
     config-file: inspecode-jshintrc
