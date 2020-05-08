@@ -54,7 +54,7 @@ inspecode:
   ### -> tractrix/codelift#1790
   eslint:
     auto-fix: false
-    thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 39 }
 
   flow:
     thresholds: { num-issues: 0 }
