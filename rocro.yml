@@ -22,15 +22,15 @@ inspecode:
     ignore:
     - public/javascripts/ace/mode-*
     config-file: inspecode-jshintrc
-    thresholds: { num-issues: 999 }   # too many issues detected: 4578 > 1000
+    thresholds: { num-issues: 587 }
   - input:
     - public/javascripts/ace/mode-[a-l]*
     config-file: inspecode-jshintrc
-    thresholds: { num-issues: 999 }   # too many issues detected: 4578 > 1000
+    thresholds: { num-issues: 568 }
   - input:
     - public/javascripts/ace/mode-[m-z]*
     config-file: inspecode-jshintrc
-    thresholds: { num-issues: 999 }   # too many issues detected: 4578 > 1000
+    thresholds: { num-issues: 577 }
   - ignore:
     - app/assets/javascripts/
     - public/javascripts/ace/
