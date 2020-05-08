@@ -5,7 +5,7 @@ inspecode:
     - app/assets/javascripts/
     #config-file: .clang-format   # (auto-detected)
     auto-fix: true
-    thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 870 }
   - ignore:
     - app/assets/javascripts/
     - node_modules/
@@ -13,4 +13,4 @@ inspecode:
     - '**/*.min.js'
     #config-file: .clang-format   # (auto-detected)
     auto-fix: true
-    thresholds: { num-issues: 999 }
+    thresholds: { num-issues: 320 }
