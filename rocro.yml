@@ -51,10 +51,7 @@ inspecode:
     thresholds: { num-issues: 152 }
 
   jscpd:
-    thresholds: { num-issues: 771 }   # 771 = 61 + 474 + 236
-      ### external tool found 771 issues
-      ### plugin reports found 236 issues
-      ### -> tractrix/codelift#1785
+    thresholds: { num-issues: 739 }
 
   jshint:
   - input:
