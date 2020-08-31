@@ -33,10 +33,6 @@ inspecode:
     machine: { cpu: 0.75 }
     thresholds: { num-issues: 184 }
 
-  ### ESLint couldn't find the config "eslint-config-discourse" to extend from.
-  ### Please check that the name of the config is correct.
-  ### The config "eslint-config-discourse" was referenced from the config file in ".eslintrc".
-  ### -> tractrix/codelift#1790
   eslint:
     auto-fix: false
     thresholds: { num-issues: 39 }
@@ -131,7 +127,7 @@ inspecode:
     thresholds: { num-issues: 922 }
 
   rails_best_practices:
-    thresholds: { num-issues: 406 }
+    thresholds: { num-issues: 410 }
 
   reek:
     config-file: inspecode-reek.yml
