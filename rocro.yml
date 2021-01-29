@@ -119,8 +119,8 @@ inspecode:
   pmd:
   - machine: { cpu: 1.0 }
     thresholds: { num-issues: 999 }
-  - machine: { cpu: 1.1 }
-    thresholds: { num-issues: 999 }
+  # - machine: { cpu: 1.1 }   # at Enterprise-AWS ... cpu resource too large: 1100m (must be <= 1)
+  #   thresholds: { num-issues: 999 }
 
   prettier:
     auto-fix: true
