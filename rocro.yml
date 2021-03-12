@@ -1,10 +1,10 @@
 inspecode:
 
   brakeman:
-    thresholds: { num-issues: 125 }
+    thresholds: { num-issues: 127 }
 
   bundler-audit:
-    thresholds: { num-issues: 12 }
+    thresholds: { num-issues: 17 }
 
   clang-format:
   - input:
@@ -38,16 +38,16 @@ inspecode:
     thresholds: { num-issues: 39 }
 
   flow:
-    thresholds: { num-issues: 0 }
+    thresholds: { num-issues: 0 }   # found no input files
 
   fossology:
-    thresholds: { num-issues: 66 }
+    thresholds: { num-issues: 74 }
 
   grep:
     thresholds: { num-issues: 152 }
 
   jscpd:
-    thresholds: { num-issues: 739 }
+    thresholds: { num-issues: 747 }
 
   jshint:
   - input:
@@ -98,7 +98,7 @@ inspecode:
     thresholds: { num-issues: 999 }
 
   npm-test:
-    thresholds: { num-issues: 0 }
+    thresholds: { num-issues: 0 }   # found no input files
 
   phpcs:
     options:
@@ -112,7 +112,7 @@ inspecode:
       - PEAR.Functions.FunctionCallSignature
       - PEAR.WhiteSpace.ScopeIndent
     auto-fix: true
-    thresholds: { num-issues: 504 }
+    thresholds: { num-issues: 505 }
 
   ### Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
   ### -> tractrix/codelift#1754
@@ -122,8 +122,12 @@ inspecode:
   # - machine: { cpu: 1.1 }   # at Enterprise-AWS ... cpu resource too large: 1100m (must be <= 1)
   #   thresholds: { num-issues: 999 }
 
+  ### (codelift-plugins#1789)
+  ### FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+  ###   - occurred since 2021-01-29, commit 0224971
+  ###   - not occurred until 2020-08-31, commit 48ad88f
   prettier:
-    auto-fix: true
+    # auto-fix: true          # disabled ... avoid skipping subsequent tasks
     thresholds: { num-issues: 922 }
 
   rails_best_practices:
