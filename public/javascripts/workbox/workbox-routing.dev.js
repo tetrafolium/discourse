@@ -1,10 +1,13 @@
 this.workbox = this.workbox || {};
-this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mjs, WorkboxError_mjs, getFriendlyURL_mjs) {
+this.workbox.routing = (function(exports, assert_mjs, logger_mjs,
+                                 cacheNames_mjs, WorkboxError_mjs,
+                                 getFriendlyURL_mjs) {
   'use strict';
 
   try {
     self['workbox:routing:4.3.1'] && _();
-  } catch (e) {} // eslint-disable-line
+  } catch (e) {
+  } // eslint-disable-line
 
   /*
     Copyright 2018 Google LLC
@@ -70,9 +73,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         });
       }
 
-      return {
-        handle: handler
-      };
+      return { handle: handler };
     }
   };
 
@@ -115,19 +116,16 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         });
 
         if (method) {
-          assert_mjs.assert.isOneOf(method, validMethods, {
-            paramName: 'method'
-          });
+          assert_mjs.assert.isOneOf(method, validMethods,
+                                    { paramName: 'method' });
         }
       } // These values are referenced directly by Router so cannot be
       // altered by minifification.
-
 
       this.handler = normalizeHandler(handler);
       this.match = match;
       this.method = method || defaultMethod;
     }
-
   }
 
   /*
@@ -173,10 +171,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * match the URL's pathname and search parameter, the route will handle the
      * request (assuming the blacklist doesn't match).
      */
-    constructor(handler, {
-      whitelist = [/./],
-      blacklist = []
-    } = {}) {
+    constructor(handler, { whitelist = [/./], blacklist = [] } = {}) {
       {
         assert_mjs.assert.isArrayOfClass(whitelist, RegExp, {
           moduleName: 'workbox-routing',
@@ -207,11 +202,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * @private
      */
 
-
-    _match({
-      url,
-      request
-    }) {
+    _match({ url, request }) {
       if (request.mode !== 'navigate') {
         return false;
       }
@@ -221,7 +212,9 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       for (const regExp of this._blacklist) {
         if (regExp.test(pathnameAndSearch)) {
           {
-            logger_mjs.logger.log(`The navigation route is not being used, since the ` + `URL matches this blacklist pattern: ${regExp}`);
+            logger_mjs.logger.log(
+              `The navigation route is not being used, since the ` +
+              `URL matches this blacklist pattern: ${regExp}`);
           }
 
           return false;
@@ -237,12 +230,13 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       }
 
       {
-        logger_mjs.logger.log(`The navigation route is not being used, since the URL ` + `being navigated to doesn't match the whitelist.`);
+        logger_mjs.logger.log(
+          `The navigation route is not being used, since the URL ` +
+          `being navigated to doesn't match the whitelist.`);
       }
 
       return false;
     }
-
   }
 
   /*
@@ -290,10 +284,9 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         });
       }
 
-      const match = ({
-        url
-      }) => {
-        const result = regExp.exec(url.href); // Return null immediately if there's no match.
+      const match = ({ url }) => {
+        const result =
+          regExp.exec(url.href); // Return null immediately if there's no match.
 
         if (!result) {
           return null;
@@ -302,10 +295,13 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         // See https://github.com/GoogleChrome/workbox/issues/281 for the context
         // behind this behavior.
 
-
         if (url.origin !== location.origin && result.index !== 0) {
           {
-            logger_mjs.logger.debug(`The regular expression '${regExp}' only partially matched ` + `against the cross-origin URL '${url}'. RegExpRoute's will only ` + `handle cross-origin requests if they match the entire URL.`);
+            logger_mjs.logger.debug(
+              `The regular expression '${regExp}' only partially matched ` +
+              `against the cross-origin URL '${
+                url}'. RegExpRoute's will only ` +
+              `handle cross-origin requests if they match the entire URL.`);
           }
 
           return null;
@@ -314,13 +310,11 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         // indicate a match.
         // If there are capture groups, then it will return their values.
 
-
         return result.slice(1);
       };
 
       super(match, handler, method);
     }
-
   }
 
   /*
@@ -361,7 +355,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * instances that are registered.
      */
 
-
     get routes() {
       return this._routes;
     }
@@ -370,16 +363,10 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * the event's request.
      */
 
-
     addFetchListener() {
       self.addEventListener('fetch', event => {
-        const {
-          request
-        } = event;
-        const responsePromise = this.handleRequest({
-          request,
-          event
-        });
+        const { request } = event;
+        const responsePromise = this.handleRequest({ request, event });
 
         if (responsePromise) {
           event.respondWith(responsePromise);
@@ -409,16 +396,14 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * ```
      */
 
-
     addCacheListener() {
       self.addEventListener('message', async event => {
         if (event.data && event.data.type === 'CACHE_URLS') {
-          const {
-            payload
-          } = event.data;
+          const { payload } = event.data;
 
           {
-            logger_mjs.logger.debug(`Caching URLs from the window`, payload.urlsToCache);
+            logger_mjs.logger.debug(`Caching URLs from the window`,
+                                    payload.urlsToCache);
           }
 
           const requestPromises = Promise.all(payload.urlsToCache.map(entry => {
@@ -427,11 +412,10 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
             }
 
             const request = new Request(...entry);
-            return this.handleRequest({
-              request
-            });
+            return this.handleRequest({ request });
           }));
-          event.waitUntil(requestPromises); // If a MessageChannel was used, reply to the message on success.
+          event.waitUntil(
+            requestPromises); // If a MessageChannel was used, reply to the message on success.
 
           if (event.ports && event.ports[0]) {
             await requestPromises;
@@ -454,11 +438,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      *     route and there's no `defaultHandler`, `undefined` is returned.
      */
 
-
-    handleRequest({
-      request,
-      event
-    }) {
+    handleRequest({ request, event }) {
       {
         assert_mjs.assert.isInstance(request, Request, {
           moduleName: 'workbox-routing',
@@ -472,20 +452,14 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
 
       if (!url.protocol.startsWith('http')) {
         {
-          logger_mjs.logger.debug(`Workbox Router only supports URLs that start with 'http'.`);
+          logger_mjs.logger.debug(
+            `Workbox Router only supports URLs that start with 'http'.`);
         }
 
         return;
       }
 
-      let {
-        params,
-        route
-      } = this.findMatchingRoute({
-        url,
-        request,
-        event
-      });
+      let { params, route } = this.findMatchingRoute({ url, request, event });
       let handler = route && route.handler;
       let debugMessages = [];
 
@@ -494,16 +468,18 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
           debugMessages.push([`Found a route to handle this request:`, route]);
 
           if (params) {
-            debugMessages.push([`Passing the following params to the route's handler:`, params]);
+            debugMessages.push(
+              [`Passing the following params to the route's handler:`, params]);
           }
         }
       } // If we don't have a handler because there was no matching route, then
       // fall back to defaultHandler if that's defined.
 
-
       if (!handler && this._defaultHandler) {
         {
-          debugMessages.push(`Failed to find a matching route. Falling ` + `back to the default handler.`); // This is used for debugging in logs in the case of an error.
+          debugMessages.push(
+            `Failed to find a matching route. Falling ` +
+            `back to the default handler.`); // This is used for debugging in logs in the case of an error.
 
           route = '[Default Handler]';
         }
@@ -515,7 +491,8 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         {
           // No handler so Workbox will do nothing. If logs is set of debug
           // i.e. verbose, we should print out this information.
-          logger_mjs.logger.debug(`No route found for: ${getFriendlyURL_mjs.getFriendlyURL(url)}`);
+          logger_mjs.logger.debug(
+            `No route found for: ${getFriendlyURL_mjs.getFriendlyURL(url)}`);
         }
 
         return;
@@ -524,7 +501,8 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       {
         // We have a handler, meaning Workbox is going to handle the route.
         // print the routing details to the console.
-        logger_mjs.logger.groupCollapsed(`Router is responding to: ${getFriendlyURL_mjs.getFriendlyURL(url)}`);
+        logger_mjs.logger.groupCollapsed(
+          `Router is responding to: ${getFriendlyURL_mjs.getFriendlyURL(url)}`);
         debugMessages.forEach(msg => {
           if (Array.isArray(msg)) {
             logger_mjs.logger.log(...msg);
@@ -541,16 +519,10 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       } // Wrap in try and catch in case the handle method throws a synchronous
       // error. It should still callback to the catch handler.
 
-
       let responsePromise;
 
       try {
-        responsePromise = handler.handle({
-          url,
-          request,
-          event,
-          params
-        });
+        responsePromise = handler.handle({ url, request, event, params });
       } catch (err) {
         responsePromise = Promise.reject(err);
       }
@@ -560,17 +532,17 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
           {
             // Still include URL here as it will be async from the console group
             // and may not make sense without the URL
-            logger_mjs.logger.groupCollapsed(`Error thrown when responding to: ` + ` ${getFriendlyURL_mjs.getFriendlyURL(url)}. Falling back to Catch Handler.`);
+            logger_mjs.logger.groupCollapsed(
+              `Error thrown when responding to: ` +
+              ` ${
+                getFriendlyURL_mjs.getFriendlyURL(
+                  url)}. Falling back to Catch Handler.`);
             logger_mjs.logger.error(`Error thrown by:`, route);
             logger_mjs.logger.error(err);
             logger_mjs.logger.groupEnd();
           }
 
-          return this._catchHandler.handle({
-            url,
-            event,
-            err
-          });
+          return this._catchHandler.handle({ url, event, err });
         });
       }
 
@@ -590,12 +562,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      *     otherwise.
      */
 
-
-    findMatchingRoute({
-      url,
-      request,
-      event
-    }) {
+    findMatchingRoute({ url, request, event }) {
       {
         assert_mjs.assert.isInstance(url, URL, {
           moduleName: 'workbox-routing',
@@ -615,29 +582,21 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
 
       for (const route of routes) {
         let params;
-        let matchResult = route.match({
-          url,
-          request,
-          event
-        });
+        let matchResult = route.match({ url, request, event });
 
         if (matchResult) {
           if (Array.isArray(matchResult) && matchResult.length > 0) {
             // Instead of passing an empty array in as params, use undefined.
             params = matchResult;
-          } else if (matchResult.constructor === Object && Object.keys(matchResult).length > 0) {
+          } else if (matchResult.constructor === Object &&
+                     Object.keys(matchResult).length > 0) {
             // Instead of passing an empty object in as params, use undefined.
             params = matchResult;
           } // Return early if have a match.
 
-
-          return {
-            route,
-            params
-          };
+          return { route, params };
         }
       } // If no match was found above, return and empty object.
-
 
       return {};
     }
@@ -652,7 +611,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * function that returns a Promise resulting in a Response.
      */
 
-
     setDefaultHandler(handler) {
       this._defaultHandler = normalizeHandler(handler);
     }
@@ -664,7 +622,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * function that returns a Promise resulting in a Response.
      */
 
-
     setCatchHandler(handler) {
       this._catchHandler = normalizeHandler(handler);
     }
@@ -673,7 +630,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      *
      * @param {workbox.routing.Route} route The route to register.
      */
-
 
     registerRoute(route) {
       {
@@ -714,7 +670,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       } // Give precedence to all of the earlier routes by adding this additional
       // route to the end of the array.
 
-
       this._routes.get(route.method).push(route);
     }
     /**
@@ -723,12 +678,11 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
      * @param {workbox.routing.Route} route The route to unregister.
      */
 
-
     unregisterRoute(route) {
       if (!this._routes.has(route.method)) {
-        throw new WorkboxError_mjs.WorkboxError('unregister-route-but-not-found-with-method', {
-          method: route.method
-        });
+        throw new WorkboxError_mjs.WorkboxError(
+          'unregister-route-but-not-found-with-method',
+          { method: route.method });
       }
 
       const routeIndex = this._routes.get(route.method).indexOf(route);
@@ -736,10 +690,10 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       if (routeIndex > -1) {
         this._routes.get(route.method).splice(routeIndex, 1);
       } else {
-        throw new WorkboxError_mjs.WorkboxError('unregister-route-route-not-registered');
+        throw new WorkboxError_mjs.WorkboxError(
+          'unregister-route-route-not-registered');
       }
     }
-
   }
 
   /*
@@ -760,7 +714,8 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
 
   const getOrCreateDefaultRouter = () => {
     if (!defaultRouter) {
-      defaultRouter = new Router(); // The helpers that use the default Router assume these listeners exist.
+      defaultRouter =
+        new Router(); // The helpers that use the default Router assume these listeners exist.
 
       defaultRouter.addFetchListener();
       defaultRouter.addCacheListener();
@@ -818,39 +773,38 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
       });
     }
 
-    const cacheName = cacheNames_mjs.cacheNames.getPrecacheName(options.cacheName);
+    const cacheName =
+      cacheNames_mjs.cacheNames.getPrecacheName(options.cacheName);
 
     const handler = async () => {
       try {
-        const response = await caches.match(cachedAssetUrl, {
-          cacheName
-        });
+        const response = await caches.match(cachedAssetUrl, { cacheName });
 
         if (response) {
           return response;
         } // This shouldn't normally happen, but there are edge cases:
         // https://github.com/GoogleChrome/workbox/issues/1441
 
-
-        throw new Error(`The cache ${cacheName} did not have an entry for ` + `${cachedAssetUrl}.`);
+        throw new Error(`The cache ${cacheName} did not have an entry for ` +
+                        `${cachedAssetUrl}.`);
       } catch (error) {
         // If there's either a cache miss, or the caches.match() call threw
         // an exception, then attempt to fulfill the navigation request with
         // a response from the network rather than leaving the user with a
         // failed navigation.
         {
-          logger_mjs.logger.debug(`Unable to respond to navigation request with ` + `cached response. Falling back to network.`, error);
+          logger_mjs.logger.debug(
+            `Unable to respond to navigation request with ` +
+              `cached response. Falling back to network.`,
+            error);
         } // This might still fail if the browser is offline...
-
 
         return fetch(cachedAssetUrl);
       }
     };
 
-    const route = new NavigationRoute(handler, {
-      whitelist: options.whitelist,
-      blacklist: options.blacklist
-    });
+    const route = new NavigationRoute(
+      handler, { whitelist: options.whitelist, blacklist: options.blacklist });
     const defaultRouter = getOrCreateDefaultRouter();
     defaultRouter.registerRoute(route);
     return route;
@@ -904,22 +858,29 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
         } // We want to check if Express-style wildcards are in the pathname only.
         // TODO: Remove this log message in v4.
 
-
-        const valueToCheck = capture.startsWith('http') ? captureUrl.pathname : capture; // See https://github.com/pillarjs/path-to-regexp#parameters
+        const valueToCheck =
+          capture.startsWith('http')
+            ? captureUrl.pathname
+            : capture; // See https://github.com/pillarjs/path-to-regexp#parameters
 
         const wildcards = '[*:?+]';
 
         if (valueToCheck.match(new RegExp(`${wildcards}`))) {
-          logger_mjs.logger.debug(`The '$capture' parameter contains an Express-style wildcard ` + `character (${wildcards}). Strings are now always interpreted as ` + `exact matches; use a RegExp for partial or wildcard matches.`);
+          logger_mjs.logger.debug(
+            `The '$capture' parameter contains an Express-style wildcard ` +
+            `character (${wildcards}). Strings are now always interpreted as ` +
+            `exact matches; use a RegExp for partial or wildcard matches.`);
         }
       }
 
-      const matchCallback = ({
-        url
-      }) => {
+      const matchCallback = ({ url }) => {
         {
-          if (url.pathname === captureUrl.pathname && url.origin !== captureUrl.origin) {
-            logger_mjs.logger.debug(`${capture} only partially matches the cross-origin URL ` + `${url}. This route will only handle cross-origin requests ` + `if they match the entire URL.`);
+          if (url.pathname === captureUrl.pathname &&
+              url.origin !== captureUrl.origin) {
+            logger_mjs.logger.debug(
+              `${capture} only partially matches the cross-origin URL ` +
+              `${url}. This route will only handle cross-origin requests ` +
+              `if they match the entire URL.`);
           }
         }
 
@@ -1001,9 +962,7 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
     https://opensource.org/licenses/MIT.
   */
 
-  {
-    assert_mjs.assert.isSWEnv('workbox-routing');
-  }
+  { assert_mjs.assert.isSWEnv('workbox-routing'); }
 
   exports.NavigationRoute = NavigationRoute;
   exports.RegExpRoute = RegExpRoute;
@@ -1015,6 +974,6 @@ this.workbox.routing = (function (exports, assert_mjs, logger_mjs, cacheNames_mj
   exports.setDefaultHandler = setDefaultHandler;
 
   return exports;
-
-}({}, workbox.core._private, workbox.core._private, workbox.core._private, workbox.core._private, workbox.core._private));
+}({}, workbox.core._private, workbox.core._private, workbox.core._private,
+  workbox.core._private, workbox.core._private));
 //# sourceMappingURL=workbox-routing.dev.js.map

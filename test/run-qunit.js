@@ -37,12 +37,8 @@ async function runAllTests() {
   function launchChrome() {
     const options = {
       chromeFlags: [
-        "--disable-gpu",
-        "--headless",
-        "--no-sandbox",
-        "--disable-dev-shm-usage",
-        "--mute-audio",
-        "--window-size=1440,900"
+        "--disable-gpu", "--headless", "--no-sandbox",
+        "--disable-dev-shm-usage", "--mute-audio", "--window-size=1440,900"
       ]
     };
 
@@ -66,8 +62,7 @@ async function runAllTests() {
       if (e.message === "No inspectable targets" && connectAttempts < 50) {
         connectAttempts++;
         console.log(
-          "Unable to establish connection to chrome target - trying again..."
-        );
+          "Unable to establish connection to chrome target - trying again...");
         await new Promise(resolve => setTimeout(resolve, 100));
       } else {
         throw e;
@@ -94,11 +89,8 @@ async function runAllTests() {
     // If it's a simple test result, write without newline
     if (message === "." || message === "F") {
       process.stdout.write(message);
-    } else if (
-      message &&
-      message.startsWith &&
-      message.startsWith("AUTOSPEC:")
-    ) {
+    } else if (message && message.startsWith &&
+               message.startsWith("AUTOSPEC:")) {
       fs.appendFileSync(QUNIT_RESULT, `${message.slice(10)}\n`);
     } else {
       console.log(message);
@@ -109,9 +101,7 @@ async function runAllTests() {
   Page.navigate({ url: args[0] });
 
   Page.loadEventFired(async () => {
-    await Runtime.evaluate({
-      expression: `(${qunit_script})()`
-    });
+    await Runtime.evaluate({ expression: `(${qunit_script})()` });
     const timeout = parseInt(args[1] || 300000, 10);
     var start = Date.now();
 
@@ -125,9 +115,8 @@ async function runAllTests() {
         process.exit(124);
       }
 
-      let numFails = await Runtime.evaluate({
-        expression: `(${check_script})()`
-      });
+      let numFails =
+        await Runtime.evaluate({ expression: `(${check_script})()` });
 
       if (numFails && numFails.result && numFails.result.type !== "undefined") {
         clearInterval(interval);
@@ -221,20 +210,16 @@ function logQUnit() {
 
     console.log("Slowest tests");
     console.log("----------------------------------------------");
-    let ary = Object.keys(durations).map(key => ({
-      key: key,
-      value: durations[key]
-    }));
+    let ary =
+      Object.keys(durations).map(key => ({ key: key, value: durations[key] }));
     ary.sort((p1, p2) => p2.value - p1.value);
     ary.slice(0, 30).forEach(pair => {
       console.log(pair.key + ": " + pair.value + "ms");
     });
 
     var stats = [
-      "Time: " + context.runtime + "ms",
-      "Total: " + context.total,
-      "Passed: " + context.passed,
-      "Failed: " + context.failed
+      "Time: " + context.runtime + "ms", "Total: " + context.total,
+      "Passed: " + context.passed, "Failed: " + context.failed
     ];
     console.log(stats.join(", "));
 
@@ -246,8 +231,7 @@ let qunit_script = logQUnit.toString();
 if (QUNIT_RESULT) {
   qunit_script = qunit_script.replace(
     "/* QUNIT_RESULT */",
-    "console.log(`AUTOSPEC: ${context.module}:::${context.testId}:::${context.name}`);"
-  );
+    "console.log(`AUTOSPEC: ${context.module}:::${context.testId}:::${context.name}`);");
 }
 
 function check() {

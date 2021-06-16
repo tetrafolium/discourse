@@ -22,13 +22,11 @@ const path = require("path");
   });
   const page = await browser.newPage();
 
-  await page.setViewport({
-    width: 1366,
-    height: 768
-  });
+  await page.setViewport({ width: 1366, height: 768 });
 
   const takeFailureScreenshot = function() {
-    const screenshotPath = `${process.env.SMOKE_TEST_SCREENSHOT_PATH ||
+    const screenshotPath = `${
+      process.env.SMOKE_TEST_SCREENSHOT_PATH ||
       "tmp/smoke-test-screenshots"}/smoke-test-${Date.now()}.png`;
     console.log(`Screenshot of failure taken at ${screenshotPath}`);
     return page.screenshot({ path: screenshotPath, fullPage: true });
@@ -37,26 +35,24 @@ const path = require("path");
   const exec = (description, fn, assertion) => {
     const start = +new Date();
 
-    return fn
-      .call()
+    return fn.call()
       .then(async output => {
         if (assertion) {
           if (assertion.call(this, output)) {
-            console.log(`PASSED: ${description} - ${+new Date() - start}ms`);
+            console.log(`PASSED: ${description} - ${+ new Date() - start}ms`);
           } else {
-            console.log(`FAILED: ${description} - ${+new Date() - start}ms`);
+            console.log(`FAILED: ${description} - ${+ new Date() - start}ms`);
             await takeFailureScreenshot();
             console.log("SMOKE TEST FAILED");
             process.exit(1);
           }
         } else {
-          console.log(`PASSED: ${description} - ${+new Date() - start}ms`);
+          console.log(`PASSED: ${description} - ${+ new Date() - start}ms`);
         }
       })
       .catch(async error => {
-        console.log(
-          `ERROR (${description}): ${error.message} - ${+new Date() - start}ms`
-        );
+        console.log(`ERROR (${description}): ${error.message} - ${
+          + new Date() - start}ms`);
         await takeFailureScreenshot();
         console.log("SMOKE TEST FAILED");
         process.exit(1);
@@ -71,9 +67,8 @@ const path = require("path");
 
   page.on("response", resp => {
     if (resp.status() !== 200 && resp.status() !== 302) {
-      console.log(
-        "FAILED HTTP REQUEST TO " + resp.url() + " Status is: " + resp.status()
-      );
+      console.log("FAILED HTTP REQUEST TO " + resp.url() +
+                  " Status is: " + resp.status());
     }
     return resp;
   });
@@ -97,16 +92,12 @@ const path = require("path");
     });
 
     await exec("type in credentials & log in", () => {
-      let promise = page.type(
-        "#login-account-name",
-        process.env.DISCOURSE_USERNAME || "smoke_user"
-      );
+      let promise = page.type("#login-account-name",
+                              process.env.DISCOURSE_USERNAME || "smoke_user");
 
       promise = promise.then(() => {
-        return page.type(
-          "#login-account-password",
-          process.env.DISCOURSE_PASSWORD || "P4ssw0rd"
-        );
+        return page.type("#login-account-password",
+                         process.env.DISCOURSE_PASSWORD || "P4ssw0rd");
       });
 
       promise = promise.then(() => {
@@ -171,9 +162,8 @@ const path = require("path");
     }
 
     await exec("go home", () => {
-      let promise = page.waitForSelector("#site-logo, #site-text-logo", {
-        visible: true
-      });
+      let promise =
+        page.waitForSelector("#site-logo, #site-text-logo", { visible: true });
 
       promise = promise.then(() => {
         return page.click("#site-logo, #site-text-logo");
@@ -196,8 +186,7 @@ const path = require("path");
 
     await exec("the editor is visible", () => {
       return page.waitForFunction(
-        "document.activeElement === document.getElementById('reply-title')"
-      );
+        "document.activeElement === document.getElementById('reply-title')");
     });
 
     await page.evaluate(() => {
@@ -205,9 +194,10 @@ const path = require("path");
     });
 
     await exec("compose new topic", () => {
-      const date = `(${+new Date()})`;
+      const date = `(${+ new Date()})`;
       const title = `This is a new topic ${date}`;
-      const post = `I can write a new topic inside the smoke test! ${date} \n\n`;
+      const post =
+        `I can write a new topic inside the smoke test! ${date} \n\n`;
 
       let promise = page.type("#reply-title", title);
 
@@ -253,21 +243,20 @@ const path = require("path");
     });
 
     await exec("composer is open", () => {
-      return page.waitForSelector("#reply-control .d-editor-input", {
-        visible: true
-      });
+      return page.waitForSelector("#reply-control .d-editor-input",
+                                  { visible: true });
     });
 
     await exec("compose reply", () => {
-      const post = `I can even write a reply inside the smoke test ;) (${+new Date()})`;
+      const post =
+        `I can even write a reply inside the smoke test ;) (${+ new Date()})`;
       return page.type("#reply-control .d-editor-input", post);
     });
 
     await exec("waiting for the preview", () => {
       return page.waitForXPath(
         "//div[contains(@class, 'd-editor-preview') and contains(.//p, 'I can even write a reply')]",
-        { visible: true }
-      );
+        { visible: true });
     });
 
     await exec("wait a little bit", () => {
@@ -278,9 +267,8 @@ const path = require("path");
       let promise = page.click("#reply-control .create");
 
       promise = promise.then(() => {
-        return page.waitForSelector("#reply-control.closed", {
-          visible: false
-        });
+        return page.waitForSelector("#reply-control.closed",
+                                    { visible: false });
       });
 
       return promise;
@@ -288,16 +276,11 @@ const path = require("path");
 
     await assert("reply is created", () => {
       let promise = page.waitForSelector(
-        ".topic-post:not(.staged) #post_2 .cooked",
-        {
-          visible: true
-        }
-      );
+        ".topic-post:not(.staged) #post_2 .cooked", { visible: true });
 
       promise = promise.then(() => {
         return page.waitForFunction(
-          "document.querySelector('#post_2 .cooked').innerText.includes('I can even write a reply')"
-        );
+          "document.querySelector('#post_2 .cooked').innerText.includes('I can even write a reply')");
       });
 
       return promise;
@@ -317,9 +300,8 @@ const path = require("path");
       });
 
       promise = promise.then(() => {
-        return page.waitForSelector("#reply-control .d-editor-input", {
-          visible: true
-        });
+        return page.waitForSelector("#reply-control .d-editor-input",
+                                    { visible: true });
       });
 
       return promise;
@@ -329,10 +311,8 @@ const path = require("path");
       let promise = page.waitFor(5000);
 
       promise = promise.then(() => {
-        return page.type(
-          "#reply-control .d-editor-input",
-          "\n\nI edited this post"
-        );
+        return page.type("#reply-control .d-editor-input",
+                         "\n\nI edited this post");
       });
 
       return promise;
@@ -342,9 +322,8 @@ const path = require("path");
       let promise = page.click("#reply-control .create");
 
       promise = promise.then(() => {
-        return page.waitForSelector("#reply-control.closed", {
-          visible: false
-        });
+        return page.waitForSelector("#reply-control.closed",
+                                    { visible: false });
       });
 
       return promise;
@@ -352,16 +331,11 @@ const path = require("path");
 
     await assert("edit is successful", () => {
       let promise = page.waitForSelector(
-        ".topic-post:not(.staged) #post_1 .cooked",
-        {
-          visible: true
-        }
-      );
+        ".topic-post:not(.staged) #post_1 .cooked", { visible: true });
 
       promise = promise.then(() => {
         return page.waitForFunction(
-          "document.querySelector('#post_1 .cooked').innerText.includes('I edited this post')"
-        );
+          "document.querySelector('#post_1 .cooked').innerText.includes('I edited this post')");
       });
 
       return promise;

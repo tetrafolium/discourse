@@ -58,11 +58,9 @@ window.MessageBus.stop();
 // Trick JSHint into allow document.write
 var d = document;
 d.write(
-  '<div id="ember-testing-container"><div id="ember-testing"></div></div>'
-);
+  '<div id="ember-testing-container"><div id="ember-testing"></div></div>');
 d.write(
-  "<style>#ember-testing-container { position: absolute; background: white; bottom: 0; right: 0; width: 640px; height: 384px; overflow: auto; z-index: 9999; border: 1px solid #ccc; } #ember-testing { zoom: 50%; }</style>"
-);
+  "<style>#ember-testing-container { position: absolute; background: white; bottom: 0; right: 0; width: 640px; height: 384px; overflow: auto; z-index: 9999; border: 1px solid #ccc; } #ember-testing { zoom: 50%; }</style>");
 
 Discourse.rootElement = "#ember-testing";
 Discourse.setupForTesting();
@@ -77,15 +75,15 @@ if (window.Logster) {
 }
 
 var createPretender = require("helpers/create-pretender", null, null, false),
-  fixtures = require("fixtures/site-fixtures", null, null, false).default,
-  flushMap = require("discourse/models/store", null, null, false).flushMap,
-  ScrollingDOMMethods = require("discourse/mixins/scrolling", null, null, false)
-    .ScrollingDOMMethods,
-  _DiscourseURL = require("discourse/lib/url", null, null, false).default,
-  applyPretender = require("helpers/qunit-helpers", null, null, false)
-    .applyPretender,
-  server,
-  acceptanceModulePrefix = "Acceptance: ";
+    fixtures = require("fixtures/site-fixtures", null, null, false).default,
+    flushMap = require("discourse/models/store", null, null, false).flushMap,
+    ScrollingDOMMethods =
+      require("discourse/mixins/scrolling", null, null, false)
+        .ScrollingDOMMethods,
+    _DiscourseURL = require("discourse/lib/url", null, null, false).default,
+    applyPretender =
+      require("helpers/qunit-helpers", null, null, false).applyPretender,
+    server, acceptanceModulePrefix = "Acceptance: ";
 
 function dup(obj) {
   return jQuery.extend(true, {}, obj);
@@ -129,11 +127,8 @@ QUnit.testStart(function(ctx) {
       success: createPretender.success
     };
 
-    applyPretender(
-      ctx.module.replace(acceptanceModulePrefix, ""),
-      server,
-      helper
-    );
+    applyPretender(ctx.module.replace(acceptanceModulePrefix, ""), server,
+                   helper);
   }
 
   // Allow our tests to change site settings and have them reset before the next test
@@ -195,15 +190,14 @@ function getUrlParameter(name) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
   var results = regex.exec(location.search);
-  return results === null
-    ? ""
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
+  return results === null ? ""
+                          : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 var skipCore = getUrlParameter("qunit_skip_core") == "1";
 var pluginPath = getUrlParameter("qunit_single_plugin")
-  ? "/" + getUrlParameter("qunit_single_plugin") + "/"
-  : "/plugins/";
+                   ? "/" + getUrlParameter("qunit_single_plugin") + "/"
+                   : "/plugins/";
 
 Object.keys(requirejs.entries).forEach(function(entry) {
   var isTest = /\-test/.test(entry);
