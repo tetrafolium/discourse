@@ -4,7 +4,7 @@
 
   /**
     A class for intelligently breaking up strings at logical points.
-  **/
+   **/
   var BreakString = function(string) {
     this.string = string;
   };

@@ -51,7 +51,7 @@ const DiscourseLocation = EmberObject.extend({
 
     @property rootURL
     @default '/'
-  */
+   */
   rootURL: "/",
 
   /**

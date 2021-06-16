@@ -46,7 +46,7 @@ export function updateCsrfToken() {
   Our own $.ajax method. Makes sure the .then method executes in an Ember runloop
   for performance reasons. Also automatically adjusts the URL to support installs
   in subfolders.
-**/
+ **/
 
 export function ajax() {
   let url, args;

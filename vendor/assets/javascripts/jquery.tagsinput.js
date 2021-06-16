@@ -362,11 +362,11 @@
 	};
 
    /**
-     * check delimiter Array
-     * @param event
-     * @returns {boolean}
-     * @private
-     */
+    * check delimiter Array
+    * @param event
+    * @returns {boolean}
+    * @private
+    */
    var _checkDelimiter = function(event){
       var found = false;
       if (event.which == 13) {

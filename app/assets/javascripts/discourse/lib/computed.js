@@ -9,7 +9,7 @@ import {htmlSafe as htmlSafeTemplateHelper} from "@ember/template";
   @params {String} p1 the first property
   @params {String} p2 the second property
   @return {Function} discourseComputedProperty function
-**/
+ **/
 
 export function propertyEqual(p1, p2) {
   return computed(p1, p2, function() {
@@ -24,7 +24,7 @@ export function propertyEqual(p1, p2) {
   @params {String} p1 the first property
   @params {String} p2 the second property
   @return {Function} discourseComputedProperty function
-**/
+ **/
 export function propertyNotEqual(p1, p2) {
   return computed(p1, p2, function() {
     return this.get(p1) !== this.get(p2);
@@ -50,7 +50,7 @@ export function propertyLessThan(p1, p2) {
   @params {String} properties* to format
   @params {String} format the i18n format string
   @return {Function} discourseComputedProperty function
-**/
+ **/
 export function i18n(...args) {
   const format = args.pop();
   return computed(...args, function() {
@@ -63,7 +63,7 @@ export function i18n(...args) {
   @method htmlSafe
   @params {String} properties* to htmlify
   @return {Function} discourseComputedProperty function
-**/
+ **/
 export function htmlSafe(...args) {
   return computed(...args, {
     get() {
@@ -81,7 +81,7 @@ export function htmlSafe(...args) {
   @params {String} properties* to format
   @params {String} format the format string
   @return {Function} discourseComputedProperty function
-**/
+ **/
 export function fmt(...args) {
   const format = args.pop();
   return computed(...args, function() {
@@ -97,7 +97,7 @@ export function fmt(...args) {
   @params {String} properties* to format
   @params {String} format the format string for the URL
   @return {Function} discourseComputedProperty function returning a URL
-**/
+ **/
 export function url(...args) {
   const format = args.pop();
   return computed(...args, function() {
@@ -112,7 +112,7 @@ export function url(...args) {
   @params {String} properties* to check
   @params {String} substring the substring
   @return {Function} discourseComputedProperty function
-**/
+ **/
 export function endWith() {
   const args = Array.prototype.slice.call(arguments, 0);
   const substring = args.pop();
@@ -131,7 +131,7 @@ export function endWith() {
 
   @method setting
   @param {String} name of site setting
-**/
+ **/
 export function setting(name) {
   return computed(function() {
     return Discourse.SiteSettings[name];

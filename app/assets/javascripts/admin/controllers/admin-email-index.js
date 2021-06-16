@@ -8,7 +8,7 @@ export default Controller.extend({
     Is the "send test email" button disabled?
 
     @property sendTestEmailDisabled
-  **/
+   **/
   sendTestEmailDisabled: empty("testEmailAddress"),
 
     /**
@@ -26,7 +26,7 @@ export default Controller.extend({
       Sends a test email to the currently entered email address
 
       @method sendTestEmail
-    **/
+       **/
       sendTestEmail:
         function() {
           this.setProperties({ sendingEmail: true, sentTestEmail: false });

@@ -5445,7 +5445,7 @@
                                    Literal: 53,
                                    JS: 54,
                                    UNDEFINED: 55,
-                                   NULL: 56,
+                                   null: 56,
                                    BOOL: 57,
                                    INFINITY: 58,
                                    NAN: 59,

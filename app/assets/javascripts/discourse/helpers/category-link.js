@@ -28,7 +28,7 @@ function categoryStripe(color, classes) {
     @param {Boolean} [opts.hideParent] If true, parent category will be hidden in the badge.
     @param {Boolean} [opts.recursive] If true, the function will be called recursively for all parent categories
     @param {Number}  [opts.depth] Current category depth, used for limiting recursive calls
-**/
+ **/
 export function categoryBadgeHTML(category, opts) {
   opts = opts || {};
 

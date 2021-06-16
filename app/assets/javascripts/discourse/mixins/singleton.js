@@ -44,7 +44,7 @@
     console.log(Foot.currentProp('toes')); // 5
 
   ```
-**/
+ **/
 import Mixin from "@ember/object/mixin";
 
 const Singleton = Mixin.create({

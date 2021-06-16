@@ -6,7 +6,7 @@ import Mixin from "@ember/object/mixin";
   This object provides the DOM methods we need for our Mixin to bind to scrolling
   methods in the browser. By removing them from the Mixin we can test them
   easier.
-**/
+ **/
 const ScrollingDOMMethods = {
   bindOnScroll(onScrollMethod, name) {
     name = name || "default";

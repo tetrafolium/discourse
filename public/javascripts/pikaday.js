@@ -34,8 +34,8 @@ if (typeof exports === 'object') {
 'use strict';
 
 /**
-     * feature detection and helper functions
-     */
+ * feature detection and helper functions
+ */
 var
   hasMoment = typeof moment === 'function',
 
@@ -182,8 +182,8 @@ var
   },
 
   /**
-     * defaults and localisation
-     */
+   * defaults and localisation
+   */
   defaults = {
 
     // bind the picker to a form field
@@ -689,13 +689,13 @@ var
   };
 
 /**
-     * public Pikaday API
-     */
+ * public Pikaday API
+ */
 Pikaday.prototype = {
 
   /**
-         * configure functionality
-         */
+   * configure functionality
+   */
   config: function(options) {
     if (!this._o) {
       this._o = extend({}, defaults, true);
@@ -756,8 +756,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * return a formatted string of the current selection (using Moment.js if available)
-         */
+   * return a formatted string of the current selection (using Moment.js if available)
+   */
   toString: function(format) {
     format = format || this._o.format;
     if (!isDate(this._d)) {
@@ -773,15 +773,15 @@ Pikaday.prototype = {
   },
 
   /**
-         * return a Moment.js object of the current selection (if available)
-         */
+   * return a Moment.js object of the current selection (if available)
+   */
   getMoment: function() {
     return hasMoment ? moment(this._d) : null;
   },
 
   /**
-         * set the current selection from a Moment.js object (if available)
-         */
+   * set the current selection from a Moment.js object (if available)
+   */
   setMoment: function(date, preventOnSelect) {
     if (hasMoment && moment.isMoment(date)) {
       this.setDate(date.toDate(), preventOnSelect);
@@ -789,15 +789,15 @@ Pikaday.prototype = {
   },
 
   /**
-         * return a Date object of the current selection
-         */
+   * return a Date object of the current selection
+   */
   getDate: function() {
     return isDate(this._d) ? new Date(this._d.getTime()) : null;
   },
 
   /**
-         * set the current selection
-         */
+   * set the current selection
+   */
   setDate: function(date, preventOnSelect) {
     if (!date) {
       this._d = null;
@@ -838,8 +838,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * change view to a specific date
-         */
+   * change view to a specific date
+   */
   gotoDate: function(date) {
     var newCalendar = true;
 
@@ -900,8 +900,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * change view to a specific month (zero-index, e.g. 0: January)
-         */
+   * change view to a specific month (zero-index, e.g. 0: January)
+   */
   gotoMonth: function(month) {
     if (!isNaN(month)) {
       this.calendars[0].month = parseInt(month, 10);
@@ -920,8 +920,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * change view to a specific full year (e.g. "2012")
-         */
+   * change view to a specific full year (e.g. "2012")
+   */
   gotoYear: function(year) {
     if (!isNaN(year)) {
       this.calendars[0].year = parseInt(year, 10);
@@ -930,8 +930,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * change the minDate
-         */
+   * change the minDate
+   */
   setMinDate: function(value) {
     if (value instanceof Date) {
       setToStartOfDay(value);
@@ -949,8 +949,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * change the maxDate
-         */
+   * change the maxDate
+   */
   setMaxDate: function(value) {
     if (value instanceof Date) {
       setToStartOfDay(value);
@@ -976,8 +976,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * refresh the HTML
-         */
+   * refresh the HTML
+   */
   draw: function(force) {
     if (!this._v && !force) {
       return;
@@ -1087,8 +1087,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * render HTML for a particular month
-         */
+   * render HTML for a particular month
+   */
   render: function(year, month, randId) {
     var opts = this._o, now = new Date(), days = getDaysInMonth(year, month),
         before = new Date(year, month, 1).getDay(), data = [], row = [];
@@ -1214,8 +1214,8 @@ Pikaday.prototype = {
   },
 
   /**
-         * GAME OVER
-         */
+   * GAME OVER
+   */
   destroy: function() {
     var opts = this._o;
 

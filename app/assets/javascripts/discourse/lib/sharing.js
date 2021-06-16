@@ -29,7 +29,7 @@
       popupHeight: 265
     });
   ```
-**/
+ **/
 
 let _sources = {};
 let _customSharingIds = [];

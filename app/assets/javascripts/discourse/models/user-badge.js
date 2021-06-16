@@ -95,7 +95,7 @@ UserBadge.reopenClass({
     @param {String} username
     @param {Object} options
     @returns {Promise} a promise that resolves to an array of `UserBadge`.
-  **/
+   **/
   findByUsername: function(username, options) {
     if (!username) {
       return Promise.resolve([]);
@@ -115,7 +115,7 @@ UserBadge.reopenClass({
     @method findById
     @param {String} badgeId
     @returns {Promise} a promise that resolves to an array of `UserBadge`.
-  **/
+   **/
   findByBadgeId: function(badgeId, options) {
     if (!options) {
       options = {};
@@ -134,7 +134,7 @@ UserBadge.reopenClass({
     @param {Integer} badgeId id of the badge to be granted.
     @param {String} username username of the user to be granted the badge.
     @returns {Promise} a promise that resolves to an instance of `UserBadge`.
-  **/
+   **/
   grant: function(badgeId, username, reason) {
     return ajax("/user_badges", {
              type: "POST",

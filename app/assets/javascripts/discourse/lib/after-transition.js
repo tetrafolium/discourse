@@ -3,7 +3,7 @@
   it happens after the transition.
 
   SO: http://stackoverflow.com/questions/9943435/css3-animation-end-techniques
-**/
+ **/
 var dummy = document.createElement("div"), eventNameHash = {
   webkit: "webkitTransitionEnd",
   Moz: "transitionend",
