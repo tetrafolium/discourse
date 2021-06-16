@@ -442,7 +442,7 @@ widgetTest(`unread indicator`, {
   }
 });
 
-widgetTest("reply directly above (supressed)", {
+widgetTest("reply directly above (suppressed)", {
   template: '{{mount-widget widget="post" args=args}}',
   beforeEach() {
     this.set("args", {
@@ -461,7 +461,7 @@ widgetTest("reply directly above (supressed)", {
   }
 });
 
-widgetTest("reply a few posts above (supressed)", {
+widgetTest("reply a few posts above (suppressed)", {
   template: '{{mount-widget widget="post" args=args}}',
   beforeEach() {
     this.set("args", {

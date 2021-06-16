@@ -47,7 +47,7 @@ const fa4Replacements = {
   "500px": "fab-500px",
   "address-book-o": "far-address-book",
   "address-card-o": "far-address-card",
-  adn: "fab-adn",
+  and: "fab-and",
   amazon: "fab-amazon",
   android: "fab-android",
   angellist: "fab-angellist",
@@ -545,7 +545,7 @@ export function convertIconClass(icon) {
     .trim();
 }
 
-// TODO: Improve how helpers are registered for vdom compliation
+// TODO: Improve how helpers are registered for vdom compilation
 if (typeof Discourse !== "undefined") {
   Discourse.__widget_helpers.iconNode = iconNode;
 }

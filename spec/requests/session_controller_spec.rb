@@ -487,7 +487,7 @@ RSpec.describe SessionController do
       expect(session[:current_user_id]).to be_blank
     end
 
-    it "works in developmenet mode" do
+    it "works in developments mode" do
       Rails.env.stubs(:development?).returns(true)
       get "/session/#{user.username}/become.json"
       expect(response).to be_redirect
@@ -1792,7 +1792,7 @@ RSpec.describe SessionController do
       expect(response.status).to eq(400)
     end
 
-    context 'for a non existant username' do
+    context 'for a non existent username' do
       it "doesn't generate a new token for a made up username" do
         expect do
           post "/session/forgot_password.json", params: { login: 'made_up' }
@@ -1891,7 +1891,7 @@ RSpec.describe SessionController do
 
   describe '#current' do
     context "when not logged in" do
-      it "retuns 404" do
+      it "returns 404" do
         get "/session/current.json"
         expect(response.status).to eq(404)
       end

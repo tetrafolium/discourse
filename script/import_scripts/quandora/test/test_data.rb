@@ -148,7 +148,7 @@
         "name" : "7fcdc8ee-ab92-43a9-84a6-665aa4edbb49",
         "email" : "ggreatful@mydomain.com",
         "firstName" : "Greta",
-        "lastName" : "Greatful",
+        "lastName" : "Grateful",
         "title" : "Member",
         "score" : 516,
         "disabled" : false,

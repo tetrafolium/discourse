@@ -17,7 +17,7 @@ class InlineUploads
     end
 
     cooked_fragment = Nokogiri::HTML::fragment(PrettyText.cook(markdown, disable_emojis: true))
-    link_occurences = []
+    link_occurrences = []
 
     cooked_fragment.traverse do |node|
       if node.name == "img"
@@ -29,9 +29,9 @@ class InlineUploads
 
       if seen_link = matched_uploads(node).first
         if (actual_link = (node.attributes["href"]&.value || node.attributes["src"]&.value))
-          link_occurences << { link: actual_link, is_valid: true }
+          link_occurrences << { link: actual_link, is_valid: true }
         elsif node.name != "p"
-          link_occurences << { link: seen_link, is_valid: false }
+          link_occurrences << { link: seen_link, is_valid: false }
         end
       end
     end

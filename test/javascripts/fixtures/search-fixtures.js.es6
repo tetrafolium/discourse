@@ -243,7 +243,7 @@ export default {
           pinned: false,
           unpinned: null,
           excerpt:
-            '...0 lines of Javascript code! An inline example Let\'s say you want to replace all occurances of "evil trout" with a link that says "EVIL TROUT IS AWESOME": Discourse.Dialect.on("register", function(event) {...',
+            '...0 lines of Javascript code! An inline example Let\'s say you want to replace all occurrences of "evil trout" with a link that says "EVIL TROUT IS AWESOME": Discourse.Dialect.on("register", function(event) {...',
           visible: true,
           closed: false,
           archived: false,

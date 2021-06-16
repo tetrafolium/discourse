@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#mixin for all guardian methods dealing with category permisions
+#mixin for all guardian methods dealing with category permission
 module CategoryGuardian
 
   # Creating Method

@@ -652,7 +652,7 @@ describe User do
       expect(User.username_available?('tESt')).to eq(false)
     end
 
-    it 'returns true when reserved username is explicity allowed' do
+    it 'returns true when reserved username is explicitly allowed' do
       SiteSetting.reserved_usernames = 'test|donkey'
 
       expect(User.username_available?(
@@ -1604,7 +1604,7 @@ describe User do
     end
   end
 
-  context "when user preferences are overriden" do
+  context "when user preferences are overridden" do
 
     fab!(:category0) { Fabricate(:category) }
     fab!(:category1) { Fabricate(:category) }
@@ -1632,7 +1632,7 @@ describe User do
       SiteSetting.default_categories_watching_first_post = category3.id.to_s
     end
 
-    it "has overriden preferences" do
+    it "has overridden preferences" do
       user = Fabricate(:user)
       options = user.user_option
       expect(options.mailing_list_mode).to eq(true)
@@ -2196,7 +2196,7 @@ describe User do
           expect(User.system_avatar_template("बहुत")).to match(%r|/letter_avatar_proxy/v\d/letter/%E0%A4%AC/ea5d25/{size}.png|)
         end
 
-        it "substitues {username} with the URL encoded username" do
+        it "substitutes {username} with the URL encoded username" do
           SiteSetting.external_system_avatars_url = "https://{hostname}/{username}.png"
           expect(User.system_avatar_template("बहुत")).to eq("https://#{Discourse.current_hostname}/%E0%A4%AC%E0%A4%B9%E0%A5%81%E0%A4%A4.png")
         end

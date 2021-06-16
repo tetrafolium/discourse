@@ -1277,7 +1277,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                      ["int apache_request_remote_host([int type])", ""],
                    apache_request_run: [
                      "long apache_request_run()",
-                     "This is a wrapper for ap_sub_run_req and ap_destory_sub_req.  It takes      sub_request, runs it, destroys it, and returns it's status."
+                     "This is a wrapper for ap_sub_run_req and ap_destroy_sub_req.  It takes      sub_request, runs it, destroys it, and returns it's status."
                    ],
                    apache_request_satisfies:
                      ["long apache_request_satisfies()", ""],
@@ -1319,7 +1319,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    ],
                    array_change_key_case: [
                      "array array_change_key_case(array input [, int case=CASE_LOWER])",
-                     "Retuns an array with all string keys lowercased [or uppercased]"
+                     "Returns an array with all string keys lowercased [or uppercased]"
                    ],
                    array_chunk: [
                      "array array_chunk(array input, int size [, bool preserve_keys])",
@@ -1622,7 +1622,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    bcsqrt:
                      [
                        "string bcsqrt(string operand [, int scale])",
-                       "Returns the square root of an arbitray precision number"
+                       "Returns the square root of an arbitrary precision number"
                      ],
                    bcsub:
                      [
@@ -2493,7 +2493,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    dom_document_xinclude:
                      [
                        "int dom_document_xinclude([int options])",
-                       "Substitutues xincludes in a DomDocument"
+                       "Substitutes xincludes in a DomDocument"
                      ],
                    dom_domconfiguration_can_set_parameter:
                      [
@@ -2922,7 +2922,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    enchant_broker_set_ordering:
                      [
                        "bool enchant_broker_set_ordering(resource broker, string tag, string ordering)",
-                       "Declares a preference of dictionaries to use for the language  described/referred to by 'tag'. The ordering is a comma delimited  list of provider names. As a special exception, the \"*\" tag can  be used as a language tag to declare a default ordering for any  language that does not explictly declare an ordering."
+                       "Declares a preference of dictionaries to use for the language  described/referred to by 'tag'. The ordering is a comma delimited  list of provider names. As a special exception, the \"*\" tag can  be used as a language tag to declare a default ordering for any  language that does not explicitly declare an ordering."
                      ],
                    enchant_dict_add_to_personal:
                      [
@@ -3181,7 +3181,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    finfo_buffer:
                      [
                        "string finfo_buffer(resource finfo, char *string [, int options [, resource context]])",
-                       "Return infromation about a string buffer."
+                       "Return information about a string buffer."
                      ],
                    finfo_close:
                      [
@@ -5353,12 +5353,12 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    intl_get_error_code:
                      [
                        "int intl_get_error_code()",
-                       "* Get code of the last occured error."
+                       "* Get code of the last occurred error."
                      ],
                    intl_get_error_message:
                      [
                        "string intl_get_error_message()",
-                       "* Get text description of the last occured error."
+                       "* Get text description of the last occurred error."
                      ],
                    intl_is_failure:
                      [
@@ -5922,7 +5922,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    locale_lookup:
                      [
                        "string locale_lookup(array $langtag, string $locale[, bool $canonicalize[, string $default = null]])",
-                       "* Searchs the items in $langtag for the best match to the language * range"
+                       "* Searches the items in $langtag for the best match to the language * range"
                      ],
                    locale_set_default:
                      [
@@ -7512,7 +7512,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                      ],
                    number_format:
                      [
-                       "string number_format(float number [, int num_decimal_places [, string dec_seperator, string thousands_seperator]])",
+                       "string number_format(float number [, int num_decimal_places [, string dec_separator, string thousands_separator]])",
                        "Formats a number with grouped thousands"
                      ],
                    numfmt_create:
@@ -8168,7 +8168,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    odbc_next_result:
                      [
                        "bool odbc_next_result(resource result_id)",
-                       "Checks if multiple results are avaiable"
+                       "Checks if multiple results are available"
                      ],
                    odbc_num_fields:
                      [
@@ -8203,7 +8203,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    odbc_procedures:
                      [
                        "resource odbc_procedures(resource connection_id [, string qualifier, string owner, string name])",
-                       "Returns a result identifier containg the list of procedure names in a datasource"
+                       "Returns a result identifier containing the list of procedure names in a datasource"
                      ],
                    odbc_result:
                      [
@@ -10027,7 +10027,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    snmp2_real_walk:
                      [
                        "array snmp2_real_walk(string host, string community, string object_id [, int timeout [, int retries]])",
-                       "Return all objects including their respective object id withing the specified one"
+                       "Return all objects including their respective object id within the specified one"
                      ],
                    snmp2_set:
                      [
@@ -10092,7 +10092,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    snmp_set_quick_print:
                      [
                        "void snmp_set_quick_print(int quick_print)",
-                       "Return all objects including their respective object id withing the specified one"
+                       "Return all objects including their respective object id within the specified one"
                      ],
                    snmp_set_valueretrieval:
                      [
@@ -10112,7 +10112,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    snmprealwalk:
                      [
                        "array snmprealwalk(string host, string community, string object_id [, int timeout [, int retries]])",
-                       "Return all objects including their respective object id withing the specified one"
+                       "Return all objects including their respective object id within the specified one"
                      ],
                    snmpset:
                      [
@@ -10268,7 +10268,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    spl_autoload_call:
                      [
                        "void spl_autoload_call(string class_name)",
-                       "Try all registerd autoload function to load the requested class"
+                       "Try all registered autoload function to load the requested class"
                      ],
                    spl_autoload_extensions:
                      [
@@ -11136,7 +11136,7 @@ ace.define("ace/mode/doc_comment_highlight_rules",
                    tidy_get_error_buffer:
                      [
                        "string tidy_get_error_buffer([boolean detailed])",
-                       "Return warnings and errors which occured parsing the specified document"
+                       "Return warnings and errors which occurred parsing the specified document"
                      ],
                    tidy_get_head:
                      [

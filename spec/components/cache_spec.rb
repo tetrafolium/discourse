@@ -66,7 +66,7 @@ describe Cache do
 
     expect(Discourse.redis.ttl(key)).to be_within(2.seconds).of(1.minute)
 
-    # we always expire withing a day
+    # we always expire within a day
     cache.fetch("bla") { "hi" }
 
     key = cache.normalize_key("bla")

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # name: discourse-internet-explorer
-# about: Attempts to provide backward support for internt explorer
+# about: Attempts to provide backward support for internet explorer
 # version: 1.0
 # authors: Joffrey Jaffeux, David Taylor, Daniel Waterworth, Robin Ward
 # url: https://github.com/discourse/discourse/tree/master/plugins/discourse-internet-explorer

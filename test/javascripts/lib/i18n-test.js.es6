@@ -106,7 +106,7 @@ QUnit.test("translations", assert => {
   assert.equal(
     I18n.t("hello.world"),
     "Hello World!",
-    "doesn't break if a key is overriden in a locale"
+    "doesn't break if a key is overridden in a locale"
   );
   assert.equal(I18n.t("hello.universe"), "", "allows empty strings");
 });
@@ -141,8 +141,8 @@ QUnit.test("extra translations", assert => {
         web_hooks: {
           events: {
             incoming: {
-              one: "Istnieje nowe wydarzenie",
-              few: "Istnieją %{count} nowe wydarzenia.",
+              one: "Istnieje now wydarzenie",
+              few: "Istnieją %{count} now wydarzenia.",
               many: "Istnieje %{count} nowych wydarzeń.",
               other: "Istnieje %{count} nowych wydarzeń."
             }
@@ -166,7 +166,7 @@ QUnit.test("extra translations", assert => {
 
   assert.equal(
     I18n.t("admin.web_hooks.events.incoming", { count: 2 }),
-    "Istnieją 2 nowe wydarzenia.",
+    "Istnieją 2 now wydarzenia.",
     "it uses pluralized extra translation when it exists"
   );
 

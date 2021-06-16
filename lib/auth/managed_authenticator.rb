@@ -13,7 +13,7 @@ class Auth::ManagedAuthenticator < Auth::Authenticator
     info["email"] || info["nickname"] || info["name"]
   end
 
-  # These three methods are designed to be overriden by child classes
+  # These three methods are designed to be overridden by child classes
   def match_by_email
     true
   end
@@ -94,7 +94,7 @@ class Auth::ManagedAuthenticator < Auth::Authenticator
     result.name = (info[:first_name] && info[:last_name]) ? "#{info[:first_name]} #{info[:last_name]}" : info[:name]
     if result.name.present? && result.name == result.email
       # Some IDPs send the email address in the name parameter (e.g. Auth0 with default configuration)
-      # We add some generic protection here, so that users don't accidently make their email addresses public
+      # We add some generic protection here, so that users don't accidentally make their email addresses public
       result.name = nil
     end
     result.username = info[:nickname]

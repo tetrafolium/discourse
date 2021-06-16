@@ -312,7 +312,7 @@ class CookedPostProcessor
     return if src.blank? || is_a_hyperlink?(img) || is_svg?(img)
 
     width, height = img["width"].to_i, img["height"].to_i
-    # TODO: store original dimentions in db
+    # TODO: store original dimensions in db
     original_width, original_height = (get_size(src) || [0, 0]).map(&:to_i)
 
     # can't reach the image...

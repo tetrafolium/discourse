@@ -204,7 +204,7 @@
                         // Apply ellipsis on last text node, by removing one word.
                         ellipsisApplied = ellipsisOnLastTextNode(selectedElement);
 
-                        // If ellipsis was succesfully applied, remove any remaining empty last elements and append the
+                        // If ellipsis was successfully applied, remove any remaining empty last elements and append the
                         // ellipsis characters.
                         if (ellipsisApplied) {
                             removeLastEmptyElements(selectedElement);

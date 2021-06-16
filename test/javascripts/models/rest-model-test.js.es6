@@ -120,7 +120,7 @@ QUnit.test("custom api name", async assert => {
   //Create
   const widget = store.createRecord("my-widget");
   await widget.save({ name: "Evil Widget" });
-  assert.equal(widget.id, 100, "it saved a new record successully");
+  assert.equal(widget.id, 100, "it saved a new record successfully");
   assert.equal(widget.get("name"), "Evil Widget");
 
   // Update

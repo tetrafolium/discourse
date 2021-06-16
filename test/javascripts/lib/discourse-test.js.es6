@@ -96,6 +96,6 @@ QUnit.test("title counts are updated correctly", assert => {
   assert.equal(
     document.title,
     "Test Title",
-    "counter dissappears after focus, and doesn't reappear until another notification arrives"
+    "counter disappears after focus, and doesn't reappear until another notification arrives"
   );
 });

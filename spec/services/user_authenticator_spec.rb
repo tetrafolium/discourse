@@ -26,7 +26,7 @@ describe UserAuthenticator do
       SiteSetting.enable_github_logins = true
     end
 
-    it "confirms email and adds the user to appropraite groups based on email" do
+    it "confirms email and adds the user to appropriate groups based on email" do
       user = Fabricate(:user, email: "user53@discourse.org")
       expect(group.usernames).not_to include(user.username)
 

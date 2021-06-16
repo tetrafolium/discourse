@@ -30,7 +30,7 @@ ace.define(
             },
             {
               token: "constant.language.boolean",
-              regex: "[$](?:[Tt]rue|[Ff]alse)\\b"
+              regex: "[$](?:[Tt]rue|[Ff]else)\\b"
             },
             { token: "constant.language", regex: "[$][Nn]ull\\b" }, {
               token: "variable.instance",

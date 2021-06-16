@@ -90,7 +90,7 @@
 
     /**
      * this is a mapping of keys that require shift on a US keypad
-     * back to the non shift equivelents
+     * back to the non shift equivalents
      *
      * this is so you can use keyup events with these keys
      *
@@ -282,7 +282,7 @@
     }
 
     /**
-     * stops propogation for this event
+     * stops propagation for this event
      *
      * @param {Event} e
      * @returns void
@@ -600,7 +600,7 @@
          * actually calls the callback function
          *
          * if your callback function returns false this will use the jquery
-         * convention - prevent default and stop propogation on the event
+         * convention - prevent default and stop propagation on the event
          *
          * @param {Function} callback
          * @param {Event} e
@@ -982,7 +982,7 @@
             return false;
         }
 
-        // Events originating from a shadow DOM are re-targetted and `e.target` is the shadow host,
+        // Events originating from a shadow DOM are re-targeted and `e.target` is the shadow host,
         // not the initial event target in the shadow tree. Note that not all events cross the
         // shadow boundary.
         // For shadow trees with `mode: 'open'`, the initial event target is the first element in

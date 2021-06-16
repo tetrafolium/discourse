@@ -1478,7 +1478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
+	        //normal environments in sane situations
 	        return setTimeout(fun, 0);
 	    }
 	    // if setTimeout wasn't available but was latter defined
@@ -1501,7 +1501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
+	        //normal environments in sane situations
 	        return clearTimeout(marker);
 	    }
 	    // if clearTimeout wasn't available but was latter defined
@@ -1580,7 +1580,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	// v8 likes predictible objects
+	// v8 likes predictable objects
 	function Item(fun, array) {
 	    this.fun = fun;
 	    this.array = array;
@@ -7502,13 +7502,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  BlockScoping.prototype.pushDeclar = function pushDeclar(node) {
-	    var declars = [];
+	    var declares = [];
 	    var names = t.getBindingIdentifiers(node);
 	    for (var name in names) {
 	      declars.push(t.variableDeclarator(names[name]));
 	    }
 
-	    this.body.push(t.variableDeclaration(node.kind, declars));
+	    this.body.push(t.variableDeclaration(node.kind, declares));
 
 	    var replace = [];
 
@@ -31868,7 +31868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Applies the mappings of a sub-source-map for a specific source file to the
 	 * source map being generated. Each mapping to the supplied source file is
 	 * rewritten using the supplied source map. Note: The resolution for the
-	 * resulting mappings is the minimium of this map and the supplied map.
+	 * resulting mappings is the minimum of this map and the supplied map.
 	 *
 	 * @param aSourceMapConsumer The source map to be applied.
 	 * @param aSourceFile Optional. The filename of the source file.
@@ -44005,7 +44005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return key;
 	}
 
-	function gatherSequenceExpressions(nodes, scope, declars) {
+	function gatherSequenceExpressions(nodes, scope, declares) {
 	  var exprs = [];
 	  var ensureLastUndefined = true;
 
@@ -44061,13 +44061,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      ensureLastUndefined = true;
 	    } else if (t.isIfStatement(node)) {
-	      var consequent = node.consequent ? gatherSequenceExpressions([node.consequent], scope, declars) : scope.buildUndefinedNode();
-	      var alternate = node.alternate ? gatherSequenceExpressions([node.alternate], scope, declars) : scope.buildUndefinedNode();
+	      var consequent = node.consequent ? gatherSequenceExpressions([node.consequent], scope, declares) : scope.buildUndefinedNode();
+	      var alternate = node.alternate ? gatherSequenceExpressions([node.alternate], scope, declares) : scope.buildUndefinedNode();
 	      if (!consequent || !alternate) return;
 
 	      exprs.push(t.conditionalExpression(node.test, consequent, alternate));
 	    } else if (t.isBlockStatement(node)) {
-	      var body = gatherSequenceExpressions(node.body, scope, declars);
+	      var body = gatherSequenceExpressions(node.body, scope, declares);
 	      if (!body) return;
 
 	      exprs.push(body);
@@ -44092,11 +44092,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function toSequenceExpression(nodes, scope) {
 	  if (!nodes || !nodes.length) return;
 
-	  var declars = [];
-	  var result = gatherSequenceExpressions(nodes, scope, declars);
+	  var declares = [];
+	  var result = gatherSequenceExpressions(nodes, scope, declares);
 	  if (!result) return;
 
-	  for (var _iterator3 = declars, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : (0, _getIterator3.default)(_iterator3);;) {
+	  for (var _iterator3 = declares, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : (0, _getIterator3.default)(_iterator3);;) {
 	    var _ref3;
 
 	    if (_isArray3) {
@@ -51291,7 +51291,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        peek = function peek() {
 
 	        // Get the next character without consuming it or
-	        // assigning it to the ch varaible.
+	        // assigning it to the ch variable.
 
 	        return text.charAt(at);
 	    },

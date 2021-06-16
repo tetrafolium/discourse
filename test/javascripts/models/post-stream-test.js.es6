@@ -710,7 +710,7 @@ QUnit.test("staging and committing a post", assert => {
   assert.ok(
     postStream.get("lastAppended"),
     found,
-    "comitting a post changes lastAppended"
+    "committing a post changes lastAppended"
   );
 });
 
@@ -767,7 +767,7 @@ QUnit.test("triggerRecoveredPost", async assert => {
   );
 });
 
-QUnit.test("comitting and triggerNewPostInStream race condition", assert => {
+QUnit.test("committing and triggerNewPostInStream race condition", assert => {
   const postStream = buildStream(4964);
   const store = postStream.store;
 

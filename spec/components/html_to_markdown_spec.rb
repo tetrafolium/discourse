@@ -83,7 +83,7 @@ describe HtmlToMarkdown do
     expect(html_to_markdown(%Q{<img src="foo.bar">})).to eq("")
   end
 
-  it "keeps <img> with src='cid:' whith 'keep_cid_imgs'" do
+  it "keeps <img> with src='cid:' with 'keep_cid_imgs'" do
     expect(html_to_markdown(HTML_WITH_CID_IMG, keep_cid_imgs: true)).to eq("![Discourse Logo](cid:ii_1525434659ddb4cb)")
     expect(html_to_markdown(HTML_WITH_CID_IMG, keep_img_tags: true, keep_cid_imgs: true)).to eq("<img src=\"cid:ii_1525434659ddb4cb\" alt=\"Discourse Logo\">")
   end

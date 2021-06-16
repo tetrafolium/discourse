@@ -91,7 +91,7 @@ RSpec.describe Users::OmniauthCallbacksController do
     end
 
     describe "request" do
-      it "should error for non existant authenticators" do
+      it "should error for non existent authenticators" do
         post "/auth/fake_auth"
         expect(response.status).to eq(404)
         get "/auth/fake_auth"
