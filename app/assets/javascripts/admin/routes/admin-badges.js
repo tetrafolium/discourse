@@ -1,5 +1,5 @@
 import DiscourseRoute from "discourse/routes/discourse";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import Badge from "discourse/models/badge";
 import BadgeGrouping from "discourse/models/badge-grouping";
 
@@ -20,10 +20,8 @@ export default DiscourseRoute.extend({
 
     Object.keys(json.admin_badges.triggers).forEach(k => {
       const id = json.admin_badges.triggers[k];
-      badgeTriggers.push({
-        id,
-        name: I18n.t("admin.badges.trigger_type." + k)
-      });
+      badgeTriggers.push(
+        { id, name: I18n.t("admin.badges.trigger_type." + k) });
     });
 
     json.badge_groupings.forEach(function(badgeGroupingJson) {

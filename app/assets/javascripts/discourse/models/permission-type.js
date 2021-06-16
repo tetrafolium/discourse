@@ -7,15 +7,15 @@ const PermissionType = EmberObject.extend({
     var key = "";
 
     switch (id) {
-      case 1:
-        key = "full";
-        break;
-      case 2:
-        key = "create_post";
-        break;
-      case 3:
-        key = "readonly";
-        break;
+    case 1:
+      key = "full";
+      break;
+    case 2:
+      key = "create_post";
+      break;
+    case 3:
+      key = "readonly";
+      break;
     }
     return I18n.t("permission_types." + key);
   }

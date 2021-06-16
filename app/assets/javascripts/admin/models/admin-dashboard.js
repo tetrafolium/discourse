@@ -1,11 +1,8 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import EmberObject from "@ember/object";
 
-const GENERAL_ATTRIBUTES = [
-  "updated_at",
-  "discourse_updated_at",
-  "release_notes_link"
-];
+const GENERAL_ATTRIBUTES =
+  ["updated_at", "discourse_updated_at", "release_notes_link"];
 
 const AdminDashboard = EmberObject.extend({});
 
@@ -25,11 +22,7 @@ AdminDashboard.reopenClass({
       const attributes = {};
       GENERAL_ATTRIBUTES.forEach(a => (attributes[a] = json[a]));
 
-      model.setProperties({
-        reports: json.reports,
-        attributes,
-        loaded: true
-      });
+      model.setProperties({ reports: json.reports, attributes, loaded: true });
 
       return model;
     });

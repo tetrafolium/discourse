@@ -1,57 +1,63 @@
 /*global Mousetrap:true*/
 import deprecated from "discourse-common/lib/deprecated";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { addDecorator } from "discourse/widgets/post-cooked";
-import { addPluginOutletDecorator } from "discourse/components/plugin-connector";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {addDecorator} from "discourse/widgets/post-cooked";
+import {addPluginOutletDecorator} from "discourse/components/plugin-connector";
 import ComposerEditor from "discourse/components/composer-editor";
 import DiscourseBanner from "discourse/components/discourse-banner";
-import { addButton } from "discourse/widgets/post-menu";
-import { includeAttributes } from "discourse/lib/transform-post";
-import { registerHighlightJSLanguage } from "discourse/lib/highlight-syntax";
-import { addToolbarCallback } from "discourse/components/d-editor";
-import { addWidgetCleanCallback } from "discourse/components/mount-widget";
-import { addGlobalNotice } from "discourse/components/global-notice";
+import {addButton} from "discourse/widgets/post-menu";
+import {includeAttributes} from "discourse/lib/transform-post";
+import {registerHighlightJSLanguage} from "discourse/lib/highlight-syntax";
+import {addToolbarCallback} from "discourse/components/d-editor";
+import {addWidgetCleanCallback} from "discourse/components/mount-widget";
+import {addGlobalNotice} from "discourse/components/global-notice";
 import {
   createWidget,
   reopenWidget,
   decorateWidget,
   changeSetting
 } from "discourse/widgets/widget";
-import { preventCloak } from "discourse/widgets/post-stream";
-import { h } from "virtual-dom";
-import { addPopupMenuOptionsCallback } from "discourse/controllers/composer";
-import { extraConnectorClass } from "discourse/lib/plugin-connectors";
-import { addPostSmallActionIcon } from "discourse/widgets/post-small-action";
-import { registerTopicFooterButton } from "discourse/lib/register-topic-footer-button";
-import { addDiscoveryQueryParam } from "discourse/controllers/discovery-sortable";
-import { addTagsHtmlCallback } from "discourse/lib/render-tags";
-import { addUserMenuGlyph } from "discourse/widgets/user-menu";
-import { addPostClassesCallback } from "discourse/widgets/post";
-import { addPostTransformCallback } from "discourse/widgets/post-stream";
-import { attachAdditionalPanel } from "discourse/widgets/header";
+import {preventCloak} from "discourse/widgets/post-stream";
+import {h} from "virtual-dom";
+import {addPopupMenuOptionsCallback} from "discourse/controllers/composer";
+import {extraConnectorClass} from "discourse/lib/plugin-connectors";
+import {addPostSmallActionIcon} from "discourse/widgets/post-small-action";
+import {
+  registerTopicFooterButton
+} from "discourse/lib/register-topic-footer-button";
+import {addDiscoveryQueryParam} from "discourse/controllers/discovery-sortable";
+import {addTagsHtmlCallback} from "discourse/lib/render-tags";
+import {addUserMenuGlyph} from "discourse/widgets/user-menu";
+import {addPostClassesCallback} from "discourse/widgets/post";
+import {addPostTransformCallback} from "discourse/widgets/post-stream";
+import {attachAdditionalPanel} from "discourse/widgets/header";
 import {
   registerIconRenderer,
   replaceIcon
 } from "discourse-common/lib/icon-library";
-import { replaceCategoryLinkRenderer } from "discourse/helpers/category-link";
-import { replaceTagRenderer } from "discourse/lib/render-tag";
-import { addNavItem } from "discourse/models/nav-item";
-import { replaceFormatter } from "discourse/lib/utilities";
-import { modifySelectKit } from "select-kit/mixins/plugin-api";
-import { addGTMPageChangedCallback } from "discourse/lib/page-tracker";
-import { registerCustomAvatarHelper } from "discourse/helpers/user-avatar";
-import { disableNameSuppression } from "discourse/widgets/poster-name";
-import { registerCustomPostMessageCallback as registerCustomPostMessageCallback1 } from "discourse/controllers/topic";
+import {replaceCategoryLinkRenderer} from "discourse/helpers/category-link";
+import {replaceTagRenderer} from "discourse/lib/render-tag";
+import {addNavItem} from "discourse/models/nav-item";
+import {replaceFormatter} from "discourse/lib/utilities";
+import {modifySelectKit} from "select-kit/mixins/plugin-api";
+import {addGTMPageChangedCallback} from "discourse/lib/page-tracker";
+import {registerCustomAvatarHelper} from "discourse/helpers/user-avatar";
+import {disableNameSuppression} from "discourse/widgets/poster-name";
+import {
+  registerCustomPostMessageCallback as registerCustomPostMessageCallback1
+} from "discourse/controllers/topic";
 import Sharing from "discourse/lib/sharing";
 import {
   addComposerUploadHandler,
   addComposerUploadMarkdownResolver
 } from "discourse/components/composer-editor";
-import { addCategorySortCriteria } from "discourse/components/edit-category-settings";
-import { queryRegistry } from "discourse/widgets/widget";
+import {
+  addCategorySortCriteria
+} from "discourse/components/edit-category-settings";
+import {queryRegistry} from "discourse/widgets/widget";
 import Composer from "discourse/models/composer";
-import { on } from "@ember/object/evented";
-import KeyboardShortcuts, { bindings } from "discourse/lib/keyboard-shortcuts";
+import {on} from "@ember/object/evented";
+import KeyboardShortcuts, {bindings} from "discourse/lib/keyboard-shortcuts";
 
 // If you add any methods to the API ensure you bump up this number
 const PLUGIN_API_VERSION = "0.8.39";
@@ -72,11 +78,8 @@ class PluginApi {
   }
 
   _lookupContainer(path) {
-    if (
-      !this.container ||
-      this.container.isDestroying ||
-      this.container.isDestroyed
-    ) {
+    if (!this.container || this.container.isDestroying ||
+        this.container.isDestroyed) {
       return;
     }
 
@@ -88,9 +91,8 @@ class PluginApi {
 
     if (this.container.cache[resolverName]) {
       // eslint-disable-next-line no-console
-      console.warn(
-        `"${resolverName}" was already cached in the container. Changes won't be applied.`
-      );
+      console.warn(`"${
+        resolverName}" was already cached in the container. Changes won't be applied.`);
     }
 
     const klass = this.container.factoryFor(resolverName);
@@ -220,12 +222,8 @@ class PluginApi {
     if (!opts.onlyStream) {
       decorate(ComposerEditor, "previewRefreshed", callback, opts.id);
       decorate(DiscourseBanner, "didInsertElement", callback, opts.id);
-      decorate(
-        this.container.factoryFor("component:user-stream").class,
-        "didInsertElement",
-        callback,
-        opts.id
-      );
+      decorate(this.container.factoryFor("component:user-stream").class,
+               "didInsertElement", callback, opts.id);
     }
   }
 
@@ -293,8 +291,7 @@ class PluginApi {
         return dec.h(
           "span.poster-icon",
           { className: result.className, attributes: { title: result.title } },
-          iconBody
-        );
+          iconBody);
       }
     });
   }
@@ -343,9 +340,8 @@ class PluginApi {
    * ```
    **/
   attachWidgetAction(widget, actionName, fn) {
-    const widgetClass =
-      queryRegistry(widget) ||
-      this.container.factoryFor(`widget:${widget}`).class;
+    const widgetClass = queryRegistry(widget) ||
+                        this.container.factoryFor(`widget:${widget}`).class;
     widgetClass.prototype[actionName] = fn;
   }
 
@@ -565,8 +561,7 @@ class PluginApi {
 
   addFlagProperty() {
     deprecated(
-      "addFlagProperty has been removed. Use the reviewable API instead."
-    );
+      "addFlagProperty has been removed. Use the reviewable API instead.");
   }
 
   /**
@@ -764,10 +759,8 @@ class PluginApi {
   addNavigationBarItem(item) {
     if (!item["name"]) {
       // eslint-disable-next-line no-console
-      console.warn(
-        "A 'name' is required when adding a Navigation Bar Item.",
-        item
-      );
+      console.warn("A 'name' is required when adding a Navigation Bar Item.",
+                   item);
     } else {
       const customHref = item.customHref;
       if (customHref) {
@@ -1079,8 +1072,7 @@ function decorate(klass, evt, cb, id) {
   if (!id) {
     // eslint-disable-next-line no-console
     console.warn(
-      "`decorateCooked` should be supplied with an `id` option to avoid memory leaks."
-    );
+      "`decorateCooked` should be supplied with an `id` option to avoid memory leaks.");
   } else {
     if (!_decorated.has(klass)) {
       _decorated.set(klass, new Set());

@@ -6,8 +6,7 @@ export default Component.extend(BufferedContent, SettingComponent, {
   layoutName: "admin/templates/components/site-setting",
 
   _save() {
-    return this.model
-      .save({ [this.setting.setting]: this.convertNamesToIds() })
+    return this.model.save({ [this.setting.setting]: this.convertNamesToIds() })
       .then(() => this.store.findAll("theme"));
   },
 

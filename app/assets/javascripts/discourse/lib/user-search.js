@@ -1,26 +1,14 @@
 import discourseDebounce from "discourse/lib/debounce";
-import { CANCELLED_STATUS } from "discourse/lib/autocomplete";
-import { userPath } from "discourse/lib/url";
-import { emailValid } from "discourse/lib/utilities";
-import { Promise } from "rsvp";
+import {CANCELLED_STATUS} from "discourse/lib/autocomplete";
+import {userPath} from "discourse/lib/url";
+import {emailValid} from "discourse/lib/utilities";
+import {Promise} from "rsvp";
 
-var cache = {},
-  cacheKey,
-  cacheTime,
-  currentTerm,
-  oldSearch;
+var cache = {}, cacheKey, cacheTime, currentTerm, oldSearch;
 
-function performSearch(
-  term,
-  topicId,
-  categoryId,
-  includeGroups,
-  includeMentionableGroups,
-  includeMessageableGroups,
-  allowedUsers,
-  groupMembersOf,
-  resultsFn
-) {
+function performSearch(term, topicId, categoryId, includeGroups,
+                       includeMentionableGroups, includeMessageableGroups,
+                       allowedUsers, groupMembersOf, resultsFn) {
   var cached = cache[term];
   if (cached) {
     resultsFn(cached);
@@ -54,11 +42,9 @@ function performSearch(
 
   oldSearch
     .then(function(r) {
-      const hasResults = !!(
-        (r.users && r.users.length) ||
-        (r.groups && r.groups.length) ||
-        (r.emails && r.emails.length)
-      );
+      const hasResults =
+        !!((r.users && r.users.length) || (r.groups && r.groups.length) ||
+           (r.emails && r.emails.length));
 
       if (eagerComplete && !hasResults) {
         // we are trying to eager load, but received no results
@@ -86,12 +72,8 @@ function organizeResults(r, options) {
     return r;
   }
 
-  var exclude = options.exclude || [],
-    limit = options.limit || 5,
-    users = [],
-    emails = [],
-    groups = [],
-    results = [];
+  var exclude = options.exclude || [], limit = options.limit || 5, users = [],
+      emails = [], groups = [], results = [];
 
   if (r.users) {
     r.users.every(function(u) {
@@ -111,10 +93,8 @@ function organizeResults(r, options) {
 
   if (r.groups) {
     r.groups.every(function(g) {
-      if (
-        options.term.toLowerCase() === g.name.toLowerCase() ||
-        results.length < limit
-      ) {
+      if (options.term.toLowerCase() === g.name.toLowerCase() ||
+          results.length < limit) {
         if (exclude.indexOf(g.name) === -1) {
           groups.push(g);
           results.push(g);
@@ -136,7 +116,8 @@ function organizeResults(r, options) {
 // will not find me, which is a reasonable compromise
 //
 // we also ignore if we notice a double space or a string that is only a space
-const ignoreRegex = /([\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*,\/:;<=>?\[\]^`{|}~])|\s\s|^\s$|^[^+]*\+[^@]*$/;
+const ignoreRegex =
+  /([\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*,\/:;<=>?\[\]^`{|}~])|\s\s|^\s$|^[^+]*\+[^@]*$/;
 
 export function skipSearch(term, allowEmails) {
   if (term.indexOf("@") > -1 && !allowEmails) {
@@ -155,14 +136,11 @@ export default function userSearch(options) {
     options.term = options.term.substring(1);
   }
 
-  var term = options.term || "",
-    includeGroups = options.includeGroups,
-    includeMentionableGroups = options.includeMentionableGroups,
-    includeMessageableGroups = options.includeMessageableGroups,
-    allowedUsers = options.allowedUsers,
-    topicId = options.topicId,
-    categoryId = options.categoryId,
-    groupMembersOf = options.groupMembersOf;
+  var term = options.term || "", includeGroups = options.includeGroups,
+      includeMentionableGroups = options.includeMentionableGroups,
+      includeMessageableGroups = options.includeMessageableGroups,
+      allowedUsers = options.allowedUsers, topicId = options.topicId,
+      categoryId = options.categoryId, groupMembersOf = options.groupMembersOf;
 
   if (oldSearch) {
     oldSearch.abort();
@@ -189,19 +167,11 @@ export default function userSearch(options) {
       return;
     }
 
-    debouncedSearch(
-      term,
-      topicId,
-      categoryId,
-      includeGroups,
-      includeMentionableGroups,
-      includeMessageableGroups,
-      allowedUsers,
-      groupMembersOf,
-      function(r) {
-        clearTimeout(clearPromise);
-        resolve(organizeResults(r, options));
-      }
-    );
+    debouncedSearch(term, topicId, categoryId, includeGroups,
+                    includeMentionableGroups, includeMessageableGroups,
+                    allowedUsers, groupMembersOf, function(r) {
+                      clearTimeout(clearPromise);
+                      resolve(organizeResults(r, options));
+                    });
   });
 }

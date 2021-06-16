@@ -1,9 +1,9 @@
-import { later } from "@ember/runloop";
-import { ajax } from "discourse/lib/ajax";
+import {later} from "@ember/runloop";
+import {ajax} from "discourse/lib/ajax";
 import DiscourseURL from "discourse/lib/url";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
-import { selectedText } from "discourse/lib/utilities";
-import { Promise } from "rsvp";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
+import {selectedText} from "discourse/lib/utilities";
+import {Promise} from "rsvp";
 import ENV from "discourse-common/config/environment";
 import User from "discourse/models/user";
 
@@ -21,8 +21,7 @@ export function isValidLink($link) {
   return (
     $link.hasClass("track-link") ||
     $link.closest(".hashtag, .badge-category, .onebox-result, .onebox-body")
-      .length === 0
-  );
+        .length === 0);
 }
 
 export default {
@@ -55,10 +54,8 @@ export default {
 
     if ($link.hasClass("attachment")) {
       // Warn the user if they cannot download the file.
-      if (
-        Discourse.SiteSettings.prevent_anons_from_downloading_files &&
-        !User.current()
-      ) {
+      if (Discourse.SiteSettings.prevent_anons_from_downloading_files &&
+          !User.current()) {
         bootbox.alert(I18n.t("post.errors.attachment_download_requires_login"));
       } else if (wantsNewWindow(e)) {
         const newWindow = window.open(href, "_blank");
@@ -70,9 +67,8 @@ export default {
       return false;
     }
 
-    const $article = $link.closest(
-      "article:not(.onebox-body), .excerpt, #revisions"
-    );
+    const $article =
+      $link.closest("article:not(.onebox-body), .excerpt, #revisions");
     const postId = $article.data("post-id");
     const topicId = $("#topic").data("topic-id") || $article.data("topic-id");
     const userId = $link.data("user-id") || $article.data("user-id");
@@ -102,11 +98,7 @@ export default {
       } else {
         trackPromise = ajax(Discourse.getURL("/clicks/track"), {
           type: "POST",
-          data: {
-            url: href,
-            post_id: postId,
-            topic_id: topicId
-          }
+          data: { url: href, post_id: postId, topic_id: topicId }
         });
       }
     }

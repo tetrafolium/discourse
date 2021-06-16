@@ -1,20 +1,20 @@
-import { alias, or } from "@ember/object/computed";
-import { debounce, next, schedule } from "@ember/runloop";
+import {alias, or} from "@ember/object/computed";
+import {debounce, next, schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { load } from "pretty-text/oneboxer";
-import { lookupCache } from "pretty-text/oneboxer-cache";
-import { ajax } from "discourse/lib/ajax";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
+import {load} from "pretty-text/oneboxer";
+import {lookupCache} from "pretty-text/oneboxer-cache";
+import {ajax} from "discourse/lib/ajax";
 import afterTransition from "discourse/lib/after-transition";
 import ENV from "discourse-common/config/environment";
 import EmberObject from "@ember/object";
 
 export default Component.extend({
   classNames: ["title-input"],
-  watchForLink: alias("composer.canEditTopicFeaturedLink"),
-  disabled: or("composer.loading", "composer.disableTitleInput"),
+    watchForLink: alias("composer.canEditTopicFeaturedLink"),
+    disabled: or("composer.loading", "composer.disableTitleInput"),
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
     if (this.focusTarget === "title") {
       const $input = $(this.element.querySelector("input"));
@@ -27,51 +27,40 @@ export default Component.extend({
     if (this.get("composer.titleLength") > 0) {
       debounce(this, this._titleChanged, 10);
     }
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "composer.titleLength",
-    "composer.missingTitleCharacters",
-    "composer.minimumTitleLength",
-    "lastValidatedAt"
-  )
-  validation(
-    titleLength,
-    missingTitleChars,
-    minimumTitleLength,
-    lastValidatedAt
-  ) {
+    @discourseComputed("composer.titleLength",
+                       "composer.missingTitleCharacters",
+                       "composer.minimumTitleLength", "lastValidatedAt")
+    validation(titleLength, missingTitleChars, minimumTitleLength,
+               lastValidatedAt) {
     let reason;
     if (titleLength < 1) {
       reason = I18n.t("composer.error.title_missing");
     } else if (missingTitleChars > 0) {
-      reason = I18n.t("composer.error.title_too_short", {
-        min: minimumTitleLength
-      });
+      reason =
+        I18n.t("composer.error.title_too_short", { min: minimumTitleLength });
     } else if (titleLength > this.siteSettings.max_topic_title_length) {
-      reason = I18n.t("composer.error.title_too_long", {
-        max: this.siteSettings.max_topic_title_length
-      });
+      reason = I18n.t("composer.error.title_too_long",
+                      { max: this.siteSettings.max_topic_title_length });
     }
 
     if (reason) {
-      return EmberObject.create({
-        failed: true,
-        reason,
-        lastShownAt: lastValidatedAt
-      });
+      return EmberObject.create(
+        { failed: true, reason, lastShownAt: lastValidatedAt });
     }
-  },
+  }
+  ,
 
-  @discourseComputed("watchForLink")
-  titleMaxLength() {
+    @discourseComputed("watchForLink") titleMaxLength() {
     // maxLength gets in the way of pasting long links, so don't use it if featured links are allowed.
     // Validation will display a message if titles are too long.
     return this.watchForLink ? null : this.siteSettings.max_topic_title_length;
-  },
+  }
+  ,
 
-  @observes("composer.titleLength", "watchForLink")
-  _titleChanged() {
+    @observes("composer.titleLength", "watchForLink") _titleChanged() {
     if (this.get("composer.titleLength") === 0) {
       this.set("autoPosted", false);
     }
@@ -81,34 +70,32 @@ export default Component.extend({
 
     if (ENV.environment === "test") {
       next(() =>
-        // not ideal but we don't want to run this in current
-        // runloop to avoid an error in console
-        this._checkForUrl()
-      );
+             // not ideal but we don't want to run this in current
+           // runloop to avoid an error in console
+           this._checkForUrl());
     } else {
       debounce(this, this._checkForUrl, 500);
     }
-  },
+  }
+  ,
 
-  @observes("composer.replyLength")
-  _clearFeaturedLink() {
+    @observes("composer.replyLength") _clearFeaturedLink() {
     if (this.watchForLink && this.bodyIsDefault()) {
       this.set("composer.featuredLink", null);
     }
-  },
+  }
+  ,
 
-  _checkForUrl() {
+    _checkForUrl() {
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
 
     if (this.isAbsoluteUrl && this.bodyIsDefault()) {
       // only feature links to external sites
-      if (
-        this.get("composer.title").match(
-          new RegExp("^https?:\\/\\/" + window.location.hostname, "i")
-        )
-      ) {
+      if (this.get("composer.title")
+            .match(
+              new RegExp("^https?:\\/\\/" + window.location.hostname, "i"))) {
         return;
       }
 
@@ -147,16 +134,17 @@ export default Component.extend({
         });
       }
     }
-  },
+  }
+  ,
 
-  _updatePost(html) {
+    _updatePost(html) {
     if (html) {
       this.set("autoPosted", true);
       this.set("composer.featuredLink", this.get("composer.title"));
 
       const $h = $(html),
-        heading = $h.find("h3").length > 0 ? $h.find("h3") : $h.find("h4"),
-        composer = this.composer;
+            heading = $h.find("h3").length > 0 ? $h.find("h3") : $h.find("h4"),
+            composer = this.composer;
 
       composer.appendText(this.get("composer.title"), null, { block: true });
 
@@ -169,28 +157,26 @@ export default Component.extend({
         }
       }
     }
-  },
+  }
+  ,
 
-  changeTitle(val) {
+    changeTitle(val) {
     if (val && val.length > 0) {
       this.set("composer.title", val.trim());
     }
-  },
+  }
+  ,
 
-  @discourseComputed("composer.title", "composer.titleLength")
-  isAbsoluteUrl(title, titleLength) {
-    return (
-      titleLength > 0 &&
-      /^(https?:)?\/\/[\w\.\-]+/i.test(title) &&
-      !/\s/.test(title)
-    );
-  },
+    @discourseComputed("composer.title", "composer.titleLength")
+    isAbsoluteUrl(title, titleLength) {
+    return (titleLength > 0 && /^(https?:)?\/\/[\w\.\-]+/i.test(title) &&
+            !/\s/.test(title));
+  }
+  ,
 
-  bodyIsDefault() {
+    bodyIsDefault() {
     const reply = this.get("composer.reply") || "";
-    return (
-      reply.length === 0 ||
-      reply === (this.get("composer.category.topic_template") || "")
-    );
+    return (reply.length === 0 ||
+            reply === (this.get("composer.category.topic_template") || ""));
   }
 });

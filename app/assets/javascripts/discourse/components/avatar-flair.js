@@ -1,15 +1,15 @@
-import { observes } from "discourse-common/utils/decorators";
+import {observes} from "discourse-common/utils/decorators";
 import MountWidget from "discourse/components/mount-widget";
 
 export default MountWidget.extend({
   widget: "avatar-flair",
 
-  @observes("flairURL", "flairBgColor", "flairColor")
-  _rerender() {
+    @observes("flairURL", "flairBgColor", "flairColor") _rerender() {
     this.queueRerender();
-  },
+  }
+  ,
 
-  buildArgs() {
+    buildArgs() {
     return {
       primary_group_flair_url: this.flairURL,
       primary_group_flair_bg_color: this.flairBgColor,

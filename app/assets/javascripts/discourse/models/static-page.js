@@ -1,6 +1,6 @@
 import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
-import { Promise } from "rsvp";
+import {ajax} from "discourse/lib/ajax";
+import {Promise} from "rsvp";
 
 const StaticPage = EmberObject.extend();
 
@@ -13,13 +13,12 @@ StaticPage.reopenClass({
       if ($preloaded.length) {
         let text = $preloaded.text();
         text = text.match(
-          /<!-- preload-content: -->((?:.|[\n\r])*)<!-- :preload-content -->/
-        )[1];
+          /<!-- preload-content: -->((?:.|[\n\r])*)<!-- :preload-content -->/)[1];
         resolve(StaticPage.create({ path, html: text }));
       } else {
-        ajax(`/${path}.html`, { dataType: "html" }).then(result =>
-          resolve(StaticPage.create({ path, html: result }))
-        );
+        ajax(`/${path}.html`, {
+          dataType: "html"
+        }).then(result => resolve(StaticPage.create({ path, html: result })));
       }
     });
   }

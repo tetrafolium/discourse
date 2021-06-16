@@ -1,4 +1,4 @@
-import { scheduleOnce } from "@ember/runloop";
+import {scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
 export default Component.extend({
   classNames: ["modal-body"],
@@ -28,11 +28,8 @@ export default Component.extend({
   },
 
   _afterFirstRender() {
-    if (
-      !this.site.mobileView &&
-      this.autoFocus !== "false" &&
-      this.element.querySelector("input")
-    ) {
+    if (!this.site.mobileView && this.autoFocus !== "false" &&
+        this.element.querySelector("input")) {
       this.element.querySelector("input").focus();
     }
 
@@ -41,30 +38,20 @@ export default Component.extend({
       const maxHeightFloat = parseFloat(maxHeight) / 100.0;
       if (maxHeightFloat > 0) {
         const viewPortHeight = $(window).height();
-        $(this.element).css(
-          "max-height",
-          Math.floor(maxHeightFloat * viewPortHeight) + "px"
-        );
+        $(this.element)
+          .css("max-height",
+               Math.floor(maxHeightFloat * viewPortHeight) + "px");
       }
     }
 
-    this.appEvents.trigger(
-      "modal:body-shown",
-      this.getProperties(
-        "title",
-        "rawTitle",
-        "fixed",
-        "subtitle",
-        "rawSubtitle",
-        "dismissable"
-      )
-    );
+    this.appEvents.trigger("modal:body-shown",
+                           this.getProperties("title", "rawTitle", "fixed",
+                                              "subtitle", "rawSubtitle",
+                                              "dismissable"));
   },
 
   _clearFlash() {
-    $("#modal-alert")
-      .hide()
-      .removeClass("alert-error", "alert-success");
+    $("#modal-alert").hide().removeClass("alert-error", "alert-success");
   },
 
   _flash(msg) {

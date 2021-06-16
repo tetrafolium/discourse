@@ -5,12 +5,7 @@ export default Component.extend({
     onChange(tags) {
       this.set("value", tags);
 
-      this.valueChanged &&
-        this.valueChanged({
-          target: {
-            value: tags
-          }
-        });
+      this.valueChanged && this.valueChanged({ target: { value: tags } });
     }
   }
 });

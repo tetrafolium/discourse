@@ -1,4 +1,4 @@
-import { empty, alias } from "@ember/object/computed";
+import {empty, alias} from "@ember/object/computed";
 import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import Topic from "discourse/models/topic";
@@ -25,26 +25,16 @@ function addBulkButton(action, key, opts) {
 }
 
 // Default buttons
-addBulkButton("showChangeCategory", "change_category", {
-  icon: "pencil-alt",
-  class: "btn-default"
-});
-addBulkButton("closeTopics", "close_topics", {
-  icon: "lock",
-  class: "btn-default"
-});
-addBulkButton("archiveTopics", "archive_topics", {
-  icon: "folder",
-  class: "btn-default"
-});
-addBulkButton("showNotificationLevel", "notification_level", {
-  icon: "d-regular",
-  class: "btn-default"
-});
-addBulkButton("resetRead", "reset_read", {
-  icon: "backward",
-  class: "btn-default"
-});
+addBulkButton("showChangeCategory", "change_category",
+              { icon: "pencil-alt", class: "btn-default" });
+addBulkButton("closeTopics", "close_topics",
+              { icon: "lock", class: "btn-default" });
+addBulkButton("archiveTopics", "archive_topics",
+              { icon: "folder", class: "btn-default" });
+addBulkButton("showNotificationLevel", "notification_level",
+              { icon: "d-regular", class: "btn-default" });
+addBulkButton("resetRead", "reset_read",
+              { icon: "backward", class: "btn-default" });
 addBulkButton("unlistTopics", "unlist_topics", {
   icon: "far-eye-slash",
   class: "btn-default",
@@ -56,19 +46,13 @@ addBulkButton("relistTopics", "relist_topics", {
   buttonVisible: topics => topics.some(t => !t.visible)
 });
 if (Discourse.SiteSettings.tagging_enabled) {
-  addBulkButton("showTagTopics", "change_tags", {
-    icon: "tag",
-    class: "btn-default"
-  });
-  addBulkButton("showAppendTagTopics", "append_tags", {
-    icon: "tag",
-    class: "btn-default"
-  });
+  addBulkButton("showTagTopics", "change_tags",
+                { icon: "tag", class: "btn-default" });
+  addBulkButton("showAppendTagTopics", "append_tags",
+                { icon: "tag", class: "btn-default" });
 }
-addBulkButton("deleteTopics", "delete", {
-  icon: "trash-alt",
-  class: "btn-danger"
-});
+addBulkButton("deleteTopics", "delete",
+              { icon: "trash-alt", class: "btn-danger" });
 
 // Modal for performing bulk actions on topics
 export default Controller.extend(ModalFunctionality, {
@@ -81,10 +65,7 @@ export default Controller.extend(ModalFunctionality, {
     const topics = this.get("model.topics");
     // const relistButtonIndex = _buttons.findIndex(b => b.action === 'relistTopics');
 
-    this.set(
-      "buttons",
-      _buttons.filter(b => b.buttonVisible(topics))
-    );
+    this.set("buttons", _buttons.filter(b => b.buttonVisible(topics)));
     this.set("modal.modalClass", "topic-bulk-actions-modal small");
     this.send("changeBulkTemplate", "modal/bulk-actions-buttons");
   },
@@ -181,13 +162,12 @@ export default Controller.extend(ModalFunctionality, {
       const categoryId = parseInt(this.newCategoryId, 10) || 0;
       const category = Category.findById(categoryId);
 
-      this.perform({ type: "change_category", category_id: categoryId }).then(
-        topics => {
+      this.perform({ type: "change_category", category_id: categoryId })
+        .then(topics => {
           topics.forEach(t => t.set("category", category));
           (this.refreshClosure || identity)();
           this.send("closeModal");
-        }
-      );
+        });
     },
 
     resetRead() {
@@ -196,4 +176,4 @@ export default Controller.extend(ModalFunctionality, {
   }
 });
 
-export { addBulkButton };
+export {addBulkButton};

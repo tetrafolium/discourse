@@ -1,5 +1,5 @@
-import { isEmpty } from "@ember/utils";
-import { userPath } from "discourse/lib/url";
+import {isEmpty} from "@ember/utils";
+import {userPath} from "discourse/lib/url";
 
 const _additionalAttributes = [];
 
@@ -84,13 +84,8 @@ export function transformBasicPost(post) {
   return postAtts;
 }
 
-export default function transformPost(
-  currentUser,
-  site,
-  post,
-  prevPost,
-  nextPost
-) {
+export default function transformPost(currentUser, site, post, prevPost,
+                                      nextPost) {
   // Note: it can be dangerous to not use `get` in Ember code, but this is significantly
   // faster and has tests to confirm it works. We only call `get` when the property is a CP
   const postType = post.post_type;
@@ -151,10 +146,8 @@ export default function transformPost(
   }
 
   const showTopicMap =
-    showPMMap ||
-    (post.post_number === 1 &&
-      topic.archetype === "regular" &&
-      topic.posts_count > 1);
+    showPMMap || (post.post_number === 1 && topic.archetype === "regular" &&
+                  topic.posts_count > 1);
   if (showTopicMap) {
     postAtts.showTopicMap = true;
     postAtts.topicCreatedAt = topic.created_at;
@@ -190,9 +183,8 @@ export default function transformPost(
   }
 
   if (postAtts.isDeleted) {
-    postAtts.deletedByAvatarTemplate = post.get(
-      "postDeletedBy.avatar_template"
-    );
+    postAtts.deletedByAvatarTemplate =
+      post.get("postDeletedBy.avatar_template");
     postAtts.deletedByUsername = post.get("postDeletedBy.username");
   }
 
@@ -203,21 +195,22 @@ export default function transformPost(
   }
 
   if (post.actions_summary) {
-    postAtts.actionsSummary = post.actions_summary
-      .filter(a => {
-        return a.actionType.name_key !== "like" && a.acted;
-      })
-      .map(a => {
-        const action = a.actionType.name_key;
+    postAtts.actionsSummary =
+      post.actions_summary
+        .filter(a => {
+          return a.actionType.name_key !== "like" && a.acted;
+        })
+        .map(a => {
+          const action = a.actionType.name_key;
 
-        return {
-          id: a.id,
-          postId: post.id,
-          action,
-          canUndo: a.can_undo,
-          description: I18n.t(`post.actions.by_you.${action}`)
-        };
-      });
+          return {
+            id: a.id,
+            postId: post.id,
+            action,
+            canUndo: a.can_undo,
+            description: I18n.t(`post.actions.by_you.${action}`)
+          };
+        });
   }
 
   const likeAction = post.likeAction;
@@ -239,18 +232,13 @@ export default function transformPost(
 
     // Show a "Flag to delete" message if not staff and you can't
     // otherwise delete it.
-    postAtts.showFlagDelete =
-      !postAtts.canDelete &&
-      postAtts.yours &&
-      currentUser &&
-      !currentUser.staff;
+    postAtts.showFlagDelete = !postAtts.canDelete && postAtts.yours &&
+                              currentUser && !currentUser.staff;
   } else {
     postAtts.canRecover = postAtts.isDeleted && postAtts.canRecover;
-    postAtts.canDelete =
-      postAtts.canDelete &&
-      !post.deleted_at &&
-      currentUser &&
-      (currentUser.staff || !post.user_deleted);
+    postAtts.canDelete = postAtts.canDelete && !post.deleted_at &&
+                         currentUser &&
+                         (currentUser.staff || !post.user_deleted);
   }
 
   _additionalAttributes.forEach(a => (postAtts[a] = post[a]));

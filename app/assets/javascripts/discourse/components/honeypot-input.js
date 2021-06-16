@@ -1,5 +1,5 @@
-import { TextField } from "@ember/component";
-import { on } from "discourse-common/utils/decorators";
+import {TextField} from "@ember/component";
+import {on} from "discourse-common/utils/decorators";
 
 export default TextField.extend({
   @on("init")

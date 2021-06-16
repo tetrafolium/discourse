@@ -1,5 +1,5 @@
-import { createWidget, applyDecorators } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
+import {createWidget, applyDecorators} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
 
 createWidget("admin-menu-button", {
   html(attrs) {
@@ -8,18 +8,14 @@ createWidget("admin-menu-button", {
       className = attrs.buttonClass;
     }
 
-    return h(
-      "li",
-      { className: attrs.className },
-      this.attach("button", {
-        className,
-        action: attrs.action,
-        url: attrs.url,
-        icon: attrs.icon,
-        label: attrs.fullLabel || `topic.${attrs.label}`,
-        secondaryAction: "hideAdminMenu"
-      })
-    );
+    return h("li", { className: attrs.className }, this.attach("button", {
+      className,
+      action: attrs.action,
+      url: attrs.url,
+      icon: attrs.icon,
+      label: attrs.fullLabel || `topic.${attrs.label}`,
+      secondaryAction: "hideAdminMenu"
+    }));
   }
 });
 
@@ -44,22 +40,18 @@ createWidget("topic-admin-menu-button", {
     });
 
     // We don't show the button when expanded on the right side on desktop
-    if (
-      menu.attrs.actionButtons.length &&
-      (!(attrs.rightSide && state.expanded) || this.site.mobileView)
-    ) {
-      result.push(
-        this.attach("button", {
-          className:
-            "btn-default toggle-admin-menu" +
+    if (menu.attrs.actionButtons.length &&
+        (!(attrs.rightSide && state.expanded) || this.site.mobileView)) {
+      result.push(this.attach("button", {
+        className:
+          "btn-default toggle-admin-menu" +
             (attrs.fixed ? " show-topic-admin" : "") +
             (attrs.addKeyboardTargetClass ? " keyboard-target-admin-menu" : ""),
-          title: "topic_admin_menu",
-          icon: "wrench",
-          action: "showAdminMenu",
-          sendActionEvent: true
-        })
-      );
+        title: "topic_admin_menu",
+        icon: "wrench",
+        action: "showAdminMenu",
+        sendActionEvent: true
+      }));
     }
 
     if (state.expanded) {
@@ -236,13 +228,11 @@ export default createWidget("topic-admin-menu", {
         this.addActionButton({
           className: "topic-admin-convert",
           buttonClass: "btn-default",
-          action: isPrivateMessage
-            ? "convertToPublicTopic"
-            : "convertToPrivateMessage",
+          action: isPrivateMessage ? "convertToPublicTopic"
+                                   : "convertToPrivateMessage",
           icon: isPrivateMessage ? "comment" : "envelope",
-          label: isPrivateMessage
-            ? "actions.make_public"
-            : "actions.make_private"
+          label: isPrivateMessage ? "actions.make_public"
+                                  : "actions.make_private"
         });
       }
 
@@ -294,31 +284,21 @@ export default createWidget("topic-admin-menu", {
   },
 
   html(attrs) {
-    const extraButtons = applyDecorators(
-      this,
-      "adminMenuButtons",
-      this.attrs,
-      this.state
-    );
+    const extraButtons =
+      applyDecorators(this, "adminMenuButtons", this.attrs, this.state);
     return [
-      h("div.header", [
-        h("h3", I18n.t("topic.actions.title")),
-        h(
-          "div",
-          this.attach("button", {
+      h("div.header",
+        [
+          h("h3", I18n.t("topic.actions.title")),
+          h("div", this.attach("button", {
             action: "clickOutside",
             icon: "times",
             className: "close-button"
-          })
-        )
-      ]),
-      h(
-        "ul",
-        attrs.actionButtons
-          .concat(extraButtons)
-          .filter(Boolean)
-          .map(b => this.attach("admin-menu-button", b))
-      )
+          }))
+        ]),
+      h("ul", attrs.actionButtons.concat(extraButtons)
+                .filter(Boolean)
+                .map(b => this.attach("admin-menu-button", b)))
     ];
   },
 

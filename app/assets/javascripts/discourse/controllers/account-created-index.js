@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import { resendActivationEmail } from "discourse/lib/user-activation";
+import {resendActivationEmail} from "discourse/lib/user-activation";
 
 export default Controller.extend({
   actions: {

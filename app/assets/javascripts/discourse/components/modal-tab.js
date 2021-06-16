@@ -1,6 +1,6 @@
-import { equal, alias } from "@ember/object/computed";
+import {equal, alias} from "@ember/object/computed";
 import Component from "@ember/component";
-import { propertyEqual } from "discourse/lib/computed";
+import {propertyEqual} from "discourse/lib/computed";
 
 export default Component.extend({
   tagName: "li",

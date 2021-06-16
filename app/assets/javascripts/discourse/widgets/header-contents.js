@@ -1,4 +1,4 @@
-import { createWidget } from "discourse/widgets/widget";
+import {createWidget} from "discourse/widgets/widget";
 import hbs from "discourse/widgets/hbs-compiler";
 
 createWidget("header-contents", {

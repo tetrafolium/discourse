@@ -1,23 +1,22 @@
-import { isEmpty } from "@ember/utils";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
+import {isEmpty} from "@ember/utils";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
 import RawHtml from "discourse/widgets/raw-html";
-import { createWidget } from "discourse/widgets/widget";
+import {createWidget} from "discourse/widgets/widget";
 import DiscourseURL from "discourse/lib/url";
-import { h } from "virtual-dom";
-import { emojiUnescape } from "discourse/lib/text";
+import {h} from "virtual-dom";
+import {emojiUnescape} from "discourse/lib/text";
 import {
   postUrl,
   escapeExpression,
   formatUsername
 } from "discourse/lib/utilities";
-import { setTransientHeader } from "discourse/lib/ajax";
-import { userPath } from "discourse/lib/url";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { ajax } from "discourse/lib/ajax";
+import {setTransientHeader} from "discourse/lib/ajax";
+import {userPath} from "discourse/lib/url";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {ajax} from "discourse/lib/ajax";
 
-export const DefaultNotificationItem = createWidget(
-  "default-notification-item",
-  {
+export const DefaultNotificationItem =
+  createWidget("default-notification-item", {
     tagName: "li",
 
     buildClasses(attrs) {
@@ -45,9 +44,8 @@ export const DefaultNotificationItem = createWidget(
 
         let username = data.username;
         username = username ? "?username=" + username.toLowerCase() : "";
-        return Discourse.getURL(
-          "/badges/" + badgeId + "/" + badgeSlug + username
-        );
+        return Discourse.getURL("/badges/" + badgeId + "/" + badgeSlug +
+                                username);
       }
 
       const topicId = attrs.topic_id;
@@ -69,7 +67,8 @@ export const DefaultNotificationItem = createWidget(
 
       if (this.attrs.fancy_title) {
         if (this.attrs.topic_id) {
-          return `<span data-topic-id="${this.attrs.topic_id}">${this.attrs.fancy_title}</span>`;
+          return `<span data-topic-id="${this.attrs.topic_id}">${
+            this.attrs.fancy_title}</span>`;
         }
         return this.attrs.fancy_title;
       }
@@ -83,10 +82,8 @@ export const DefaultNotificationItem = createWidget(
       const username = formatUsername(data.display_username);
       const description = this.description(data);
 
-      return I18n.t(`notifications.${notificationName}`, {
-        description,
-        username
-      });
+      return I18n.t(`notifications.${notificationName}`,
+                    { description, username });
     },
 
     icon(notificationName) {
@@ -119,13 +116,10 @@ export const DefaultNotificationItem = createWidget(
       let contents = [icon, html];
 
       const href = this.url(data);
-      return href
-        ? h(
-            "a",
-            { attributes: { href, title, "data-auto-route": true } },
-            contents
-          )
-        : contents;
+      return href ? h("a",
+                      { attributes: { href, title, "data-auto-route": true } },
+                      contents)
+                  : contents;
     },
 
     click(e) {
@@ -134,7 +128,8 @@ export const DefaultNotificationItem = createWidget(
       setTransientHeader("Discourse-Clear-Notifications", id);
       if (document && document.cookie) {
         let path = Discourse.BaseUri || "/";
-        document.cookie = `cn=${id}; path=${path}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+        document.cookie =
+          `cn=${id}; path=${path}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
       }
       if (wantsNewWindow(e)) {
         return;
@@ -148,11 +143,8 @@ export const DefaultNotificationItem = createWidget(
             return;
           }
 
-          this.appEvents.trigger(
-            "post:show-revision",
-            this.attrs.post_number,
-            this.attrs.data.revision_number
-          );
+          this.appEvents.trigger("post:show-revision", this.attrs.post_number,
+                                 this.attrs.data.revision_number);
         }
       });
     },
@@ -161,11 +153,8 @@ export const DefaultNotificationItem = createWidget(
       // dismiss notification on middle click
       if (event.which === 2 && !this.attrs.read) {
         this.attrs.set("read", true);
-        ajax("/notifications/mark-read", {
-          method: "PUT",
-          data: this.attrs.id
-        });
+        ajax("/notifications/mark-read",
+             { method: "PUT", data: this.attrs.id });
       }
     }
-  }
-);
+  });

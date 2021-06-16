@@ -1,8 +1,8 @@
-import { bufferedProperty } from "discourse/mixins/buffered-content";
+import {bufferedProperty} from "discourse/mixins/buffered-content";
 import Controller from "@ember/controller";
-import { isEmpty } from "@ember/utils";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { empty } from "@ember/object/computed";
+import {isEmpty} from "@ember/utils";
+import {popupAjaxError} from "discourse/lib/ajax-error";
+import {empty} from "@ember/object/computed";
 
 export default Controller.extend(bufferedProperty("model"), {
   isNew: empty("model.id"),
@@ -12,8 +12,7 @@ export default Controller.extend(bufferedProperty("model"), {
       const buffered = this.buffered;
       const attrs = buffered.getProperties("description");
 
-      this.model
-        .save(attrs)
+      this.model.save(attrs)
         .then(() => {
           this.set("editingDescription", false);
           this.rollbackBuffer();
@@ -43,8 +42,7 @@ export default Controller.extend(bufferedProperty("model"), {
     },
 
     deleteKey(key) {
-      key
-        .destroyRecord()
+      key.destroyRecord()
         .then(() => this.transitionToRoute("adminApiKeys.index"))
         .catch(popupAjaxError);
     },

@@ -1,8 +1,4 @@
-const {
-  computed,
-  getOwner,
-  String: { dasherize }
-} = Ember;
+const { computed, getOwner, String: { dasherize } } = Ember;
 
 export default function(name) {
   return computed(function(defaultName) {

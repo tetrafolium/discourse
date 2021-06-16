@@ -1,4 +1,4 @@
-import { equal } from "@ember/object/computed";
+import {equal} from "@ember/object/computed";
 import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import Post from "discourse/models/post";
@@ -21,23 +21,20 @@ export default Controller.extend(ModalFunctionality, {
   },
 
   loadRawEmail(postId) {
-    return Post.loadRawEmail(postId).then(result =>
-      this.setProperties({
-        rawEmail: result.raw_email,
-        textPart: result.text_part,
-        htmlPart: result.html_part
-      })
-    );
+    return Post.loadRawEmail(postId).then(result => this.setProperties({
+      rawEmail: result.raw_email,
+      textPart: result.text_part,
+      htmlPart: result.html_part
+    }));
   },
 
   loadIncomingRawEmail(incomingEmailId) {
-    return IncomingEmail.loadRawEmail(incomingEmailId).then(result =>
-      this.setProperties({
+    return IncomingEmail.loadRawEmail(incomingEmailId)
+      .then(result => this.setProperties({
         rawEmail: result.raw_email,
         textPart: result.text_part,
         htmlPart: result.html_part
-      })
-    );
+      }));
   },
 
   actions: {

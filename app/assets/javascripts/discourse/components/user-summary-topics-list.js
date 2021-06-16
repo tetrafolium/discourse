@@ -7,8 +7,7 @@ const MAX_SUMMARY_RESULTS = 6;
 export default Component.extend({
   tagName: "",
 
-  @discourseComputed("items.length")
-  hasMore(length) {
+    @discourseComputed("items.length") hasMore(length) {
     return length >= MAX_SUMMARY_RESULTS;
   }
 });

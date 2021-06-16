@@ -1,7 +1,7 @@
-import { empty, or, notEmpty } from "@ember/object/computed";
+import {empty, or, notEmpty} from "@ember/object/computed";
 import Controller from "@ember/controller";
 import EmailPreview from "admin/models/email-preview";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default Controller.extend({
   username: null,
@@ -27,8 +27,7 @@ export default Controller.extend({
 
       EmailPreview.findDigest(username, this.lastSeen).then(email => {
         model.setProperties(
-          email.getProperties("html_content", "text_content")
-        );
+          email.getProperties("html_content", "text_content"));
         this.set("loading", false);
       });
     },

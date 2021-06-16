@@ -1,14 +1,15 @@
-import { alias, match } from "@ember/object/computed";
-import { next, schedule, throttle } from "@ember/runloop";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
+import {alias, match} from "@ember/object/computed";
+import {next, schedule, throttle} from "@ember/runloop";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
 import afterTransition from "discourse/lib/after-transition";
 import DiscourseURL from "discourse/lib/url";
 import Mixin from "@ember/object/mixin";
 
 export default Mixin.create({
-  elementId: null, //click detection added for data-{elementId}
+  elementId: null,           //click detection added for data-{elementId}
   triggeringLinkClass: null, //the <a> classname where this card should appear
-  _showCallback: null, //username, $target - load up data for when show is called, should call this._positionCard($target) when it's done.
+  _showCallback:
+    null, //username, $target - load up data for when show is called, should call this._positionCard($target) when it's done.
 
   postStream: alias("topic.postStream"),
   viewingTopic: match("currentPath", /^topic\./),
@@ -53,16 +54,11 @@ export default Mixin.create({
       }
     }
 
-    const post =
-      this.viewingTopic && postId
-        ? this.postStream.findLoadedPost(postId)
-        : null;
-    this.setProperties({
-      username,
-      loading: username,
-      cardTarget: target,
-      post
-    });
+    const post = this.viewingTopic && postId
+                   ? this.postStream.findLoadedPost(postId)
+                   : null;
+    this.setProperties(
+      { username, loading: username, cardTarget: target, post });
 
     this._showCallback(username, $target);
 
@@ -82,7 +78,8 @@ export default Mixin.create({
     const clickOutsideEventName = `mousedown.outside-${id}`;
     const clickDataExpand = `click.discourse-${id}`;
     const clickMention = `click.discourse-${id}-${triggeringLinkClass}`;
-    const previewClickEvent = `click.discourse-preview-${id}-${triggeringLinkClass}`;
+    const previewClickEvent =
+      `click.discourse-preview-${id}-${triggeringLinkClass}`;
     const mobileScrollEvent = "scroll.mobile-card-cloak";
 
     this.setProperties({
@@ -93,24 +90,20 @@ export default Mixin.create({
       mobileScrollEvent
     });
 
-    $("html")
-      .off(clickOutsideEventName)
-      .on(clickOutsideEventName, e => {
-        if (this.visible) {
-          const $target = $(e.target);
-          if (
-            $target.closest(`[data-${id}]`).data(id) ||
+    $("html").off(clickOutsideEventName).on(clickOutsideEventName, e => {
+      if (this.visible) {
+        const $target = $(e.target);
+        if ($target.closest(`[data-${id}]`).data(id) ||
             $target.closest(`a.${triggeringLinkClass}`).length > 0 ||
-            $target.closest(`#${id}`).length > 0
-          ) {
-            return;
-          }
-
-          this._close();
+            $target.closest(`#${id}`).length > 0) {
+          return;
         }
 
-        return true;
-      });
+        this._close();
+      }
+
+      return true;
+    });
 
     $("#main-outlet").on(clickDataExpand, `[data-${id}]`, e => {
       if (wantsNewWindow(e)) {
@@ -130,11 +123,8 @@ export default Mixin.create({
 
     this.appEvents.on(previewClickEvent, this, "_previewClick");
 
-    this.appEvents.on(
-      `topic-header:trigger-${id}`,
-      this,
-      "_topicHeaderTrigger"
-    );
+    this.appEvents.on(`topic-header:trigger-${id}`, this,
+                      "_topicHeaderTrigger");
   },
 
   _topicHeaderTrigger(username, $target) {
@@ -211,13 +201,10 @@ export default Mixin.create({
             if (isFixed) {
               position.top -= $("html").scrollTop();
               //if content is fixed and will be cut off on the bottom, display it above...
-              if (
-                position.top + height + verticalAdjustments >
-                $(window).height() - 50
-              ) {
-                position.bottom =
-                  $(window).height() -
-                  (target.offset().top - $("html").scrollTop());
+              if (position.top + height + verticalAdjustments >
+                  $(window).height() - 50) {
+                position.bottom = $(window).height() -
+                                  (target.offset().top - $("html").scrollTop());
                 if (verticalAdjustments > 0) {
                   position.bottom += 48;
                 }
@@ -290,17 +277,12 @@ export default Mixin.create({
     const previewClickEvent = this.previewClickEvent;
 
     $("html").off(clickOutsideEventName);
-    $("#main")
-      .off(clickDataExpand)
-      .off(clickMention);
+    $("#main").off(clickDataExpand).off(clickMention);
 
     this.appEvents.off(previewClickEvent, this, "_previewClick");
 
-    this.appEvents.off(
-      `topic-header:trigger-${this.elementId}`,
-      this,
-      "_topicHeaderTrigger"
-    );
+    this.appEvents.off(`topic-header:trigger-${this.elementId}`, this,
+                       "_topicHeaderTrigger");
   },
 
   keyUp(e) {

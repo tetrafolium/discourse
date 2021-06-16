@@ -1,11 +1,11 @@
-import { avatarImg } from "discourse/widgets/post";
-import { dateNode } from "discourse/helpers/node";
+import {avatarImg} from "discourse/widgets/post";
+import {dateNode} from "discourse/helpers/node";
 import RawHtml from "discourse/widgets/raw-html";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
 import highlightText from "discourse/lib/highlight-text";
-import { escapeExpression, formatUsername } from "discourse/lib/utilities";
-import { iconNode } from "discourse-common/lib/icon-library";
+import {escapeExpression, formatUsername} from "discourse/lib/utilities";
+import {iconNode} from "discourse-common/lib/icon-library";
 import renderTag from "discourse/lib/render-tag";
 
 class Highlighted extends RawHtml {
@@ -33,18 +33,15 @@ function createSearchResult({ type, linkField, builder }) {
           searchResultId = r.id;
         }
 
-        return h(
-          "li.item",
-          this.attach("link", {
-            href: r[linkField],
-            contents: () => builder.call(this, r, attrs.term),
-            className: "search-link",
-            searchResultId,
-            searchResultType: type,
-            searchContextEnabled: attrs.searchContextEnabled,
-            searchLogId: attrs.searchLogId
-          })
-        );
+        return h("li.item", this.attach("link", {
+          href: r[linkField],
+          contents: () => builder.call(this, r, attrs.term),
+          className: "search-link",
+          searchResultId,
+          searchResultType: type,
+          searchContextEnabled: attrs.searchContextEnabled,
+          searchLogId: attrs.searchLogId
+        }));
       });
     }
   });
@@ -54,13 +51,10 @@ function postResult(result, link, term) {
   const html = [link];
 
   if (!this.site.mobileView) {
-    html.push(
-      h("span.blurb", [
-        dateNode(result.created_at),
-        h("span", " - "),
-        new Highlighted(result.blurb, term)
-      ])
-    );
+    html.push(h("span.blurb", [
+      dateNode(result.created_at), h("span", " - "),
+      new Highlighted(result.blurb, term)
+    ]));
   }
 
   return html;
@@ -126,10 +120,7 @@ createSearchResult({
     userTitles.push(h("span.username", formatUsername(u.username)));
 
     const userResultContents = [
-      avatarImg("small", {
-        template: u.avatar_template,
-        username: u.username
-      }),
+      avatarImg("small", { template: u.avatar_template, username: u.username }),
       h("div.user-titles", userTitles)
     ];
 
@@ -148,22 +139,16 @@ createSearchResult({
       h("span.topic-title", new Highlighted(topic.fancyTitle, term))
     ];
 
-    const secondLine = [
-      this.attach("category-link", {
-        category: topic.category,
-        link: false
-      })
-    ];
+    const secondLine =
+      [this.attach("category-link", { category: topic.category, link: false })];
     if (Discourse.SiteSettings.tagging_enabled) {
       secondLine.push(
-        this.attach("discourse-tags", { topic, tagName: "span" })
-      );
+        this.attach("discourse-tags", { topic, tagName: "span" }));
     }
 
-    const link = h("span.topic", [
-      h("div.first-line", firstLine),
-      h("div.second-line", secondLine)
-    ]);
+    const link =
+      h("span.topic",
+        [h("div.first-line", firstLine), h("div.second-line", secondLine)]);
 
     return postResult.call(this, result, link, term);
   }
@@ -173,12 +158,8 @@ createSearchResult({
   type: "post",
   linkField: "url",
   builder(result, term) {
-    return postResult.call(
-      this,
-      result,
-      I18n.t("search.post_format", result),
-      term
-    );
+    return postResult.call(this, result, I18n.t("search.post_format", result),
+                           term);
   }
 });
 
@@ -213,19 +194,13 @@ createWidget("search-menu-results", {
 
       if (result.moreUrl) {
         more.push(
-          this.attach("link", $.extend(moreArgs, { href: result.moreUrl }))
-        );
+          this.attach("link", $.extend(moreArgs, { href: result.moreUrl })));
       } else if (result.more) {
-        more.push(
-          this.attach(
-            "link",
-            $.extend(moreArgs, {
-              action: "moreOfType",
-              actionParam: result.type,
-              className: "filter filter-type"
-            })
-          )
-        );
+        more.push(this.attach("link", $.extend(moreArgs, {
+          action: "moreOfType",
+          actionParam: result.type,
+          className: "filter filter-type"
+        })));
       }
 
       if (more.length) {
@@ -250,14 +225,12 @@ createWidget("search-menu-results", {
     };
 
     resultTypes.forEach(rt => {
-      const resultNodeContents = [
-        this.attach(rt.componentName, {
-          searchContextEnabled: attrs.searchContextEnabled,
-          searchLogId: attrs.results.grouped_search_result.search_log_id,
-          results: rt.results,
-          term: attrs.term
-        })
-      ];
+      const resultNodeContents = [this.attach(rt.componentName, {
+        searchContextEnabled: attrs.searchContextEnabled,
+        searchLogId: attrs.results.grouped_search_result.search_log_id,
+        results: rt.results,
+        term: attrs.term
+      })];
 
       if (["topic"].includes(rt.type)) {
         const more = buildMoreNode(rt);
@@ -288,10 +261,8 @@ createWidget("search-menu-results", {
       secondaryResultsContents.push(categoriesAndTags);
       secondaryResultsContents.push(categoriesAndTagsMore);
 
-      const secondaryResults = h(
-        "div.secondary-results",
-        secondaryResultsContents
-      );
+      const secondaryResults =
+        h("div.secondary-results", secondaryResultsContents);
 
       content.push(secondaryResults);
     }

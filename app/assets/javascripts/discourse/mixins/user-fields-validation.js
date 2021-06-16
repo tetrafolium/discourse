@@ -1,6 +1,6 @@
-import { isEmpty } from "@ember/utils";
+import {isEmpty} from "@ember/utils";
 import EmberObject from "@ember/object";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 import Mixin from "@ember/object/mixin";
 
 export default Mixin.create({
@@ -17,11 +17,11 @@ export default Mixin.create({
       });
     }
     this.set("userFields", userFields);
-  },
+  }
+  ,
 
-  // Validate required fields
-  @discourseComputed("userFields.@each.value")
-  userFieldsValidation() {
+    // Validate required fields
+    @discourseComputed("userFields.@each.value") userFieldsValidation() {
     let userFields = this.userFields;
     if (userFields) {
       userFields = userFields.filterBy("field.required");

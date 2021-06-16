@@ -1,5 +1,5 @@
 import createPMRoute from "discourse/routes/build-private-messages-route";
-import { findOrResetCachedTopicList } from "discourse/lib/cached-topic-list";
+import {findOrResetCachedTopicList} from "discourse/lib/cached-topic-list";
 
 export default createPMRoute("groups", "private-messages-groups").extend({
   groupName: null,
@@ -17,11 +17,11 @@ export default createPMRoute("groups", "private-messages-groups").extend({
 
   model(params) {
     const username = this.modelFor("user").get("username_lower");
-    const filter = `topics/private-messages-group/${username}/${params.name}/archive`;
+    const filter =
+      `topics/private-messages-group/${username}/${params.name}/archive`;
     const lastTopicList = findOrResetCachedTopicList(this.session, filter);
-    return lastTopicList
-      ? lastTopicList
-      : this.store.findFiltered("topicList", { filter });
+    return lastTopicList ? lastTopicList
+                         : this.store.findFiltered("topicList", { filter });
   },
 
   afterModel(model) {
@@ -39,8 +39,7 @@ export default createPMRoute("groups", "private-messages-groups").extend({
     const group = split[split.length - 2];
     this.controllerFor("user-private-messages").set("groupFilter", group);
     this.controllerFor("user-private-messages").set("archive", true);
-    this.controllerFor("user-topics-list").subscribe(
-      `/private-messages/group/${group}/archive`
-    );
+    this.controllerFor("user-topics-list")
+      .subscribe(`/private-messages/group/${group}/archive`);
   }
 });

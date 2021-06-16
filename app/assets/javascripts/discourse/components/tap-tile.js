@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { propertyEqual } from "discourse/lib/computed";
+import {propertyEqual} from "discourse/lib/computed";
 
 export default Component.extend({
   classNames: ["tap-tile"],

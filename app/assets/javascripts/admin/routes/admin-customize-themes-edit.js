@@ -4,12 +4,8 @@ export default Route.extend({
     const all = this.modelFor("adminCustomizeThemes");
     const model = all.findBy("id", parseInt(params.theme_id, 10));
     return model
-      ? {
-          model,
-          target: params.target,
-          field_name: params.field_name
-        }
-      : this.replaceWith("adminCustomizeThemes.index");
+             ? { model, target: params.target, field_name: params.field_name }
+             : this.replaceWith("adminCustomizeThemes.index");
   },
 
   serialize(wrapper) {
@@ -24,12 +20,8 @@ export default Route.extend({
   setupController(controller, wrapper) {
     const fields = wrapper.model.get("fields")[wrapper.target].map(f => f.name);
     if (!fields.includes(wrapper.field_name)) {
-      this.transitionTo(
-        "adminCustomizeThemes.edit",
-        wrapper.model.id,
-        wrapper.target,
-        fields[0]
-      );
+      this.transitionTo("adminCustomizeThemes.edit", wrapper.model.id,
+                        wrapper.target, fields[0]);
       return;
     }
     controller.set("model", wrapper.model);
@@ -41,23 +33,18 @@ export default Route.extend({
 
   actions: {
     willTransition(transition) {
-      if (
-        this.get("controller.model.changed") &&
-        this.shouldAlertUnsavedChanges &&
-        transition.intent.name !== this.routeName
-      ) {
+      if (this.get("controller.model.changed") &&
+          this.shouldAlertUnsavedChanges &&
+          transition.intent.name !== this.routeName) {
         transition.abort();
-        bootbox.confirm(
-          I18n.t("admin.customize.theme.unsaved_changes_alert"),
-          I18n.t("admin.customize.theme.discard"),
-          I18n.t("admin.customize.theme.stay"),
-          result => {
-            if (!result) {
-              this.set("shouldAlertUnsavedChanges", false);
-              transition.retry();
-            }
-          }
-        );
+        bootbox.confirm(I18n.t("admin.customize.theme.unsaved_changes_alert"),
+                        I18n.t("admin.customize.theme.discard"),
+                        I18n.t("admin.customize.theme.stay"), result => {
+                          if (!result) {
+                            this.set("shouldAlertUnsavedChanges", false);
+                            transition.retry();
+                          }
+                        });
       }
     }
   }

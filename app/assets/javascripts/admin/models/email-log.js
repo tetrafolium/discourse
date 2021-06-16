@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import AdminUser from "admin/models/admin-user";
 import EmberObject from "@ember/object";
 
@@ -26,9 +26,9 @@ EmailLog.reopenClass({
     const status = filter.status || "sent";
     filter = _.omit(filter, "status");
 
-    return ajax(`/admin/email/${status}.json?offset=${offset}`, {
-      data: filter
-    }).then(logs => logs.map(log => EmailLog.create(log)));
+    return ajax(`/admin/email/${status}.json?offset=${offset}`,
+                { data: filter })
+      .then(logs => logs.map(log => EmailLog.create(log)));
   }
 });
 

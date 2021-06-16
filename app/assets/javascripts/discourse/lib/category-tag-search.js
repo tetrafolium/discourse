@@ -1,9 +1,9 @@
 import discourseDebounce from "discourse/lib/debounce";
-import { CANCELLED_STATUS } from "discourse/lib/autocomplete";
+import {CANCELLED_STATUS} from "discourse/lib/autocomplete";
 import Category from "discourse/models/category";
-import { TAG_HASHTAG_POSTFIX } from "discourse/lib/tag-hashtags";
-import { SEPARATOR } from "discourse/lib/category-hashtags";
-import { Promise } from "rsvp";
+import {TAG_HASHTAG_POSTFIX} from "discourse/lib/tag-hashtags";
+import {SEPARATOR} from "discourse/lib/category-hashtags";
+import {Promise} from "rsvp";
 
 var cache = {};
 var cacheTime;
@@ -22,11 +22,9 @@ function searchTags(term, categories, limit) {
     }, 5000);
 
     const debouncedSearch = discourseDebounce((q, cats, resultFunc) => {
-      oldSearch = $.ajax(Discourse.getURL("/tags/filter/search"), {
-        type: "GET",
-        cache: true,
-        data: { limit: limit, q }
-      });
+      oldSearch =
+        $.ajax(Discourse.getURL("/tags/filter/search"),
+               { type: "GET", cache: true, data: { limit: limit, q } });
 
       var returnVal = CANCELLED_STATUS;
 
@@ -40,8 +38,8 @@ function searchTags(term, categories, limit) {
             return {
               name: tagName,
               text: categoryNames.includes(tagName)
-                ? `${tagName}${TAG_HASHTAG_POSTFIX}`
-                : tagName,
+                      ? `${tagName}${TAG_HASHTAG_POSTFIX}`
+                      : tagName,
               count: tag.count
             };
           });

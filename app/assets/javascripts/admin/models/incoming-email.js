@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import AdminUser from "admin/models/admin-user";
 import EmberObject from "@ember/object";
 
@@ -30,11 +30,10 @@ IncomingEmail.reopenClass({
     const status = filter.status || "received";
     filter = _.omit(filter, "status");
 
-    return ajax(`/admin/email/${status}.json?offset=${offset}`, {
-      data: filter
-    }).then(incomings =>
-      incomings.map(incoming => IncomingEmail.create(incoming))
-    );
+    return ajax(`/admin/email/${status}.json?offset=${offset}`,
+                { data: filter })
+      .then(incomings =>
+              incomings.map(incoming => IncomingEmail.create(incoming)));
   },
 
   loadRawEmail(id) {

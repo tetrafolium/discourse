@@ -1,8 +1,8 @@
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { avatarImg, avatarFor } from "discourse/widgets/post";
-import { dateNode, numberNode } from "discourse/helpers/node";
-import { replaceEmoji } from "discourse/widgets/emoji";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {avatarImg, avatarFor} from "discourse/widgets/post";
+import {dateNode, numberNode} from "discourse/helpers/node";
+import {replaceEmoji} from "discourse/widgets/emoji";
 
 const LINKS_SHOWN = 5;
 
@@ -13,24 +13,21 @@ function renderParticipants(userFilters, participants) {
 
   userFilters = userFilters || [];
   return participants.map(p => {
-    return this.attach("topic-participant", p, {
-      state: { toggled: userFilters.includes(p.username) }
-    });
+    return this.attach(
+      "topic-participant", p,
+      { state: { toggled: userFilters.includes(p.username) } });
   });
 }
 
 createWidget("topic-map-show-links", {
   tagName: "div.link-summary",
   html() {
-    return h(
-      "span",
-      this.attach("button", {
-        title: "topic_map.links_shown",
-        icon: "chevron-down",
-        action: "showLinks",
-        className: "btn"
-      })
-    );
+    return h("span", this.attach("button", {
+      title: "topic_map.links_shown",
+      icon: "chevron-down",
+      action: "showLinks",
+      className: "btn"
+    }));
   },
 
   showLinks() {
@@ -46,13 +43,11 @@ createWidget("topic-participant", {
   },
 
   html(attrs, state) {
-    const linkContents = [
-      avatarImg("medium", {
-        username: attrs.username,
-        template: attrs.avatar_template,
-        name: attrs.name
-      })
-    ];
+    const linkContents = [avatarImg("medium", {
+      username: attrs.username,
+      template: attrs.avatar_template,
+      name: attrs.name
+    })];
 
     if (attrs.post_count > 2) {
       linkContents.push(h("span.post-count", attrs.post_count.toString()));
@@ -62,14 +57,11 @@ createWidget("topic-participant", {
       linkContents.push(this.attach("avatar-flair", attrs));
     }
 
-    return h(
-      "a.poster.trigger-user-card",
-      {
-        className: state.toggled ? "toggled" : null,
-        attributes: { title: attrs.username, "data-user-card": attrs.username }
-      },
-      linkContents
-    );
+    return h("a.poster.trigger-user-card", {
+      className: state.toggled ? "toggled" : null,
+      attributes: { title: attrs.username, "data-user-card": attrs.username }
+    },
+             linkContents);
   }
 });
 
@@ -84,16 +76,11 @@ createWidget("topic-map-summary", {
 
   html(attrs, state) {
     const contents = [];
-    contents.push(
-      h("li", [
-        h(
-          "h4",
-          {
-            attributes: { role: "presentation" }
-          },
-          I18n.t("created_lowercase")
-        ),
-        h("div.topic-map-post.created-at", [
+    contents.push(h("li", [
+      h("h4", { attributes: { role: "presentation" } },
+        I18n.t("created_lowercase")),
+      h("div.topic-map-post.created-at",
+        [
           avatarFor("tiny", {
             username: attrs.createdByUsername,
             template: attrs.createdByAvatarTemplate,
@@ -101,131 +88,71 @@ createWidget("topic-map-summary", {
           }),
           dateNode(attrs.topicCreatedAt)
         ])
-      ])
-    );
-    contents.push(
-      h(
-        "li",
-        h("a", { attributes: { href: attrs.lastPostUrl } }, [
-          h(
-            "h4",
-            {
-              attributes: { role: "presentation" }
-            },
-            I18n.t("last_reply_lowercase")
-          ),
-          h("div.topic-map-post.last-reply", [
-            avatarFor("tiny", {
-              username: attrs.lastPostUsername,
-              template: attrs.lastPostAvatarTemplate,
-              name: attrs.lastPostName
-            }),
-            dateNode(attrs.lastPostAt)
-          ])
-        ])
-      )
-    );
-    contents.push(
-      h("li", [
-        numberNode(attrs.topicReplyCount),
-        h(
-          "h4",
-          {
-            attributes: { role: "presentation" }
-          },
-          I18n.t("replies_lowercase", {
-            count: attrs.topicReplyCount
-          }).toString()
-        )
-      ])
-    );
-    contents.push(
-      h("li.secondary", [
-        numberNode(attrs.topicViews, { className: attrs.topicViewsHeat }),
-        h(
-          "h4",
-          {
-            attributes: { role: "presentation" }
-          },
-          I18n.t("views_lowercase", { count: attrs.topicViews }).toString()
-        )
-      ])
-    );
+    ]));
+    contents.push(h("li", h("a", { attributes: { href: attrs.lastPostUrl } }, [
+                      h("h4", { attributes: { role: "presentation" } },
+                        I18n.t("last_reply_lowercase")),
+                      h("div.topic-map-post.last-reply",
+                        [
+                          avatarFor("tiny", {
+                            username: attrs.lastPostUsername,
+                            template: attrs.lastPostAvatarTemplate,
+                            name: attrs.lastPostName
+                          }),
+                          dateNode(attrs.lastPostAt)
+                        ])
+                    ])));
+    contents.push(h("li", [
+      numberNode(attrs.topicReplyCount),
+      h("h4", { attributes: { role: "presentation" } },
+        I18n.t("replies_lowercase", { count: attrs.topicReplyCount })
+          .toString())
+    ]));
+    contents.push(h("li.secondary", [
+      numberNode(attrs.topicViews, { className: attrs.topicViewsHeat }),
+      h("h4", { attributes: { role: "presentation" } },
+        I18n.t("views_lowercase", { count: attrs.topicViews }).toString())
+    ]));
 
     if (attrs.participantCount > 0) {
-      contents.push(
-        h("li.secondary", [
-          numberNode(attrs.participantCount),
-          h(
-            "h4",
-            {
-              attributes: { role: "presentation" }
-            },
-            I18n.t("users_lowercase", {
-              count: attrs.participantCount
-            }).toString()
-          )
-        ])
-      );
+      contents.push(h("li.secondary", [
+        numberNode(attrs.participantCount),
+        h("h4", { attributes: { role: "presentation" } },
+          I18n.t("users_lowercase", { count: attrs.participantCount })
+            .toString())
+      ]));
     }
 
     if (attrs.topicLikeCount) {
-      contents.push(
-        h("li.secondary", [
-          numberNode(attrs.topicLikeCount),
-          h(
-            "h4",
-            {
-              attributes: { role: "presentation" }
-            },
-            I18n.t("likes_lowercase", {
-              count: attrs.topicLikeCount
-            }).toString()
-          )
-        ])
-      );
+      contents.push(h("li.secondary", [
+        numberNode(attrs.topicLikeCount),
+        h("h4", { attributes: { role: "presentation" } },
+          I18n.t("likes_lowercase", { count: attrs.topicLikeCount }).toString())
+      ]));
     }
 
     if (attrs.topicLinkLength > 0) {
-      contents.push(
-        h("li.secondary", [
-          numberNode(attrs.topicLinkLength),
-          h(
-            "h4",
-            {
-              attributes: { role: "presentation" }
-            },
-            I18n.t("links_lowercase", {
-              count: attrs.topicLinkLength
-            }).toString()
-          )
-        ])
-      );
+      contents.push(h("li.secondary", [
+        numberNode(attrs.topicLinkLength),
+        h("h4", { attributes: { role: "presentation" } },
+          I18n.t("links_lowercase", { count: attrs.topicLinkLength })
+            .toString())
+      ]));
     }
 
-    if (
-      state.collapsed &&
-      attrs.topicPostsCount > 2 &&
-      attrs.participants &&
-      attrs.participants.length > 0
-    ) {
+    if (state.collapsed && attrs.topicPostsCount > 2 && attrs.participants &&
+        attrs.participants.length > 0) {
       const participants = renderParticipants.call(
-        this,
-        attrs.userFilters,
-        attrs.participants.slice(0, 3)
-      );
+        this, attrs.userFilters, attrs.participants.slice(0, 3));
       contents.push(h("li.avatars", participants));
     }
 
-    const nav = h(
-      "nav.buttons",
-      this.attach("button", {
-        title: "topic.toggle_information",
-        icon: state.collapsed ? "chevron-down" : "chevron-up",
-        action: "toggleMap",
-        className: "btn"
-      })
-    );
+    const nav = h("nav.buttons", this.attach("button", {
+      title: "topic.toggle_information",
+      icon: state.collapsed ? "chevron-down" : "chevron-up",
+      action: "toggleMap",
+      className: "btn"
+    }));
 
     return [nav, h("ul.clearfix", contents)];
   }
@@ -284,8 +211,8 @@ createWidget("topic-map-expanded", {
     const result = [avatars];
     if (attrs.topicLinks) {
       const toShow = state.allLinksShown
-        ? attrs.topicLinks
-        : attrs.topicLinks.slice(0, LINKS_SHOWN);
+                       ? attrs.topicLinks
+                       : attrs.topicLinks.slice(0, LINKS_SHOWN);
 
       const links = toShow.map(l => {
         let host = "";
@@ -299,25 +226,17 @@ createWidget("topic-map-expanded", {
         }
 
         return h("tr", [
-          h(
-            "td",
-            h(
-              "span.badge.badge-notification.clicks",
-              {
-                attributes: {
-                  title: I18n.t("topic_map.clicks", { count: l.clicks })
-                }
-              },
-              l.clicks.toString()
-            )
-          ),
+          h("td", h("span.badge.badge-notification.clicks", {
+              attributes:
+                { title: I18n.t("topic_map.clicks", { count: l.clicks }) }
+            },
+                    l.clicks.toString())),
           h("td", [this.attach("topic-map-link", l), " ", host])
         ]);
       });
 
       const showAllLinksContent = [
-        h("h3", I18n.t("topic_map.links_title")),
-        h("table.topic-links", links)
+        h("h3", I18n.t("topic_map.links_title")), h("table.topic-links", links)
       ];
 
       if (!state.allLinksShown && links.length < attrs.topicLinks.length) {

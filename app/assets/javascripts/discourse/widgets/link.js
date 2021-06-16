@@ -1,7 +1,7 @@
-import { wantsNewWindow } from "discourse/lib/intercept-click";
-import { createWidget } from "discourse/widgets/widget";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { h } from "virtual-dom";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
+import {createWidget} from "discourse/widgets/widget";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {h} from "virtual-dom";
 import DiscourseURL from "discourse/lib/url";
 
 export default createWidget("link", {
@@ -16,9 +16,8 @@ export default createWidget("link", {
         if (attrs.model) {
           params.push(attrs.model);
         }
-        return Discourse.getURL(
-          router._routerMicrolib.generate.apply(router._routerMicrolib, params)
-        );
+        return Discourse.getURL(router._routerMicrolib.generate.apply(
+          router._routerMicrolib, params));
       }
     } else {
       return Discourse.getURL(attrs.href);
@@ -37,14 +36,12 @@ export default createWidget("link", {
   buildAttributes(attrs) {
     const ret = {
       href: this.href(attrs),
-      title: attrs.title
-        ? I18n.t(attrs.title, attrs.titleOptions)
-        : this.label(attrs)
+      title: attrs.title ? I18n.t(attrs.title, attrs.titleOptions)
+                         : this.label(attrs)
     };
     if (attrs.attributes) {
-      Object.keys(attrs.attributes).forEach(
-        k => (ret[k] = attrs.attributes[k])
-      );
+      Object.keys(attrs.attributes)
+        .forEach(k => (ret[k] = attrs.attributes[k]));
     }
     return ret;
   },
@@ -83,16 +80,9 @@ export default createWidget("link", {
       if (val > 0) {
         const title = attrs.badgeTitle ? I18n.t(attrs.badgeTitle) : "";
         result.push(" ");
-        result.push(
-          h(
-            "span.badge-notification",
-            {
-              className: attrs.badgeClass,
-              attributes: { title }
-            },
-            val
-          )
-        );
+        result.push(h("span.badge-notification",
+                      { className: attrs.badgeClass, attributes: { title } },
+                      val));
       }
     }
 

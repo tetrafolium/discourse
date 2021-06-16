@@ -3,7 +3,6 @@ export default Route.extend({
   setupController(controller) {
     controller.set(
       "email",
-      this.controllerFor("account-created").get("accountCreated.email")
-    );
+      this.controllerFor("account-created").get("accountCreated.email"));
   }
 });

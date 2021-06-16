@@ -1,5 +1,5 @@
 import error from "@ember/error";
-import { computed } from "@ember/object";
+import {computed} from "@ember/object";
 
 let _topicFooterButtons = {};
 
@@ -50,14 +50,10 @@ export function registerTopicFooterButton(button) {
 
   const normalizedButton = Object.assign(defaultButton, button);
 
-  if (
-    !normalizedButton.icon &&
-    !normalizedButton.title &&
-    !normalizedButton.translatedTitle
-  ) {
-    error(
-      `Attempted to register a topic button: ${button.id} with no icon or title.`
-    );
+  if (!normalizedButton.icon && !normalizedButton.title &&
+      !normalizedButton.translatedTitle) {
+    error(`Attempted to register a topic button: ${
+      button.id} with no icon or title.`);
     return;
   }
 
@@ -65,11 +61,9 @@ export function registerTopicFooterButton(button) {
 }
 
 export function getTopicFooterButtons() {
-  const dependentKeys = [].concat(
-    ...Object.values(_topicFooterButtons)
-      .map(tfb => tfb.dependentKeys)
-      .filter(x => x)
-  );
+  const dependentKeys = [].concat(...Object.values(_topicFooterButtons)
+                                    .map(tfb => tfb.dependentKeys)
+                                    .filter(x => x));
 
   return computed(...dependentKeys, {
     get() {
@@ -94,18 +88,15 @@ export function getTopicFooterButtons() {
           discourseComputedButon.id = button.id;
 
           const label = _compute(button, "label");
-          discourseComputedButon.label = label
-            ? I18n.t(label)
-            : _compute(button, "translatedLabel");
+          discourseComputedButon.label =
+            label ? I18n.t(label) : _compute(button, "translatedLabel");
 
           const title = _compute(button, "title");
-          discourseComputedButon.title = title
-            ? I18n.t(title)
-            : _compute(button, "translatedTitle");
+          discourseComputedButon.title =
+            title ? I18n.t(title) : _compute(button, "translatedTitle");
 
-          discourseComputedButon.classNames = (
-            _compute(button, "classNames") || []
-          ).join(" ");
+          discourseComputedButon.classNames =
+            (_compute(button, "classNames") || []).join(" ");
 
           discourseComputedButon.icon = _compute(button, "icon");
           discourseComputedButon.disabled = _compute(button, "disabled");

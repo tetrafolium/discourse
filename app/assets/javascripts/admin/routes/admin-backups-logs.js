@@ -12,14 +12,15 @@ export default Route.extend({
       if (preloadedLogs && preloadedLogs.length) {
         // we need to filter out message like: "[SUCCESS]"
         // and convert POJOs to Ember Objects
-        const newLogs = _.chain(preloadedLogs)
-          .reject(function(log) {
-            return log.message.length === 0 || log.message[0] === "[";
-          })
-          .map(function(log) {
-            return EmberObject.create(log);
-          })
-          .value();
+        const newLogs =
+          _.chain(preloadedLogs)
+            .reject(function(log) {
+              return log.message.length === 0 || log.message[0] === "[";
+            })
+            .map(function(log) {
+              return EmberObject.create(log);
+            })
+            .value();
         logs.pushObjects(newLogs);
       }
     });

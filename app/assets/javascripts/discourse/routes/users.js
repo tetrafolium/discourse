@@ -2,12 +2,12 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
   queryParams: {
-    period: { refreshModel: true },
-    order: { refreshModel: true },
-    asc: { refreshModel: true },
-    name: { refreshModel: true, replace: true },
-    group: { refreshModel: true },
-    exclude_usernames: { refreshModel: true }
+    period: {refreshModel: true},
+    order: {refreshModel: true},
+    asc: {refreshModel: true},
+    name: {refreshModel: true, replace: true},
+    group: {refreshModel: true},
+    exclude_usernames: {refreshModel: true}
   },
 
   titleToken() {
@@ -41,11 +41,8 @@ export default DiscourseRoute.extend({
 
   setupController(controller, model) {
     const params = this._params;
-    controller.setProperties({
-      model,
-      period: params.period,
-      nameInput: params.name
-    });
+    controller.setProperties(
+      { model, period: params.period, nameInput: params.name });
   },
 
   actions: {

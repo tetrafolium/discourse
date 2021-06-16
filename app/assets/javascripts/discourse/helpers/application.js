@@ -1,16 +1,15 @@
-import { registerUnbound } from "discourse-common/lib/helpers";
+import {registerUnbound} from "discourse-common/lib/helpers";
 import {
   longDate,
   autoUpdatingRelativeAge,
   number
 } from "discourse/lib/formatter";
-import { htmlSafe } from "@ember/template";
+import {htmlSafe} from "@ember/template";
 
 registerUnbound("raw-date", dt => htmlSafe(longDate(new Date(dt))));
 
-registerUnbound("age-with-tooltip", dt =>
-  htmlSafe(autoUpdatingRelativeAge(new Date(dt), { title: true }))
-);
+registerUnbound("age-with-tooltip", dt => htmlSafe(autoUpdatingRelativeAge(
+                                      new Date(dt), { title: true })));
 
 registerUnbound("number", (orig, params) => {
   orig = Math.round(parseFloat(orig));
@@ -20,10 +19,8 @@ registerUnbound("number", (orig, params) => {
 
   let title = I18n.toNumber(orig, { precision: 0 });
   if (params.numberKey) {
-    title = I18n.t(params.numberKey, {
-      number: title,
-      count: parseInt(orig, 10)
-    });
+    title =
+      I18n.t(params.numberKey, { number: title, count: parseInt(orig, 10) });
   }
 
   let classNames = "number";

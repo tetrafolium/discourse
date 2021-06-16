@@ -1,6 +1,6 @@
-import { schedule } from "@ember/runloop";
-import { ajax } from "discourse/lib/ajax";
-import { replaceSpan } from "discourse/lib/category-hashtags";
+import {schedule} from "@ember/runloop";
+import {ajax} from "discourse/lib/ajax";
+import {replaceSpan} from "discourse/lib/category-hashtags";
 
 const validCategoryHashtags = {};
 const checkedCategoryHashtags = [];
@@ -28,11 +28,8 @@ export function linkSeenCategoryHashtags($elem) {
   const unseen = [];
 
   if ($hashtags.length) {
-    const categorySlugs = $hashtags.map((_, hashtag) =>
-      $(hashtag)
-        .text()
-        .substr(1)
-    );
+    const categorySlugs =
+      $hashtags.map((_, hashtag) => $(hashtag).text().substr(1));
     if (categorySlugs.length) {
       _.uniq(categorySlugs).forEach(categorySlug => {
         if (checkedCategoryHashtags.indexOf(categorySlug) === -1) {
@@ -47,12 +44,13 @@ export function linkSeenCategoryHashtags($elem) {
 }
 
 export function fetchUnseenCategoryHashtags(categorySlugs) {
-  return ajax("/category_hashtags/check", {
-    data: { category_slugs: categorySlugs }
-  }).then(response => {
-    response.valid.forEach(category => {
-      validCategoryHashtags[category.slug] = category.url;
+  return ajax("/category_hashtags/check",
+              { data: { category_slugs: categorySlugs } })
+    .then(response => {
+      response.valid.forEach(category => {
+        validCategoryHashtags[category.slug] = category.url;
+      });
+      checkedCategoryHashtags.push.apply(checkedCategoryHashtags,
+                                         categorySlugs);
     });
-    checkedCategoryHashtags.push.apply(checkedCategoryHashtags, categorySlugs);
-  });
 }

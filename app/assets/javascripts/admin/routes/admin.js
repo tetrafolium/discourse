@@ -6,10 +6,8 @@ export default DiscourseRoute.extend({
   },
 
   activate() {
-    this.controllerFor("application").setProperties({
-      showTop: false,
-      showFooter: false
-    });
+    this.controllerFor("application")
+      .setProperties({ showTop: false, showFooter: false });
   },
 
   deactivate() {

@@ -1,7 +1,7 @@
-import { schedule } from "@ember/runloop";
-import { ajax } from "discourse/lib/ajax";
-import { replaceSpan } from "discourse/lib/category-hashtags";
-import { TAG_HASHTAG_POSTFIX } from "discourse/lib/tag-hashtags";
+import {schedule} from "@ember/runloop";
+import {ajax} from "discourse/lib/ajax";
+import {replaceSpan} from "discourse/lib/category-hashtags";
+import {TAG_HASHTAG_POSTFIX} from "discourse/lib/tag-hashtags";
 
 const validTagHashtags = {};
 const checkedTagHashtags = [];
@@ -29,10 +29,7 @@ export function linkSeenTagHashtags($elem) {
 
   if ($hashtags.length) {
     const tagValues = $hashtags.map((_, hashtag) => {
-      return $(hashtag)
-        .text()
-        .substr(1)
-        .replace(TAG_HASHTAG_POSTFIX, "");
+      return $(hashtag).text().substr(1).replace(TAG_HASHTAG_POSTFIX, "");
     });
 
     if (tagValues.length) {
@@ -47,12 +44,11 @@ export function linkSeenTagHashtags($elem) {
 }
 
 export function fetchUnseenTagHashtags(tagValues) {
-  return ajax("/tags/check", { data: { tag_values: tagValues } }).then(
-    response => {
+  return ajax("/tags/check", { data: { tag_values: tagValues } })
+    .then(response => {
       response.valid.forEach(tag => {
         validTagHashtags[tag.value] = tag.url;
       });
       checkedTagHashtags.push.apply(checkedTagHashtags, tagValues);
-    }
-  );
+    });
 }

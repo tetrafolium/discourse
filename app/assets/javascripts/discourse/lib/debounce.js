@@ -1,4 +1,4 @@
-import { debounce } from "@ember/runloop";
+import {debounce} from "@ember/runloop";
 /**
   Debounce a Javascript function. This means if it's called many times in a time limit it
   should only be executed once (at the end of the limit counted from the last call made).

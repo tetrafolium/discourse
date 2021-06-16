@@ -2,14 +2,10 @@ import DiscourseRoute from "discourse/routes/discourse";
 import UserBadge from "discourse/models/user-badge";
 import Badge from "discourse/models/badge";
 import PreloadStore from "preload-store";
-import { hash } from "rsvp";
+import {hash} from "rsvp";
 
 export default DiscourseRoute.extend({
-  queryParams: {
-    username: {
-      refreshModel: true
-    }
-  },
+  queryParams: {username: {refreshModel: true}},
   actions: {
     didTransition() {
       this.controllerFor("badges/show")._showFooter();
@@ -23,9 +19,8 @@ export default DiscourseRoute.extend({
 
   model(params) {
     if (PreloadStore.get("badge")) {
-      return PreloadStore.getAndRemove("badge").then(json =>
-        Badge.createFromJson(json)
-      );
+      return PreloadStore.getAndRemove("badge").then(
+        json => Badge.createFromJson(json));
     } else {
       return Badge.findById(params.id);
     }
@@ -35,23 +30,19 @@ export default DiscourseRoute.extend({
     const usernameFromParams =
       transition.to.queryParams && transition.to.queryParams.username;
 
-    const userBadgesGrant = UserBadge.findByBadgeId(model.get("id"), {
-      username: usernameFromParams
-    }).then(userBadges => {
-      this.userBadgesGrant = userBadges;
-    });
+    const userBadgesGrant =
+      UserBadge.findByBadgeId(model.get("id"), { username: usernameFromParams })
+        .then(userBadges => {
+          this.userBadgesGrant = userBadges;
+        });
 
     const username = this.currentUser && this.currentUser.username_lower;
-    const userBadgesAll = UserBadge.findByUsername(username).then(
-      userBadges => {
+    const userBadgesAll =
+      UserBadge.findByUsername(username).then(userBadges => {
         this.userBadgesAll = userBadges;
-      }
-    );
+      });
 
-    const promises = {
-      userBadgesGrant,
-      userBadgesAll
-    };
+    const promises = { userBadgesGrant, userBadgesAll };
 
     return hash(promises);
   },

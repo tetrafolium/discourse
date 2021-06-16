@@ -1,15 +1,15 @@
-import { inject as service } from "@ember/service";
+import {inject as service} from "@ember/service";
 import Component from "@ember/component";
-import { on, observes } from "discourse-common/utils/decorators";
-import { findRawTemplate } from "discourse/lib/raw-templates";
-import { emojiUrlFor } from "discourse/lib/text";
+import {on, observes} from "discourse-common/utils/decorators";
+import {findRawTemplate} from "discourse/lib/raw-templates";
+import {emojiUrlFor} from "discourse/lib/text";
 import {
   extendedEmojiList,
   isSkinTonableEmoji,
   emojiSearch
 } from "pretty-text/emoji";
-import { safariHacksDisabled } from "discourse/lib/utilities";
-import ENV, { INPUT_DELAY } from "discourse-common/config/environment";
+import {safariHacksDisabled} from "discourse/lib/utilities";
+import ENV, {INPUT_DELAY} from "discourse-common/config/environment";
 
 const { run } = Ember;
 
@@ -19,22 +19,21 @@ const customEmojis = _.keys(extendedEmojiList()).map(code => {
 });
 
 export default Component.extend({
-  automaticPositioning: true,
-  emojiStore: service("emoji-store"),
+  automaticPositioning: true, emojiStore: service("emoji-store"),
 
-  close() {
+    close() {
     this._unbindEvents();
 
-    this.$picker
-      .css({ width: "", left: "", bottom: "", display: "none" })
+    this.$picker.css({ width: "", left: "", bottom: "", display: "none" })
       .empty();
 
     this.$modal.removeClass("fadeIn");
 
     clearTimeout(this._checkTimeout);
-  },
+  }
+  ,
 
-  show() {
+    show() {
     const template = findRawTemplate("emoji-picker")({ customEmojis });
     this.$picker.html(template);
 
@@ -55,80 +54,74 @@ export default Component.extend({
       this._updateSelectedDiversity();
       this._checkVisibleSection(true);
 
-      if (
-        (!this.site.isMobileDevice || this.isEditorFocused) &&
-        !safariHacksDisabled()
-      )
+      if ((!this.site.isMobileDevice || this.isEditorFocused) &&
+          !safariHacksDisabled())
         this.$filter.find("input[name='filter']").focus();
     });
-  },
+  }
+  ,
 
-  @on("init")
-  _setInitialValues() {
+    @on("init") _setInitialValues() {
     this._checkTimeout = null;
     this.scrollPosition = 0;
     this.$visibleSections = [];
-  },
+  }
+  ,
 
-  @on("willDestroyElement")
-  _unbindGlobalEvents() {
+    @on("willDestroyElement") _unbindGlobalEvents() {
     this.appEvents.off("emoji-picker:close", this, "_closeEmojiPicker");
-  },
+  }
+  ,
 
-  _closeEmojiPicker() {
+    _closeEmojiPicker() {
     this.set("active", false);
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  _setup() {
+    @on("didInsertElement") _setup() {
     this.$picker = $(this.element.querySelector(".emoji-picker"));
     this.$modal = $(this.element.querySelector(".emoji-picker-modal"));
     this.appEvents.on("emoji-picker:close", this, "_closeEmojiPicker");
-  },
+  }
+  ,
 
-  @on("didUpdateAttrs")
-  _setState() {
+    @on("didUpdateAttrs") _setState() {
     this.active ? this.show() : this.close();
-  },
+  }
+  ,
 
-  @observes("filter")
-  filterChanged() {
+    @observes("filter") filterChanged() {
     this.$filter.find(".clear-filter").toggle(!_.isEmpty(this.filter));
     const filterDelay = this.site.isMobileDevice ? 400 : INPUT_DELAY;
     run.debounce(this, this._filterEmojisList, filterDelay);
-  },
+  }
+  ,
 
-  @observes("selectedDiversity")
-  selectedDiversityChanged() {
+    @observes("selectedDiversity") selectedDiversityChanged() {
     this.emojiStore.diversity = this.selectedDiversity;
 
-    $.each(
-      this.$list.find(".emoji[data-loaded='1'].diversity"),
-      (_, button) => {
-        $(button)
-          .css("background-image", "")
-          .removeAttr("data-loaded");
-      }
-    );
+    $.each(this.$list.find(".emoji[data-loaded='1'].diversity"),
+           (_, button) => {
+             $(button).css("background-image", "").removeAttr("data-loaded");
+           });
 
     if (this.filter !== "") {
-      $.each(this.$results.find(".emoji.diversity"), (_, button) =>
-        this._setButtonBackground(button, true)
-      );
+      $.each(this.$results.find(".emoji.diversity"),
+             (_, button) => this._setButtonBackground(button, true));
     }
 
     this._updateSelectedDiversity();
     this._checkVisibleSection(true);
-  },
+  }
+  ,
 
-  @observes("recentEmojis")
-  _recentEmojisChanged() {
+    @observes("recentEmojis") _recentEmojisChanged() {
     const previousScrollTop = this.scrollPosition;
     const $recentSection = this.$list.find(".section[data-section='recent']");
     const $recentSectionGroup = $recentSection.find(".section-group");
-    const $recentCategory = this.$picker
-      .find(".category-icon button[data-section='recent']")
-      .parent();
+    const $recentCategory =
+      this.$picker.find(".category-icon button[data-section='recent']")
+        .parent();
     let persistScrollPosition = !$recentCategory.is(":visible") ? true : false;
 
     // we set height to 0 to avoid it being taken into account for scroll position
@@ -151,29 +144,30 @@ export default Component.extend({
     }
 
     this._bindHover($recentSectionGroup);
-  },
+  }
+  ,
 
-  _updateSelectedDiversity() {
+    _updateSelectedDiversity() {
     const $diversityPicker = this.$picker.find(".diversity-picker");
 
     $diversityPicker.find(".diversity-scale").removeClass("selected");
     $diversityPicker
       .find(`.diversity-scale[data-level="${this.selectedDiversity}"]`)
       .addClass("selected");
-  },
+  }
+  ,
 
-  _loadCategoriesEmojis() {
+    _loadCategoriesEmojis() {
     $.each(
-      this.$picker.find(".categories-column button.emoji"),
-      (_, button) => {
+      this.$picker.find(".categories-column button.emoji"), (_, button) => {
         const $button = $(button);
         const code = this._codeWithDiversity($button.data("tabicon"), false);
         $button.css("background-image", `url("${emojiUrlFor(code)}")`);
-      }
-    );
-  },
+      });
+  }
+  ,
 
-  _bindEvents() {
+    _bindEvents() {
     this._bindDiversityClick();
     this._bindSectionsScroll();
     this._bindEmojiClick(this.$list.find(".section-group"));
@@ -186,18 +180,16 @@ export default Component.extend({
     if (!this.site.isMobileDevice) {
       this._bindHover();
     }
-  },
+  }
+  ,
 
-  _bindModalClick() {
+    _bindModalClick() {
     this.$modal.on("click", () => this.set("active", false));
 
     $("html").on("mouseup.emoji-picker", event => {
       let $target = $(event.target);
-      if (
-        $target.closest(".emoji-picker").length ||
-        $target.closest(".emoji.btn").length ||
-        $target.hasClass("grippie")
-      ) {
+      if ($target.closest(".emoji-picker").length ||
+          $target.closest(".emoji.btn").length || $target.hasClass("grippie")) {
         return;
       }
 
@@ -205,18 +197,19 @@ export default Component.extend({
       this.set("active", false);
       return false;
     });
-  },
+  }
+  ,
 
-  @on("willDestroyElement")
-  _unbindEvents() {
+    @on("willDestroyElement") _unbindEvents() {
     $(this.element).off();
     $(window).off("resize");
     clearInterval(this._refreshInterval);
     $("#reply-control").off("div-resizing");
     $("html").off("mouseup.emoji-picker");
-  },
+  }
+  ,
 
-  _filterEmojisList() {
+    _filterEmojisList() {
     if (this.filter === "") {
       this.$filter.find("input[name='filter']").val("");
       this.$results.empty().hide();
@@ -224,26 +217,24 @@ export default Component.extend({
     } else {
       const lowerCaseFilter = this.filter.toLowerCase();
       const filteredCodes = emojiSearch(lowerCaseFilter, { maxResults: 30 });
-      this.$results
-        .empty()
-        .html(
-          filteredCodes.map(code => {
-            const hasDiversity = isSkinTonableEmoji(code);
-            const diversity = hasDiversity ? "diversity" : "";
-            const scaledCode = this._codeWithDiversity(code, hasDiversity);
-            return `<button style="background-image: url('${emojiUrlFor(
-              scaledCode
-            )}')" type="button" class="emoji ${diversity}" tabindex="-1" title="${code}"></button>`;
-          })
-        )
+      this.$results.empty()
+        .html(filteredCodes.map(code => {
+          const hasDiversity = isSkinTonableEmoji(code);
+          const diversity = hasDiversity ? "diversity" : "";
+          const scaledCode = this._codeWithDiversity(code, hasDiversity);
+          return `<button style="background-image: url('${
+            emojiUrlFor(scaledCode)}')" type="button" class="emoji ${
+            diversity}" tabindex="-1" title="${code}"></button>`;
+        }))
         .show();
       this._bindHover(this.$results);
       this._bindEmojiClick(this.$results);
       this.$list.css("visibility", "hidden");
     }
-  },
+  }
+  ,
 
-  _bindFilterInput() {
+    _bindFilterInput() {
     const $input = this.$filter.find("input");
 
     $input.on("input", event => {
@@ -255,9 +246,10 @@ export default Component.extend({
       this.set("filter", "");
       return false;
     });
-  },
+  }
+  ,
 
-  _bindCategoryClick() {
+    _bindCategoryClick() {
     this.$picker.find(".category-icon").on("click", "button.emoji", event => {
       this.set("filter", "");
       this.$results.empty();
@@ -265,34 +257,33 @@ export default Component.extend({
 
       const section = $(event.currentTarget).data("section");
       const $section = this.$list.find(`.section[data-section="${section}"]`);
-      const scrollTop =
-        this.$list.scrollTop() +
-        ($section.offset().top - this.$list.offset().top);
+      const scrollTop = this.$list.scrollTop() +
+                        ($section.offset().top - this.$list.offset().top);
       this._scrollTo(scrollTop);
       return false;
     });
-  },
+  }
+  ,
 
-  _bindHover($hoverables) {
+    _bindHover($hoverables) {
     const replaceInfoContent = html =>
       this.$picker.find(".footer .info").html(html || "");
 
-    ($hoverables || this.$list.find(".section-group")).on(
-      {
+    ($hoverables || this.$list.find(".section-group"))
+      .on({
         mouseover: event => {
           const code = this._codeForEmojiButton($(event.currentTarget));
-          const html = `<img src="${emojiUrlFor(
-            code
-          )}" class="emoji"> <span>:${code}:<span>`;
+          const html = `<img src="${emojiUrlFor(code)}" class="emoji"> <span>:${
+            code}:<span>`;
           replaceInfoContent(html);
         },
         mouseleave: () => replaceInfoContent()
       },
-      "button.emoji"
-    );
-  },
+          "button.emoji");
+  }
+  ,
 
-  _bindResizing() {
+    _bindResizing() {
     $(window).on("resize", () => {
       run.throttle(this, this._positionPicker, 16);
     });
@@ -300,28 +291,28 @@ export default Component.extend({
     $("#reply-control").on("div-resizing", () => {
       run.throttle(this, this._positionPicker, 16);
     });
-  },
+  }
+  ,
 
-  _bindClearRecentEmojisGroup() {
-    const $recent = this.$picker.find(
-      ".section[data-section='recent'] .clear-recent"
-    );
+    _bindClearRecentEmojisGroup() {
+    const $recent =
+      this.$picker.find(".section[data-section='recent'] .clear-recent");
     $recent.on("click", () => {
       this.emojiStore.favorites = [];
       this.set("recentEmojis", []);
       this._scrollTo(0);
       return false;
     });
-  },
+  }
+  ,
 
-  _bindEmojiClick($emojisContainer) {
+    _bindEmojiClick($emojisContainer) {
     const handler = event => {
       const code = this._codeForEmojiButton($(event.currentTarget));
 
-      if (
-        $(event.currentTarget).parents(".section[data-section='recent']")
-          .length === 0
-      ) {
+      if ($(event.currentTarget)
+            .parents(".section[data-section='recent']")
+            .length === 0) {
         this._trackEmojiUsage(code);
       }
 
@@ -337,8 +328,7 @@ export default Component.extend({
     if (this.site.isMobileDevice) {
       const self = this;
 
-      $emojisContainer
-        .off("touchstart")
+      $emojisContainer.off("touchstart")
         .on("touchstart", "button.emoji", touchStartEvent => {
           const $this = $(touchStartEvent.currentTarget);
 
@@ -353,22 +343,23 @@ export default Component.extend({
           $this.on("touchmove", () => $this.off("touchend"));
         });
     } else {
-      $emojisContainer
-        .off("click")
-        .on("click", "button.emoji", e => handler.bind(this)(e));
+      $emojisContainer.off("click").on("click", "button.emoji",
+                                       e => handler.bind(this)(e));
     }
-  },
+  }
+  ,
 
-  _bindSectionsScroll() {
+    _bindSectionsScroll() {
     let onScroll = () => {
       run.debounce(this, this._checkVisibleSection, 50);
     };
 
     this.$list.on("scroll", onScroll);
     this._refreshInterval = setInterval(onScroll, 100);
-  },
+  }
+  ,
 
-  _checkVisibleSection(force) {
+    _checkVisibleSection(force) {
     // make sure we stop loading if picker has been removed
     if (!this.$picker) {
       return;
@@ -400,19 +391,17 @@ export default Component.extend({
     if ($selectedSection) {
       this.$picker.find(".category-icon").removeClass("current");
       this.$picker
-        .find(
-          `.category-icon button[data-section='${$selectedSection.data(
-            "section"
-          )}']`
-        )
+        .find(`.category-icon button[data-section='${
+          $selectedSection.data("section")}']`)
         .parent()
         .addClass("current");
 
       this._loadVisibleSections();
     }
-  },
+  }
+  ,
 
-  _loadVisibleSections() {
+    _loadVisibleSections() {
     if (!this.$visibleSections) {
       return;
     }
@@ -420,9 +409,8 @@ export default Component.extend({
     const listHeight = this.$list.innerHeight();
 
     this.$visibleSections.forEach(visibleSection => {
-      const $unloadedEmojis = $(visibleSection).find(
-        "button.emoji[data-loaded!='1']"
-      );
+      const $unloadedEmojis =
+        $(visibleSection).find("button.emoji[data-loaded!='1']");
       $.each($unloadedEmojis, (_, button) => {
         let offsetTop = button.offsetTop;
 
@@ -434,32 +422,30 @@ export default Component.extend({
         }
       });
     });
-  },
+  }
+  ,
 
-  _bindDiversityClick() {
-    const $diversityScales = this.$picker.find(
-      ".diversity-picker .diversity-scale"
-    );
+    _bindDiversityClick() {
+    const $diversityScales =
+      this.$picker.find(".diversity-picker .diversity-scale");
     $diversityScales.on("click", event => {
       const $selectedDiversity = $(event.currentTarget);
-      this.set(
-        "selectedDiversity",
-        parseInt($selectedDiversity.data("level"), 10)
-      );
+      this.set("selectedDiversity",
+               parseInt($selectedDiversity.data("level"), 10));
       return false;
     });
-  },
+  }
+  ,
 
-  _isReplyControlExpanded() {
-    const verticalSpace =
-      $(window).height() -
-      $(".d-header").height() -
-      $("#reply-control").height();
+    _isReplyControlExpanded() {
+    const verticalSpace = $(window).height() - $(".d-header").height() -
+                          $("#reply-control").height();
 
     return verticalSpace < this.$picker.height() - 48;
-  },
+  }
+  ,
 
-  _positionPicker() {
+    _positionPicker() {
     if (!this.active) {
       return;
     }
@@ -523,10 +509,8 @@ export default Component.extend({
     } else {
       if (this._isReplyControlExpanded()) {
         let $editorWrapper = $(".d-editor-preview-wrapper");
-        if (
-          ($editorWrapper.is(":visible") && $editorWrapper.width() < 400) ||
-          windowWidth < 485
-        ) {
+        if (($editorWrapper.is(":visible") && $editorWrapper.width() < 400) ||
+            windowWidth < 485) {
           desktopModalePositioning();
         } else {
           if ($editorWrapper.is(":visible")) {
@@ -536,10 +520,9 @@ export default Component.extend({
             desktopPositioning({ left });
           } else {
             desktopPositioning({
-              right:
-                ($("#reply-control").width() -
-                  $(".d-editor-container").width()) /
-                2
+              right: ($("#reply-control").width() -
+                      $(".d-editor-container").width()) /
+                       2
             });
           }
         }
@@ -553,10 +536,8 @@ export default Component.extend({
           const editorHeight = $(".d-editor-input").height();
           const windowBottom = $(window).scrollTop() + $(window).height();
 
-          if (
-            previewInputOffset.top + editorHeight + pickerHeight <
-            windowBottom
-          ) {
+          if (previewInputOffset.top + editorHeight + pickerHeight <
+              windowBottom) {
             // position it below editor if there is enough space
             desktopPositioning({
               position: "absolute",
@@ -575,28 +556,29 @@ export default Component.extend({
       }
     }
 
-    const infoMaxWidth =
-      this.$picker.width() -
-      this.$picker.find(".categories-column").width() -
-      this.$picker.find(".diversity-picker").width() -
-      32;
+    const infoMaxWidth = this.$picker.width() -
+                         this.$picker.find(".categories-column").width() -
+                         this.$picker.find(".diversity-picker").width() - 32;
     this.$picker.find(".info").css("max-width", infoMaxWidth);
-  },
+  }
+  ,
 
-  _codeWithDiversity(code, diversity) {
+    _codeWithDiversity(code, diversity) {
     if (diversity && this.selectedDiversity !== 1) {
       return `${code}:t${this.selectedDiversity}`;
     } else {
       return code;
     }
-  },
+  }
+  ,
 
-  _trackEmojiUsage(code) {
+    _trackEmojiUsage(code) {
     this.emojiStore.track(code);
     this.set("recentEmojis", this.emojiStore.favorites.slice(0, PER_ROW));
-  },
+  }
+  ,
 
-  _scrollTo(y) {
+    _scrollTo(y) {
     const yPosition = typeof y === "undefined" ? this.scrollPosition : y;
 
     this.$list.scrollTop(yPosition);
@@ -605,14 +587,16 @@ export default Component.extend({
     if (yPosition === 0) {
       this.$list.scroll();
     }
-  },
+  }
+  ,
 
-  _codeForEmojiButton($button) {
+    _codeForEmojiButton($button) {
     const title = $button.attr("title");
     return this._codeWithDiversity(title, $button.hasClass("diversity"));
-  },
+  }
+  ,
 
-  _setButtonBackground(button, diversity) {
+    _setButtonBackground(button, diversity) {
     if (!button) {
       return;
     }
@@ -625,9 +609,7 @@ export default Component.extend({
     // chrome delaying the request
     window.requestAnimationFrame(() => {
       const code = this._codeWithDiversity(
-        $button.attr("title"),
-        diversity || $button.hasClass("diversity")
-      );
+        $button.attr("title"), diversity || $button.hasClass("diversity"));
 
       // // force visual reloading if needed
       if (button.style.backgroundImage !== "none") {

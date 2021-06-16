@@ -2,9 +2,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 import ViewingActionType from "discourse/mixins/viewing-action-type";
 
 export default DiscourseRoute.extend(ViewingActionType, {
-  queryParams: {
-    acting_username: { refreshModel: true }
-  },
+  queryParams: {acting_username: {refreshModel: true}},
 
   model() {
     return this.modelFor("user").get("stream");

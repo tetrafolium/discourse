@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { scrollTop } from "discourse/mixins/scroll-top";
+import {scrollTop} from "discourse/mixins/scroll-top";
 
 // Can add a body class from within a component, also will scroll to the top automatically.
 export default Component.extend({

@@ -1,4 +1,4 @@
-import { dasherize } from "@ember/string";
+import {dasherize} from "@ember/string";
 
 export default function(name, opts) {
   opts = opts || {};
@@ -9,10 +9,8 @@ export default function(name, opts) {
   const route = container.lookup("route:application");
   const modalController = route.controllerFor("modal");
 
-  modalController.set(
-    "modalClass",
-    opts.modalClass || `${dasherize(name).toLowerCase()}-modal`
-  );
+  modalController.set("modalClass", opts.modalClass ||
+                                      `${dasherize(name).toLowerCase()}-modal`);
 
   const controllerName = opts.admin ? `modals/${name}` : name;
   modalController.set("name", controllerName);
@@ -41,19 +39,15 @@ export default function(name, opts) {
   }
 
   if (opts.panels) {
-    modalController.setProperties({
-      panels: opts.panels,
-      selectedPanel: opts.panels[0]
-    });
+    modalController.setProperties(
+      { panels: opts.panels, selectedPanel: opts.panels[0] });
 
     if (controller.actions.onSelectPanel) {
       modalController.set("onSelectPanel", controller.actions.onSelectPanel);
     }
 
-    modalController.set(
-      "modalClass",
-      `${modalController.get("modalClass")} has-tabs`
-    );
+    modalController.set("modalClass",
+                        `${modalController.get("modalClass")} has-tabs`);
   } else {
     modalController.setProperties({ panels: [], selectedPanel: null });
   }

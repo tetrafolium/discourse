@@ -1,6 +1,6 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import User from "discourse/models/user";
 /**
   A model representing a Topic's details that aren't always present, such as a list of participants.
@@ -12,7 +12,7 @@ import RestModel from "discourse/models/rest";
 const TopicDetails = RestModel.extend({
   loaded: false,
 
-  updateFromJson(details) {
+    updateFromJson(details) {
     const topic = this.topic;
 
     if (details.allowed_users) {
@@ -30,10 +30,11 @@ const TopicDetails = RestModel.extend({
 
     this.setProperties(details);
     this.set("loaded", true);
-  },
+  }
+  ,
 
-  @discourseComputed("notification_level", "notifications_reason_id")
-  notificationReasonText(level, reason) {
+    @discourseComputed("notification_level", "notifications_reason_id")
+    notificationReasonText(level, reason) {
     if (typeof level !== "number") {
       level = 1;
     }
@@ -47,10 +48,8 @@ const TopicDetails = RestModel.extend({
       }
     }
 
-    if (
-      User.currentProp("mailing_list_mode") &&
-      level > NotificationLevels.MUTED
-    ) {
+    if (User.currentProp("mailing_list_mode") &&
+        level > NotificationLevels.MUTED) {
       return I18n.t("topic.notifications.reasons.mailing_list_mode");
     } else {
       return I18n.t(localeString, {
@@ -58,39 +57,38 @@ const TopicDetails = RestModel.extend({
         basePath: Discourse.BaseUri
       });
     }
-  },
+  }
+  ,
 
-  updateNotifications(v) {
+    updateNotifications(v) {
     this.set("notification_level", v);
     this.set("notifications_reason_id", null);
-    return ajax("/t/" + this.get("topic.id") + "/notifications", {
-      type: "POST",
-      data: { notification_level: v }
-    });
-  },
+    return ajax("/t/" + this.get("topic.id") + "/notifications",
+                { type: "POST", data: { notification_level: v } });
+  }
+  ,
 
-  removeAllowedGroup(group) {
+    removeAllowedGroup(group) {
     const groups = this.allowed_groups;
     const name = group.name;
 
-    return ajax("/t/" + this.get("topic.id") + "/remove-allowed-group", {
-      type: "PUT",
-      data: { name: name }
-    }).then(() => {
-      groups.removeObject(groups.findBy("name", name));
-    });
-  },
+    return ajax("/t/" + this.get("topic.id") + "/remove-allowed-group",
+                { type: "PUT", data: { name: name } })
+      .then(() => {
+        groups.removeObject(groups.findBy("name", name));
+      });
+  }
+  ,
 
-  removeAllowedUser(user) {
+    removeAllowedUser(user) {
     const users = this.allowed_users;
     const username = user.get("username");
 
-    return ajax("/t/" + this.get("topic.id") + "/remove-allowed-user", {
-      type: "PUT",
-      data: { username: username }
-    }).then(() => {
-      users.removeObject(users.findBy("username", username));
-    });
+    return ajax("/t/" + this.get("topic.id") + "/remove-allowed-user",
+                { type: "PUT", data: { username: username } })
+      .then(() => {
+        users.removeObject(users.findBy("username", username));
+      });
   }
 });
 

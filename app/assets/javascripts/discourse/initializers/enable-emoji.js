@@ -1,5 +1,5 @@
-import { withPluginApi } from "discourse/lib/plugin-api";
-import { registerEmoji } from "pretty-text/emoji";
+import {withPluginApi} from "discourse/lib/plugin-api";
+import {registerEmoji} from "pretty-text/emoji";
 import PreloadStore from "preload-store";
 
 export default {
@@ -23,8 +23,7 @@ export default {
       });
     });
 
-    (PreloadStore.get("customEmoji") || []).forEach(emoji =>
-      registerEmoji(emoji.name, emoji.url)
-    );
+    (PreloadStore.get("customEmoji") || [])
+      .forEach(emoji => registerEmoji(emoji.name, emoji.url));
   }
 };

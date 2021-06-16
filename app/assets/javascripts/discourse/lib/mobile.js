@@ -51,9 +51,8 @@ const Mobile = {
   },
 
   reloadPage(mobile) {
-    window.location.assign(
-      window.location.pathname + "?mobile_view=" + (mobile ? "1" : "0")
-    );
+    window.location.assign(window.location.pathname +
+                           "?mobile_view=" + (mobile ? "1" : "0"));
   }
 };
 
@@ -68,8 +67,7 @@ export function resetMobile() {
 Object.defineProperty(Discourse, "Mobile", {
   get() {
     deprecated(
-      "`Discourse.Mobile` is deprecated, use `this.site.mobileView` instead"
-    );
+      "`Discourse.Mobile` is deprecated, use `this.site.mobileView` instead");
     return Mobile;
   }
 });

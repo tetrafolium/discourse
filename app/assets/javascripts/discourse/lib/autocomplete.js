@@ -1,6 +1,6 @@
-import { cancel, later } from "@ember/runloop";
-import { iconHTML } from "discourse-common/lib/icon-library";
-import { setCaretPosition, caretPosition } from "discourse/lib/utilities";
+import {cancel, later} from "@ember/runloop";
+import {iconHTML} from "discourse-common/lib/icon-library";
+import {setCaretPosition, caretPosition} from "discourse/lib/utilities";
 import Site from "discourse/models/site";
 
 /**
@@ -67,8 +67,7 @@ export default function(options) {
   if (this.length !== 1) {
     if (window.console) {
       window.console.log(
-        "WARNING: passed multiple elements to $.autocomplete, skipping."
-      );
+        "WARNING: passed multiple elements to $.autocomplete, skipping.");
       if (window.Error) {
         window.console.log(new window.Error().stack);
       }
@@ -101,8 +100,7 @@ export default function(options) {
   }
 
   function addInputSelectedItem(item, triggerChangeCallback) {
-    var transformed,
-      transformedItem = item;
+    var transformed, transformedItem = item;
 
     if (options.transformComplete) {
       transformedItem = options.transformComplete(transformedItem);
@@ -111,16 +109,12 @@ export default function(options) {
     if (options.single) {
       inputSelectedItems = [];
     }
-    transformed = _.isArray(transformedItem)
-      ? transformedItem
-      : [transformedItem || item];
+    transformed =
+      _.isArray(transformedItem) ? transformedItem : [transformedItem || item];
 
     const divs = transformed.map(itm => {
-      let d = $(
-        `<div class='item'><span>${itm}<a class='remove' href>${iconHTML(
-          "times"
-        )}</a></span></div>`
-      );
+      let d = $(`<div class='item'><span>${itm}<a class='remove' href>${
+        iconHTML("times")}</a></span></div>`);
       const $parent = me.parent();
       const prev = $parent.find(".item:last");
 
@@ -138,26 +132,19 @@ export default function(options) {
       options.onChangeItems(inputSelectedItems);
     }
 
-    $(divs)
-      .find("a")
-      .click(function() {
-        closeAutocomplete();
-        inputSelectedItems.splice(
-          $.inArray(transformedItem, inputSelectedItems),
-          1
-        );
-        $(this)
-          .parent()
-          .parent()
-          .remove();
-        if (options.single) {
-          me.show();
-        }
-        if (options.onChangeItems) {
-          options.onChangeItems(inputSelectedItems);
-        }
-        return false;
-      });
+    $(divs).find("a").click(function() {
+      closeAutocomplete();
+      inputSelectedItems.splice($.inArray(transformedItem, inputSelectedItems),
+                                1);
+      $(this).parent().parent().remove();
+      if (options.single) {
+        me.show();
+      }
+      if (options.onChangeItems) {
+        options.onChangeItems(inputSelectedItems);
+      }
+      return false;
+    });
   }
 
   var completeTerm = function(term) {
@@ -175,12 +162,8 @@ export default function(options) {
 
         if (term) {
           var text = me.val();
-          text =
-            text.substring(0, completeStart) +
-            (options.key || "") +
-            term +
-            " " +
-            text.substring(completeEnd + 1, text.length);
+          text = text.substring(0, completeStart) + (options.key || "") + term +
+                 " " + text.substring(completeEnd + 1, text.length);
           me.val(text);
           setCaretPosition(me[0], completeStart + 1 + term.length);
 
@@ -201,9 +184,10 @@ export default function(options) {
       wrap.find(".item").remove();
       me.show();
     } else {
-      wrap = this.wrap(
-        "<div class='ac-wrap clearfix" + (disabled ? " disabled" : "") + "'/>"
-      ).parent();
+      wrap = this
+               .wrap("<div class='ac-wrap clearfix" +
+                     (disabled ? " disabled" : "") + "'/>")
+               .parent();
 
       if (!options.fullWidthWrap) {
         wrap.width(width);
@@ -216,10 +200,8 @@ export default function(options) {
       this.css("width", options.width);
     }
 
-    this.attr(
-      "name",
-      options.updateData ? this.attr("name") : this.attr("name") + "-renamed"
-    );
+    this.attr("name", options.updateData ? this.attr("name")
+                                         : this.attr("name") + "-renamed");
 
     var vals = this.val().split(",");
     vals.forEach(x => {
@@ -281,24 +263,17 @@ export default function(options) {
     var hOffset = 0;
 
     if (isInput) {
-      pos = {
-        left: 0,
-        top: 0
-      };
+      pos = { left: 0, top: 0 };
       vOffset = BELOW;
       hOffset = 0;
     } else {
-      pos = me.caretPosition({
-        pos: completeStart + 1
-      });
+      pos = me.caretPosition({ pos: completeStart + 1 });
 
       hOffset = 10;
       if (options.treatAsTextarea) vOffset = -32;
     }
 
-    div.css({
-      left: "-1000px"
-    });
+    div.css({ left: "-1000px" });
 
     if (options.appendSelector) {
       me.parents(options.appendSelector).append(div);
@@ -309,10 +284,8 @@ export default function(options) {
     if (!isInput && !options.treatAsTextarea) {
       vOffset = div.height();
 
-      const spaceOutside =
-        window.innerHeight -
-        me.outerHeight() -
-        $("header.d-header").innerHeight();
+      const spaceOutside = window.innerHeight - me.outerHeight() -
+                           $("header.d-header").innerHeight();
 
       if (spaceOutside < vOffset && vOffset > pos.top) {
         vOffset = BELOW;
@@ -431,10 +404,8 @@ export default function(options) {
     if (completeStart === null && cp > 0) {
       if (key === options.key) {
         var prevChar = me.val().charAt(cp - 2);
-        if (
-          checkTriggerRule() &&
-          (!prevChar || allowedLettersRegex.test(prevChar))
-        ) {
+        if (checkTriggerRule() &&
+            (!prevChar || allowedLettersRegex.test(prevChar))) {
           completeStart = completeEnd = cp - 1;
           updateAutoComplete(dataSource("", options));
         }
@@ -487,10 +458,8 @@ export default function(options) {
         stopFound = prev === options.key;
         if (stopFound) {
           prev = me[0].value[c - 1];
-          if (
-            checkTriggerRule({ backSpace: true }) &&
-            (!prev || allowedLettersRegex.test(prev))
-          ) {
+          if (checkTriggerRule({ backSpace: true }) &&
+              (!prev || allowedLettersRegex.test(prev))) {
             completeStart = c;
             cp = completeEnd = initial;
             term = me[0].value.substring(c + 1, initial);
@@ -528,64 +497,62 @@ export default function(options) {
 
       // Keyboard codes! So 80's.
       switch (e.which) {
-        case keys.enter:
-        case keys.tab:
-          if (!autocompleteOptions) return true;
-          if (
-            selectedOption >= 0 &&
-            (userToComplete = autocompleteOptions[selectedOption])
-          ) {
-            completeTerm(userToComplete);
-          } else {
-            // We're cancelling it, really.
-            return true;
-          }
-          e.stopImmediatePropagation();
-          return false;
-        case keys.upArrow:
-          selectedOption = selectedOption - 1;
-          if (selectedOption < 0) {
-            selectedOption = 0;
-          }
-          markSelected();
-          return false;
-        case keys.downArrow:
-          total = autocompleteOptions.length;
-          selectedOption = selectedOption + 1;
-          if (selectedOption >= total) {
-            selectedOption = total - 1;
-          }
-          if (selectedOption < 0) {
-            selectedOption = 0;
-          }
-          markSelected();
-          return false;
-        case keys.backSpace:
-          completeEnd = cp;
-          cp--;
+      case keys.enter:
+      case keys.tab:
+        if (!autocompleteOptions) return true;
+        if (selectedOption >= 0 &&
+            (userToComplete = autocompleteOptions[selectedOption])) {
+          completeTerm(userToComplete);
+        } else {
+          // We're cancelling it, really.
+          return true;
+        }
+        e.stopImmediatePropagation();
+        return false;
+      case keys.upArrow:
+        selectedOption = selectedOption - 1;
+        if (selectedOption < 0) {
+          selectedOption = 0;
+        }
+        markSelected();
+        return false;
+      case keys.downArrow:
+        total = autocompleteOptions.length;
+        selectedOption = selectedOption + 1;
+        if (selectedOption >= total) {
+          selectedOption = total - 1;
+        }
+        if (selectedOption < 0) {
+          selectedOption = 0;
+        }
+        markSelected();
+        return false;
+      case keys.backSpace:
+        completeEnd = cp;
+        cp--;
 
-          if (cp < 0) {
-            closeAutocomplete();
-            if (isInput) {
-              i = wrap.find("a:last");
-              if (i) {
-                i.click();
-              }
+        if (cp < 0) {
+          closeAutocomplete();
+          if (isInput) {
+            i = wrap.find("a:last");
+            if (i) {
+              i.click();
             }
-            return true;
           }
-
-          term = me.val().substring(completeStart + (options.key ? 1 : 0), cp);
-
-          if (completeStart === cp && term === options.key) {
-            closeAutocomplete();
-          }
-
-          updateAutoComplete(dataSource(term, options));
           return true;
-        default:
-          completeEnd = cp;
-          return true;
+        }
+
+        term = me.val().substring(completeStart + (options.key ? 1 : 0), cp);
+
+        if (completeStart === cp && term === options.key) {
+          closeAutocomplete();
+        }
+
+        updateAutoComplete(dataSource(term, options));
+        return true;
+      default:
+        completeEnd = cp;
+        return true;
       }
     }
   });

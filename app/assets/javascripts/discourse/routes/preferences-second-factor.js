@@ -15,8 +15,7 @@ export default RestrictedUserRoute.extend({
     controller.setProperties({ model, newUsername: model.get("username") });
     controller.set("loading", true);
 
-    model
-      .loadSecondFactorCodes("")
+    model.loadSecondFactorCodes("")
       .then(response => {
         if (response.error) {
           controller.set("errorMessage", response.error);
@@ -42,14 +41,10 @@ export default RestrictedUserRoute.extend({
       const user = controller.get("currentUser");
       const settings = controller.get("siteSettings");
 
-      if (
-        transition.targetName === "preferences.second-factor" ||
-        !user ||
-        user.is_anonymous ||
-        user.second_factor_enabled ||
-        (settings.enforce_second_factor === "staff" && !user.staff) ||
-        settings.enforce_second_factor === "no"
-      ) {
+      if (transition.targetName === "preferences.second-factor" || !user ||
+          user.is_anonymous || user.second_factor_enabled ||
+          (settings.enforce_second_factor === "staff" && !user.staff) ||
+          settings.enforce_second_factor === "no") {
         return true;
       }
 

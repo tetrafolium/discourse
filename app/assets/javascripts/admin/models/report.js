@@ -1,71 +1,55 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { makeArray } from "discourse-common/lib/helpers";
-import { isEmpty } from "@ember/utils";
+import {makeArray} from "discourse-common/lib/helpers";
+import {isEmpty} from "@ember/utils";
 import EmberObject from "@ember/object";
-import { escapeExpression } from "discourse/lib/utilities";
-import { ajax } from "discourse/lib/ajax";
+import {escapeExpression} from "discourse/lib/utilities";
+import {ajax} from "discourse/lib/ajax";
 import round from "discourse/lib/round";
 import {
   fillMissingDates,
   formatUsername,
   toNumber
 } from "discourse/lib/utilities";
-import { number, durationTiny } from "discourse/lib/formatter";
-import { renderAvatar } from "discourse/helpers/user-avatar";
+import {number, durationTiny} from "discourse/lib/formatter";
+import {renderAvatar} from "discourse/helpers/user-avatar";
 
 // Change this line each time report format change
 // and you want to ensure cache is reset
 export const SCHEMA_VERSION = 4;
 
 const Report = EmberObject.extend({
-  average: false,
-  percent: false,
-  higher_is_better: true,
-  description_link: null,
-  description: null,
+  average: false, percent: false, higher_is_better: true,
+    description_link: null, description: null,
 
-  @discourseComputed("type", "start_date", "end_date")
-  reportUrl(type, start_date, end_date) {
-    start_date = moment
-      .utc(start_date)
-      .locale("en")
-      .format("YYYY-MM-DD");
+    @discourseComputed("type", "start_date",
+                       "end_date") reportUrl(type, start_date, end_date) {
+    start_date = moment.utc(start_date).locale("en").format("YYYY-MM-DD");
 
-    end_date = moment
-      .utc(end_date)
-      .locale("en")
-      .format("YYYY-MM-DD");
+    end_date = moment.utc(end_date).locale("en").format("YYYY-MM-DD");
 
     return Discourse.getURL(
-      `/admin/reports/${type}?start_date=${start_date}&end_date=${end_date}`
-    );
-  },
+      `/admin/reports/${type}?start_date=${start_date}&end_date=${end_date}`);
+  }
+  ,
 
-  valueAt(numDaysAgo) {
+    valueAt(numDaysAgo) {
     if (this.data) {
-      const wantedDate = moment()
-        .subtract(numDaysAgo, "days")
-        .locale("en")
-        .format("YYYY-MM-DD");
+      const wantedDate =
+        moment().subtract(numDaysAgo, "days").locale("en").format("YYYY-MM-DD");
       const item = this.data.find(d => d.x === wantedDate);
       if (item) {
         return item.y;
       }
     }
     return 0;
-  },
+  }
+  ,
 
-  valueFor(startDaysAgo, endDaysAgo) {
+    valueFor(startDaysAgo, endDaysAgo) {
     if (this.data) {
-      const earliestDate = moment()
-        .subtract(endDaysAgo, "days")
-        .startOf("day");
-      const latestDate = moment()
-        .subtract(startDaysAgo, "days")
-        .startOf("day");
-      let d,
-        sum = 0,
-        count = 0;
+      const earliestDate = moment().subtract(endDaysAgo, "days").startOf("day");
+      const latestDate = moment().subtract(startDaysAgo, "days").startOf("day");
+      let d, sum = 0, count = 0;
       this.data.forEach(datum => {
         d = moment(datum.x);
         if (d >= earliestDate && d <= latestDate) {
@@ -78,114 +62,117 @@ const Report = EmberObject.extend({
       }
       return round(sum, -2);
     }
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  todayCount() {
+    @discourseComputed("data", "average") todayCount() {
     return this.valueAt(0);
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  yesterdayCount() {
+    @discourseComputed("data", "average") yesterdayCount() {
     return this.valueAt(1);
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  sevenDaysAgoCount() {
+    @discourseComputed("data", "average") sevenDaysAgoCount() {
     return this.valueAt(7);
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  thirtyDaysAgoCount() {
+    @discourseComputed("data", "average") thirtyDaysAgoCount() {
     return this.valueAt(30);
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  lastSevenDaysCount() {
+    @discourseComputed("data", "average") lastSevenDaysCount() {
     return this.averageCount(7, this.valueFor(1, 7));
-  },
+  }
+  ,
 
-  @discourseComputed("data", "average")
-  lastThirtyDaysCount() {
+    @discourseComputed("data", "average") lastThirtyDaysCount() {
     return this.averageCount(30, this.valueFor(1, 30));
-  },
+  }
+  ,
 
-  averageCount(count, value) {
+    averageCount(count, value) {
     return this.average ? value / count : value;
-  },
+  }
+  ,
 
-  @discourseComputed("yesterdayCount", "higher_is_better")
-  yesterdayTrend(yesterdayCount, higherIsBetter) {
+    @discourseComputed("yesterdayCount", "higher_is_better")
+    yesterdayTrend(yesterdayCount, higherIsBetter) {
     return this._computeTrend(this.valueAt(2), yesterdayCount, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("lastSevenDaysCount", "higher_is_better")
-  sevenDaysTrend(lastSevenDaysCount, higherIsBetter) {
-    return this._computeTrend(
-      this.valueFor(8, 14),
-      lastSevenDaysCount,
-      higherIsBetter
-    );
-  },
+    @discourseComputed("lastSevenDaysCount", "higher_is_better")
+    sevenDaysTrend(lastSevenDaysCount, higherIsBetter) {
+    return this._computeTrend(this.valueFor(8, 14), lastSevenDaysCount,
+                              higherIsBetter);
+  }
+  ,
 
-  @discourseComputed("data")
-  currentTotal(data) {
+    @discourseComputed("data") currentTotal(data) {
     return data.reduce((cur, pair) => cur + pair.y, 0);
-  },
+  }
+  ,
 
-  @discourseComputed("data", "currentTotal")
-  currentAverage(data, total) {
+    @discourseComputed("data", "currentTotal") currentAverage(data, total) {
     return makeArray(data).length === 0
-      ? 0
-      : parseFloat((total / parseFloat(data.length)).toFixed(1));
-  },
+             ? 0
+             : parseFloat((total / parseFloat(data.length)).toFixed(1));
+  }
+  ,
 
-  @discourseComputed("trend", "higher_is_better")
-  trendIcon(trend, higherIsBetter) {
+    @discourseComputed("trend", "higher_is_better") trendIcon(trend,
+                                                              higherIsBetter) {
     return this._iconForTrend(trend, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("sevenDaysTrend", "higher_is_better")
-  sevenDaysTrendIcon(sevenDaysTrend, higherIsBetter) {
+    @discourseComputed("sevenDaysTrend", "higher_is_better")
+    sevenDaysTrendIcon(sevenDaysTrend, higherIsBetter) {
     return this._iconForTrend(sevenDaysTrend, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("thirtyDaysTrend", "higher_is_better")
-  thirtyDaysTrendIcon(thirtyDaysTrend, higherIsBetter) {
+    @discourseComputed("thirtyDaysTrend", "higher_is_better")
+    thirtyDaysTrendIcon(thirtyDaysTrend, higherIsBetter) {
     return this._iconForTrend(thirtyDaysTrend, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("yesterdayTrend", "higher_is_better")
-  yesterdayTrendIcon(yesterdayTrend, higherIsBetter) {
+    @discourseComputed("yesterdayTrend", "higher_is_better")
+    yesterdayTrendIcon(yesterdayTrend, higherIsBetter) {
     return this._iconForTrend(yesterdayTrend, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "prev_period",
-    "currentTotal",
-    "currentAverage",
-    "higher_is_better"
-  )
-  trend(prev, currentTotal, currentAverage, higherIsBetter) {
+    @discourseComputed("prev_period", "currentTotal", "currentAverage",
+                       "higher_is_better")
+    trend(prev, currentTotal, currentAverage, higherIsBetter) {
     const total = this.average ? currentAverage : currentTotal;
     return this._computeTrend(prev, total, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("prev30Days", "lastThirtyDaysCount", "higher_is_better")
-  thirtyDaysTrend(prev30Days, lastThirtyDaysCount, higherIsBetter) {
+    @discourseComputed("prev30Days", "lastThirtyDaysCount", "higher_is_better")
+    thirtyDaysTrend(prev30Days, lastThirtyDaysCount, higherIsBetter) {
     return this._computeTrend(prev30Days, lastThirtyDaysCount, higherIsBetter);
-  },
+  }
+  ,
 
-  @discourseComputed("type")
-  method(type) {
+    @discourseComputed("type") method(type) {
     if (type === "time_to_first_response") {
       return "average";
     } else {
       return "sum";
     }
-  },
+  }
+  ,
 
-  percentChangeString(val1, val2) {
+    percentChangeString(val1, val2) {
     const change = this._computeChange(val1, val2);
 
     if (isNaN(change) || !isFinite(change)) {
@@ -195,10 +182,11 @@ const Report = EmberObject.extend({
     } else {
       return change.toFixed(0) + "%";
     }
-  },
+  }
+  ,
 
-  @discourseComputed("prev_period", "currentTotal", "currentAverage")
-  trendTitle(prev, currentTotal, currentAverage) {
+    @discourseComputed("prev_period", "currentTotal", "currentAverage")
+    trendTitle(prev, currentTotal, currentAverage) {
     let current = this.average ? currentAverage : currentTotal;
     let percent = this.percentChangeString(prev, current);
 
@@ -213,14 +201,12 @@ const Report = EmberObject.extend({
       current = number(current);
     }
 
-    return I18n.t("admin.dashboard.reports.trend_title", {
-      percent,
-      prev,
-      current
-    });
-  },
+    return I18n.t("admin.dashboard.reports.trend_title",
+                  { percent, prev, current });
+  }
+  ,
 
-  changeTitle(valAtT1, valAtT2, prevPeriodString) {
+    changeTitle(valAtT1, valAtT2, prevPeriodString) {
     const change = this.percentChangeString(valAtT1, valAtT2);
     let title = "";
     if (change) {
@@ -228,54 +214,54 @@ const Report = EmberObject.extend({
     }
     title += `Was ${number(valAtT1)} ${prevPeriodString}.`;
     return title;
-  },
+  }
+  ,
 
-  @discourseComputed("yesterdayCount")
-  yesterdayCountTitle(yesterdayCount) {
+    @discourseComputed("yesterdayCount") yesterdayCountTitle(yesterdayCount) {
     return this.changeTitle(this.valueAt(2), yesterdayCount, "two days ago");
-  },
+  }
+  ,
 
-  @discourseComputed("lastSevenDaysCount")
-  sevenDaysCountTitle(lastSevenDaysCount) {
-    return this.changeTitle(
-      this.valueFor(8, 14),
-      lastSevenDaysCount,
-      "two weeks ago"
-    );
-  },
+    @discourseComputed("lastSevenDaysCount")
+    sevenDaysCountTitle(lastSevenDaysCount) {
+    return this.changeTitle(this.valueFor(8, 14), lastSevenDaysCount,
+                            "two weeks ago");
+  }
+  ,
 
-  @discourseComputed("prev30Days", "lastThirtyDaysCount")
-  thirtyDaysCountTitle(prev30Days, lastThirtyDaysCount) {
-    return this.changeTitle(
-      prev30Days,
-      lastThirtyDaysCount,
-      "in the previous 30 day period"
-    );
-  },
+    @discourseComputed("prev30Days", "lastThirtyDaysCount")
+    thirtyDaysCountTitle(prev30Days, lastThirtyDaysCount) {
+    return this.changeTitle(prev30Days, lastThirtyDaysCount,
+                            "in the previous 30 day period");
+  }
+  ,
 
-  @discourseComputed("data")
-  sortedData(data) {
+    @discourseComputed("data") sortedData(data) {
     return this.xAxisIsDate ? data.toArray().reverse() : data.toArray();
-  },
+  }
+  ,
 
-  @discourseComputed("data")
-  xAxisIsDate() {
+    @discourseComputed("data") xAxisIsDate() {
     if (!this.data[0]) return false;
     return this.data && this.data[0].x.match(/\d{4}-\d{1,2}-\d{1,2}/);
-  },
+  }
+  ,
 
-  @discourseComputed("labels")
-  computedLabels(labels) {
+    @discourseComputed("labels") computedLabels(labels) {
     return labels.map(label => {
       const type = label.type || "string";
 
       let mainProperty;
-      if (label.property) mainProperty = label.property;
-      else if (type === "user") mainProperty = label.properties["username"];
-      else if (type === "topic") mainProperty = label.properties["title"];
+      if (label.property)
+        mainProperty = label.property;
+      else if (type === "user")
+        mainProperty = label.properties["username"];
+      else if (type === "topic")
+        mainProperty = label.properties["title"];
       else if (type === "post")
         mainProperty = label.properties["truncated_raw"];
-      else mainProperty = label.properties[0];
+      else
+        mainProperty = label.properties[0];
 
       return {
         title: label.title,
@@ -320,9 +306,10 @@ const Report = EmberObject.extend({
         }
       };
     });
-  },
+  }
+  ,
 
-  _userLabel(properties, row) {
+    _userLabel(properties, row) {
     const username = row[properties.username];
 
     const formatedValue = () => {
@@ -336,21 +323,21 @@ const Report = EmberObject.extend({
 
       const href = Discourse.getURL(`/admin/users/${userId}/${username}`);
 
-      const avatarImg = renderAvatar(user, {
-        imageSize: "tiny",
-        ignoreTitle: true
-      });
+      const avatarImg =
+        renderAvatar(user, { imageSize: "tiny", ignoreTitle: true });
 
-      return `<a href='${href}'>${avatarImg}<span class='username'>${user.name}</span></a>`;
+      return `<a href='${href}'>${avatarImg}<span class='username'>${
+        user.name}</span></a>`;
     };
 
     return {
       value: username,
       formatedValue: username ? formatedValue(username) : "—"
     };
-  },
+  }
+  ,
 
-  _topicLabel(properties, row) {
+    _topicLabel(properties, row) {
     const topicTitle = row[properties.title];
 
     const formatedValue = () => {
@@ -363,9 +350,10 @@ const Report = EmberObject.extend({
       value: topicTitle,
       formatedValue: topicTitle ? formatedValue() : "—"
     };
-  },
+  }
+  ,
 
-  _postLabel(properties, row) {
+    _postLabel(properties, row) {
     const postTitle = row[properties.truncated_raw];
     const postNumber = row[properties.number];
     const topicId = row[properties.topic_id];
@@ -374,31 +362,26 @@ const Report = EmberObject.extend({
     return {
       property: properties.title,
       value: postTitle,
-      formatedValue:
-        postTitle && href
-          ? `<a href='${href}'>${escapeExpression(postTitle)}</a>`
-          : "—"
+      formatedValue: postTitle && href
+                       ? `<a href='${href}'>${escapeExpression(postTitle)}</a>`
+                       : "—"
     };
-  },
+  }
+  ,
 
-  _secondsLabel(value) {
-    return {
-      value: toNumber(value),
-      formatedValue: durationTiny(value)
-    };
-  },
+    _secondsLabel(value) {
+    return { value: toNumber(value), formatedValue: durationTiny(value) };
+  }
+  ,
 
-  _percentLabel(value) {
-    return {
-      value: toNumber(value),
-      formatedValue: value ? `${value}%` : "—"
-    };
-  },
+    _percentLabel(value) {
+    return { value: toNumber(value), formatedValue: value ? `${value}%` : "—" };
+  }
+  ,
 
-  _numberLabel(value, options = {}) {
-    const formatNumbers = isEmpty(options.formatNumbers)
-      ? true
-      : options.formatNumbers;
+    _numberLabel(value, options = {}) {
+    const formatNumbers =
+      isEmpty(options.formatNumbers) ? true : options.formatNumbers;
 
     const formatedValue = () => (formatNumbers ? number(value) : value);
 
@@ -406,51 +389,47 @@ const Report = EmberObject.extend({
       value: toNumber(value),
       formatedValue: value ? formatedValue() : "—"
     };
-  },
+  }
+  ,
 
-  _bytesLabel(value) {
-    return {
-      value: toNumber(value),
-      formatedValue: I18n.toHumanSize(value)
-    };
-  },
+    _bytesLabel(value) {
+    return { value: toNumber(value), formatedValue: I18n.toHumanSize(value) };
+  }
+  ,
 
-  _dateLabel(value, date, format = "LL") {
-    return {
-      value,
-      formatedValue: value ? date.format(format) : "—"
-    };
-  },
+    _dateLabel(value, date, format = "LL") {
+    return { value, formatedValue: value ? date.format(format) : "—" };
+  }
+  ,
 
-  _textLabel(value) {
+    _textLabel(value) {
     const escaped = escapeExpression(value);
 
-    return {
-      value,
-      formatedValue: value ? escaped : "—"
-    };
-  },
+    return { value, formatedValue: value ? escaped : "—" };
+  }
+  ,
 
-  _linkLabel(properties, row) {
+    _linkLabel(properties, row) {
     const property = properties[0];
     const value = Discourse.getURL(row[property]);
     const formatedValue = (href, anchor) => {
-      return `<a href="${escapeExpression(href)}">${escapeExpression(
-        anchor
-      )}</a>`;
+      return `<a href="${escapeExpression(href)}">${
+        escapeExpression(anchor)}</a>`;
     };
 
     return {
       value,
       formatedValue: value ? formatedValue(value, row[properties[1]]) : "—"
     };
-  },
+  }
+  ,
 
-  _computeChange(valAtT1, valAtT2) {
+    _computeChange(valAtT1, valAtT2) {
     return ((valAtT2 - valAtT1) / valAtT1) * 100;
-  },
+  }
+  ,
 
-  _computeTrend(valAtT1, valAtT2, higherIsBetter) {
+    _computeTrend(valAtT1, valAtT2, higherIsBetter) {
     const change = this._computeChange(valAtT1, valAtT2);
 
     if (change > 50) {
@@ -464,20 +443,21 @@ const Report = EmberObject.extend({
     } else if (change < -2) {
       return higherIsBetter ? "trending-down" : "trending-up";
     }
-  },
+  }
+  ,
 
-  _iconForTrend(trend, higherIsBetter) {
+    _iconForTrend(trend, higherIsBetter) {
     switch (trend) {
-      case "trending-up":
-        return higherIsBetter ? "angle-up" : "angle-down";
-      case "trending-down":
-        return higherIsBetter ? "angle-down" : "angle-up";
-      case "high-trending-up":
-        return higherIsBetter ? "angle-double-up" : "angle-double-down";
-      case "high-trending-down":
-        return higherIsBetter ? "angle-double-down" : "angle-double-up";
-      default:
-        return "minus";
+    case "trending-up":
+      return higherIsBetter ? "angle-up" : "angle-down";
+    case "trending-down":
+      return higherIsBetter ? "angle-down" : "angle-up";
+    case "high-trending-up":
+      return higherIsBetter ? "angle-double-up" : "angle-double-down";
+    case "high-trending-down":
+      return higherIsBetter ? "angle-double-down" : "angle-double-up";
+    default:
+      return "minus";
     }
   }
 });
@@ -490,14 +470,10 @@ Report.reopenClass({
     const endDate = options.endDate || "end_date";
 
     if (_.isArray(report[dataField])) {
-      const startDateFormatted = moment
-        .utc(report[startDate])
-        .locale("en")
-        .format("YYYY-MM-DD");
-      const endDateFormatted = moment
-        .utc(report[endDate])
-        .locale("en")
-        .format("YYYY-MM-DD");
+      const startDateFormatted =
+        moment.utc(report[startDate]).locale("en").format("YYYY-MM-DD");
+      const endDateFormatted =
+        moment.utc(report[endDate]).locale("en").format("YYYY-MM-DD");
 
       if (report.modes[0] === "stacked_chart") {
         report[filledField] = report[dataField].map(rep => {
@@ -505,53 +481,48 @@ Report.reopenClass({
             req: rep.req,
             label: rep.label,
             color: rep.color,
-            data: fillMissingDates(
-              JSON.parse(JSON.stringify(rep.data)),
-              startDateFormatted,
-              endDateFormatted
-            )
+            data: fillMissingDates(JSON.parse(JSON.stringify(rep.data)),
+                                   startDateFormatted, endDateFormatted)
           };
         });
       } else {
-        report[filledField] = fillMissingDates(
-          JSON.parse(JSON.stringify(report[dataField])),
-          startDateFormatted,
-          endDateFormatted
-        );
+        report[filledField] =
+          fillMissingDates(JSON.parse(JSON.stringify(report[dataField])),
+                           startDateFormatted, endDateFormatted);
       }
     }
   },
 
   find(type, startDate, endDate, categoryId, groupId) {
     return ajax("/admin/reports/" + type, {
-      data: {
-        start_date: startDate,
-        end_date: endDate,
-        category_id: categoryId,
-        group_id: groupId
-      }
-    }).then(json => {
-      // don’t fill for large multi column tables
-      // which are not date based
-      const modes = json.report.modes;
-      if (modes.length !== 1 && modes[0] !== "table") {
-        Report.fillMissingDates(json.report);
-      }
+             data: {
+               start_date: startDate,
+               end_date: endDate,
+               category_id: categoryId,
+               group_id: groupId
+             }
+           })
+      .then(json => {
+        // don’t fill for large multi column tables
+        // which are not date based
+        const modes = json.report.modes;
+        if (modes.length !== 1 && modes[0] !== "table") {
+          Report.fillMissingDates(json.report);
+        }
 
-      const model = Report.create({ type: type });
-      model.setProperties(json.report);
+        const model = Report.create({ type: type });
+        model.setProperties(json.report);
 
-      if (json.report.related_report) {
-        // TODO: fillMissingDates if xaxis is date
-        const related = Report.create({
-          type: json.report.related_report.type
-        });
-        related.setProperties(json.report.related_report);
-        model.set("relatedReport", related);
-      }
+        if (json.report.related_report) {
+          // TODO: fillMissingDates if xaxis is date
+          const related =
+            Report.create({ type: json.report.related_report.type });
+          related.setProperties(json.report.related_report);
+          model.set("relatedReport", related);
+        }
 
-      return model;
-    });
+        return model;
+      });
   }
 });
 

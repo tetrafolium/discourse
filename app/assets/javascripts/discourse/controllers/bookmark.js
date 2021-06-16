@@ -1,10 +1,10 @@
 import Controller from "@ember/controller";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import discourseComputed from "discourse-common/utils/decorators";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { htmlSafe } from "@ember/template";
-import { ajax } from "discourse/lib/ajax";
+import {popupAjaxError} from "discourse/lib/ajax-error";
+import {htmlSafe} from "@ember/template";
+import {ajax} from "discourse/lib/ajax";
 
 const START_OF_DAY_HOUR = 8;
 const LATER_TODAY_CUTOFF_HOUR = 17;
@@ -21,20 +21,13 @@ const REMINDER_TYPES = {
 };
 
 export default Controller.extend(ModalFunctionality, {
-  loading: false,
-  errorMessage: null,
-  name: null,
-  selectedReminderType: null,
-  closeWithoutSaving: false,
-  isSavingBookmarkManually: false,
-  onCloseWithoutSaving: null,
-  customReminderDate: null,
-  customReminderTime: null,
-  lastCustomReminderDate: null,
-  lastCustomReminderTime: null,
-  userTimezone: null,
+  loading: false, errorMessage: null, name: null, selectedReminderType: null,
+    closeWithoutSaving: false, isSavingBookmarkManually: false,
+    onCloseWithoutSaving: null, customReminderDate: null,
+    customReminderTime: null, lastCustomReminderDate: null,
+    lastCustomReminderTime: null, userTimezone: null,
 
-  onShow() {
+    onShow() {
     this.setProperties({
       errorMessage: null,
       name: null,
@@ -49,9 +42,10 @@ export default Controller.extend(ModalFunctionality, {
     });
 
     this.loadLastUsedCustomReminderDatetime();
-  },
+  }
+  ,
 
-  loadLastUsedCustomReminderDatetime() {
+    loadLastUsedCustomReminderDatetime() {
     let lastTime = localStorage.lastCustomBookmarkReminderTime;
     let lastDate = localStorage.lastCustomBookmarkReminderDate;
 
@@ -68,120 +62,107 @@ export default Controller.extend(ModalFunctionality, {
         parsedLastCustomReminderDatetime: parsed
       });
     }
-  },
+  }
+  ,
 
-  // we always want to save the bookmark unless the user specifically
-  // clicks the save or cancel button to mimic browser behaviour
-  onClose() {
+    // we always want to save the bookmark unless the user specifically
+    // clicks the save or cancel button to mimic browser behaviour
+    onClose() {
     if (!this.closeWithoutSaving && !this.isSavingBookmarkManually) {
       this.saveBookmark().catch(e => this.handleSaveError(e));
     }
     if (this.onCloseWithoutSaving && this.closeWithoutSaving) {
       this.onCloseWithoutSaving();
     }
-  },
+  }
+  ,
 
-  showBookmarkReminderControls: true,
+    showBookmarkReminderControls: true,
 
-  @discourseComputed()
-  showAtDesktop() {
-    return (
-      this.siteSettings.enable_bookmark_at_desktop_reminders &&
-      this.site.mobileView
-    );
-  },
+    @discourseComputed() showAtDesktop() {
+    return (this.siteSettings.enable_bookmark_at_desktop_reminders &&
+            this.site.mobileView);
+  }
+  ,
 
-  @discourseComputed("selectedReminderType")
-  customDateTimeSelected(selectedReminderType) {
+    @discourseComputed("selectedReminderType")
+    customDateTimeSelected(selectedReminderType) {
     return selectedReminderType === REMINDER_TYPES.CUSTOM;
-  },
+  }
+  ,
 
-  @discourseComputed()
-  reminderTypes: () => {
-    return REMINDER_TYPES;
-  },
+    @discourseComputed() reminderTypes:
+      () => {
+        return REMINDER_TYPES;
+      },
 
-  @discourseComputed()
-  showLastCustom() {
+      @discourseComputed() showLastCustom() {
     return this.lastCustomReminderTime && this.lastCustomReminderDate;
-  },
+  }
+  ,
 
-  @discourseComputed()
-  showLaterToday() {
+    @discourseComputed() showLaterToday() {
     let later = this.laterToday();
-    return (
-      !later.isSame(this.tomorrow(), "date") &&
-      later.hour() <= LATER_TODAY_CUTOFF_HOUR
-    );
-  },
+    return (!later.isSame(this.tomorrow(), "date") &&
+            later.hour() <= LATER_TODAY_CUTOFF_HOUR);
+  }
+  ,
 
-  @discourseComputed("parsedLastCustomReminderDatetime")
-  lastCustomFormatted(parsedLastCustomReminderDatetime) {
+    @discourseComputed("parsedLastCustomReminderDatetime")
+    lastCustomFormatted(parsedLastCustomReminderDatetime) {
+    return htmlSafe(I18n.t("bookmarks.reminders.last_custom", {
+      date:
+        parsedLastCustomReminderDatetime.format(I18n.t("dates.long_no_year"))
+    }));
+  }
+  ,
+
+    @discourseComputed() laterTodayFormatted() {
     return htmlSafe(
-      I18n.t("bookmarks.reminders.last_custom", {
-        date: parsedLastCustomReminderDatetime.format(
-          I18n.t("dates.long_no_year")
-        )
-      })
-    );
-  },
+      I18n.t("bookmarks.reminders.later_today",
+             { date: this.laterToday().format(I18n.t("dates.time")) }));
+  }
+  ,
 
-  @discourseComputed()
-  laterTodayFormatted() {
+    @discourseComputed() tomorrowFormatted() {
     return htmlSafe(
-      I18n.t("bookmarks.reminders.later_today", {
-        date: this.laterToday().format(I18n.t("dates.time"))
-      })
-    );
-  },
+      I18n.t("bookmarks.reminders.tomorrow",
+             { date: this.tomorrow().format(I18n.t("dates.time_short_day")) }));
+  }
+  ,
 
-  @discourseComputed()
-  tomorrowFormatted() {
+    @discourseComputed() nextBusinessDayFormatted() {
+    return htmlSafe(I18n.t(
+      "bookmarks.reminders.next_business_day",
+      { date: this.nextBusinessDay().format(I18n.t("dates.time_short_day")) }));
+  }
+  ,
+
+    @discourseComputed() nextWeekFormatted() {
     return htmlSafe(
-      I18n.t("bookmarks.reminders.tomorrow", {
-        date: this.tomorrow().format(I18n.t("dates.time_short_day"))
-      })
-    );
-  },
+      I18n.t("bookmarks.reminders.next_week",
+             { date: this.nextWeek().format(I18n.t("dates.long_no_year")) }));
+  }
+  ,
 
-  @discourseComputed()
-  nextBusinessDayFormatted() {
+    @discourseComputed() nextMonthFormatted() {
     return htmlSafe(
-      I18n.t("bookmarks.reminders.next_business_day", {
-        date: this.nextBusinessDay().format(I18n.t("dates.time_short_day"))
-      })
-    );
-  },
+      I18n.t("bookmarks.reminders.next_month",
+             { date: this.nextMonth().format(I18n.t("dates.long_no_year")) }));
+  }
+  ,
 
-  @discourseComputed()
-  nextWeekFormatted() {
-    return htmlSafe(
-      I18n.t("bookmarks.reminders.next_week", {
-        date: this.nextWeek().format(I18n.t("dates.long_no_year"))
-      })
-    );
-  },
-
-  @discourseComputed()
-  nextMonthFormatted() {
-    return htmlSafe(
-      I18n.t("bookmarks.reminders.next_month", {
-        date: this.nextMonth().format(I18n.t("dates.long_no_year"))
-      })
-    );
-  },
-
-  @discourseComputed()
-  basePath() {
+    @discourseComputed() basePath() {
     return Discourse.BaseUri;
-  },
+  }
+  ,
 
-  @discourseComputed("userTimezone")
-  userHasTimezoneSet(userTimezone) {
+    @discourseComputed("userTimezone") userHasTimezoneSet(userTimezone) {
     return !_.isEmpty(userTimezone);
-  },
+  }
+  ,
 
-  saveBookmark() {
+    saveBookmark() {
     const reminderAt = this.reminderAt();
     const reminderAtISO = reminderAt ? reminderAt.toISOString() : null;
 
@@ -215,57 +196,58 @@ export default Controller.extend(ModalFunctionality, {
         this.afterSave(reminderAtISO, this.selectedReminderType);
       }
     });
-  },
+  }
+  ,
 
-  parseCustomDateTime(date, time) {
+    parseCustomDateTime(date, time) {
     return moment.tz(date + " " + time, this.userTimezone);
-  },
+  }
+  ,
 
-  reminderAt() {
+    reminderAt() {
     if (!this.selectedReminderType) {
       return;
     }
 
     switch (this.selectedReminderType) {
-      case REMINDER_TYPES.AT_DESKTOP:
-        return null;
-      case REMINDER_TYPES.LATER_TODAY:
-        return this.laterToday();
-      case REMINDER_TYPES.NEXT_BUSINESS_DAY:
-        return this.nextBusinessDay();
-      case REMINDER_TYPES.TOMORROW:
-        return this.tomorrow();
-      case REMINDER_TYPES.NEXT_WEEK:
-        return this.nextWeek();
-      case REMINDER_TYPES.NEXT_MONTH:
-        return this.nextMonth();
-      case REMINDER_TYPES.CUSTOM:
-        const customDateTime = this.parseCustomDateTime(
-          this.customReminderDate,
-          this.customReminderTime
-        );
-        if (!customDateTime.isValid()) {
-          this.setProperties({
-            customReminderTime: null,
-            customReminderDate: null
-          });
-          return;
-        }
-        return customDateTime;
-      case REMINDER_TYPES.LAST_CUSTOM:
-        return this.parsedLastCustomReminderDatetime;
+    case REMINDER_TYPES.AT_DESKTOP:
+      return null;
+    case REMINDER_TYPES.LATER_TODAY:
+      return this.laterToday();
+    case REMINDER_TYPES.NEXT_BUSINESS_DAY:
+      return this.nextBusinessDay();
+    case REMINDER_TYPES.TOMORROW:
+      return this.tomorrow();
+    case REMINDER_TYPES.NEXT_WEEK:
+      return this.nextWeek();
+    case REMINDER_TYPES.NEXT_MONTH:
+      return this.nextMonth();
+    case REMINDER_TYPES.CUSTOM:
+      const customDateTime = this.parseCustomDateTime(this.customReminderDate,
+                                                      this.customReminderTime);
+      if (!customDateTime.isValid()) {
+        this.setProperties(
+          { customReminderTime: null, customReminderDate: null });
+        return;
+      }
+      return customDateTime;
+    case REMINDER_TYPES.LAST_CUSTOM:
+      return this.parsedLastCustomReminderDatetime;
     }
-  },
+  }
+  ,
 
-  nextWeek() {
+    nextWeek() {
     return this.startOfDay(this.now().add(7, "days"));
-  },
+  }
+  ,
 
-  nextMonth() {
+    nextMonth() {
     return this.startOfDay(this.now().add(1, "month"));
-  },
+  }
+  ,
 
-  nextBusinessDay() {
+    nextBusinessDay() {
     const currentDay = this.now().isoWeekday(); // 1=Mon, 7=Sun
     let next = null;
 
@@ -280,51 +262,56 @@ export default Controller.extend(ModalFunctionality, {
     }
 
     return this.startOfDay(next);
-  },
+  }
+  ,
 
-  tomorrow() {
+    tomorrow() {
     return this.startOfDay(this.now().add(1, "day"));
-  },
+  }
+  ,
 
-  startOfDay(momentDate) {
+    startOfDay(momentDate) {
     return momentDate.hour(START_OF_DAY_HOUR).startOf("hour");
-  },
+  }
+  ,
 
-  now() {
+    now() {
     return moment.tz(this.userTimezone);
-  },
+  }
+  ,
 
-  laterToday() {
+    laterToday() {
     let later = this.now().add(3, "hours");
-    return later.minutes() < 30
-      ? later.minutes(30)
-      : later.add(30, "minutes").startOf("hour");
-  },
+    return later.minutes() < 30 ? later.minutes(30)
+                                : later.add(30, "minutes").startOf("hour");
+  }
+  ,
 
-  handleSaveError(e) {
+    handleSaveError(e) {
     this.isSavingBookmarkManually = false;
     if (typeof e === "string") {
       bootbox.alert(e);
     } else {
       popupAjaxError(e);
     }
-  },
-
-  actions: {
-    saveAndClose() {
-      this.isSavingBookmarkManually = true;
-      this.saveBookmark()
-        .then(() => this.send("closeModal"))
-        .catch(e => this.handleSaveError(e));
-    },
-
-    closeWithoutSavingBookmark() {
-      this.closeWithoutSaving = true;
-      this.send("closeModal");
-    },
-
-    selectReminderType(type) {
-      this.set("selectedReminderType", type);
-    }
   }
+  ,
+
+    actions: {
+      saveAndClose() {
+        this.isSavingBookmarkManually = true;
+        this.saveBookmark()
+          .then(() => this.send("closeModal"))
+          .catch(e => this.handleSaveError(e));
+      },
+
+      closeWithoutSavingBookmark() {
+        this.closeWithoutSaving = true;
+        this.send("closeModal");
+      },
+
+      selectReminderType(type) {
+        this.set("selectedReminderType", type);
+      }
+    }
 });

@@ -1,6 +1,6 @@
-import { alias, not } from "@ember/object/computed";
+import {alias, not} from "@ember/object/computed";
 import Component from "@ember/component";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {iconHTML} from "discourse-common/lib/icon-library";
 
 export default Component.extend({
   classNameBindings: [":tip", "good", "bad"],

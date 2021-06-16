@@ -1,4 +1,4 @@
-import { updateRelativeAge } from "discourse/lib/formatter";
+import {updateRelativeAge} from "discourse/lib/formatter";
 
 // Updates the relative ages of dates on the screen.
 export default {

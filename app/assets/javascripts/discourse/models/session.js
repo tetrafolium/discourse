@@ -14,10 +14,8 @@ Session.reopenClass(Singleton);
 
 Object.defineProperty(Discourse, "Session", {
   get() {
-    deprecated("Import the Session object instead of using Discourse.Session", {
-      since: "2.4.0",
-      dropFrom: "2.5.0"
-    });
+    deprecated("Import the Session object instead of using Discourse.Session",
+               { since: "2.4.0", dropFrom: "2.5.0" });
     return Session;
   }
 });

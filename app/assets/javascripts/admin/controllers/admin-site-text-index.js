@@ -1,4 +1,4 @@
-import { debounce } from "@ember/runloop";
+import {debounce} from "@ember/runloop";
 import Controller from "@ember/controller";
 let lastSearch;
 
@@ -12,8 +12,7 @@ export default Controller.extend({
   overridden: false,
 
   _performSearch() {
-    this.store
-      .find("site-text", this.getProperties("q", "overridden"))
+    this.store.find("site-text", this.getProperties("q", "overridden"))
       .then(results => {
         this.set("siteTexts", results);
       })

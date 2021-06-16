@@ -12,11 +12,11 @@ import {
   WidgetMouseDownHook,
   WidgetMouseMoveHook
 } from "discourse/widgets/hooks";
-import { h } from "virtual-dom";
+import {h} from "virtual-dom";
 import DecoratorHelper from "discourse/widgets/decorator-helper";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import ENV from "discourse-common/config/environment";
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 
 const _registry = {};
 
@@ -246,9 +246,8 @@ export default class Widget {
       result.dirtyKeys = this.dirtyKeys;
       return result;
     } else {
-      throw new Error(
-        `Couldn't find ${widgetName} or fallback ${otherOpts.fallbackWidgetName}`
-      );
+      throw new Error(`Couldn't find ${widgetName} or fallback ${
+        otherOpts.fallbackWidgetName}`);
     }
   }
 
@@ -380,9 +379,8 @@ export default class Widget {
     }
 
     if (this.mouseDownOutside) {
-      properties["widget-mouse-down-outside"] = new WidgetMouseDownOutsideHook(
-        this
-      );
+      properties["widget-mouse-down-outside"] =
+        new WidgetMouseDownOutsideHook(this);
     }
 
     if (this.drag) {

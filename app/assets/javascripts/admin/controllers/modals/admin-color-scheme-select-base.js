@@ -1,4 +1,4 @@
-import Controller, { inject as controller } from "@ember/controller";
+import Controller, {inject as controller} from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 
 export default Controller.extend(ModalFunctionality, {
@@ -9,18 +9,15 @@ export default Controller.extend(ModalFunctionality, {
   init() {
     this._super(...arguments);
 
-    const defaultScheme = this.get(
-      "adminCustomizeColors.baseColorSchemes.0.base_scheme_id"
-    );
+    const defaultScheme =
+      this.get("adminCustomizeColors.baseColorSchemes.0.base_scheme_id");
     this.set("selectedBaseThemeId", defaultScheme);
   },
 
   actions: {
     selectBase() {
-      this.adminCustomizeColors.send(
-        "newColorSchemeWithBase",
-        this.selectedBaseThemeId
-      );
+      this.adminCustomizeColors.send("newColorSchemeWithBase",
+                                     this.selectedBaseThemeId);
       this.send("closeModal");
     }
   }

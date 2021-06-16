@@ -1,36 +1,35 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { filter, or, gt, lt, not } from "@ember/object/computed";
-import { iconHTML } from "discourse-common/lib/icon-library";
-import { ajax } from "discourse/lib/ajax";
-import { propertyNotEqual } from "discourse/lib/computed";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {filter, or, gt, lt, not} from "@ember/object/computed";
+import {iconHTML} from "discourse-common/lib/icon-library";
+import {ajax} from "discourse/lib/ajax";
+import {propertyNotEqual} from "discourse/lib/computed";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import { userPath } from "discourse/lib/url";
-import { Promise } from "rsvp";
+import {userPath} from "discourse/lib/url";
+import {Promise} from "rsvp";
 import User from "discourse/models/user";
 
 const wrapAdmin = user => (user ? AdminUser.create(user) : null);
 
 const AdminUser = User.extend({
   adminUserView: true,
-  customGroups: filter("groups", g => !g.automatic && Group.create(g)),
-  automaticGroups: filter("groups", g => g.automatic && Group.create(g)),
+    customGroups: filter("groups", g => !g.automatic && Group.create(g)),
+    automaticGroups: filter("groups", g => g.automatic && Group.create(g)),
 
-  canViewProfile: or("active", "staged"),
+    canViewProfile: or("active", "staged"),
 
-  @discourseComputed("bounce_score", "reset_bounce_score_after")
-  bounceScore(bounce_score, reset_bounce_score_after) {
+    @discourseComputed("bounce_score", "reset_bounce_score_after")
+    bounceScore(bounce_score, reset_bounce_score_after) {
     if (bounce_score > 0) {
-      return `${bounce_score} - ${moment(reset_bounce_score_after).format(
-        "LL"
-      )}`;
+      return `${bounce_score} - ${
+        moment(reset_bounce_score_after).format("LL")}`;
     } else {
       return bounce_score;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("bounce_score")
-  bounceScoreExplanation(bounce_score) {
+    @discourseComputed("bounce_score") bounceScoreExplanation(bounce_score) {
     if (bounce_score === 0) {
       return I18n.t("admin.user.bounce_score_explanation.none");
     } else if (bounce_score < Discourse.SiteSettings.bounce_score_threshold) {
@@ -38,70 +37,58 @@ const AdminUser = User.extend({
     } else {
       return I18n.t("admin.user.bounce_score_explanation.threshold_reached");
     }
-  },
+  }
+  ,
 
-  @discourseComputed
-  bounceLink() {
+    @discourseComputed bounceLink() {
     return Discourse.getURL("/admin/email/bounced");
-  },
+  }
+  ,
 
-  canResetBounceScore: gt("bounce_score", 0),
+    canResetBounceScore: gt("bounce_score", 0),
 
-  resetBounceScore() {
-    return ajax(`/admin/users/${this.id}/reset_bounce_score`, {
-      type: "POST"
-    }).then(() =>
-      this.setProperties({
-        bounce_score: 0,
-        reset_bounce_score_after: null
-      })
-    );
-  },
+    resetBounceScore() {
+    return ajax(`/admin/users/${this.id}/reset_bounce_score`, { type: "POST" })
+      .then(() => this.setProperties(
+              { bounce_score: 0, reset_bounce_score_after: null }));
+  }
+  ,
 
-  groupAdded(added) {
-    return ajax(`/admin/users/${this.id}/groups`, {
-      type: "POST",
-      data: { group_id: added.id }
-    }).then(() => this.groups.pushObject(added));
-  },
+    groupAdded(added) {
+    return ajax(`/admin/users/${this.id}/groups`,
+                { type: "POST", data: { group_id: added.id } })
+      .then(() => this.groups.pushObject(added));
+  }
+  ,
 
-  groupRemoved(groupId) {
-    return ajax(`/admin/users/${this.id}/groups/${groupId}`, {
-      type: "DELETE"
-    }).then(() => {
-      this.set("groups.[]", this.groups.rejectBy("id", groupId));
-      if (this.primary_group_id === groupId) {
-        this.set("primary_group_id", null);
-      }
-    });
-  },
+    groupRemoved(groupId) {
+    return ajax(`/admin/users/${this.id}/groups/${groupId}`, { type: "DELETE" })
+      .then(() => {
+        this.set("groups.[]", this.groups.rejectBy("id", groupId));
+        if (this.primary_group_id === groupId) {
+          this.set("primary_group_id", null);
+        }
+      });
+  }
+  ,
 
-  revokeApiKey() {
-    return ajax(`/admin/users/${this.id}/revoke_api_key`, {
-      type: "DELETE"
-    }).then(() => this.set("api_key", null));
-  },
+    revokeApiKey() {
+    return ajax(`/admin/users/${this.id}/revoke_api_key`, { type: "DELETE" })
+      .then(() => this.set("api_key", null));
+  }
+  ,
 
-  deleteAllPosts() {
+    deleteAllPosts() {
     let deletedPosts = 0;
     const user = this;
     const message = I18n.messageFormat(
       "admin.user.delete_all_posts_confirm_MF",
-      {
-        POSTS: user.get("post_count"),
-        TOPICS: user.get("topic_count")
-      }
-    );
+      { POSTS: user.get("post_count"), TOPICS: user.get("topic_count") });
     const buttons = [
+      { label: I18n.t("composer.cancel"), class: "d-modal-cancel", link: true },
       {
-        label: I18n.t("composer.cancel"),
-        class: "d-modal-cancel",
-        link: true
-      },
-      {
-        label:
-          `${iconHTML("exclamation-triangle")} ` +
-          I18n.t("admin.user.delete_all_posts"),
+        label: `${iconHTML("exclamation-triangle")} ` +
+                 I18n.t("admin.user.delete_all_posts"),
         class: "btn btn-danger",
         callback: () => {
           openProgressModal();
@@ -111,27 +98,23 @@ const AdminUser = User.extend({
     ];
     const openProgressModal = () => {
       bootbox.dialog(
-        `<p>${I18n.t(
-          "admin.user.delete_posts_progress"
-        )}</p><div class='progress-bar'><span></span></div>`,
-        [],
-        { classes: "delete-posts-progress" }
-      );
+        `<p>${
+          I18n.t(
+            "admin.user.delete_posts_progress")}</p><div class='progress-bar'><span></span></div>`,
+        [], { classes: "delete-posts-progress" });
     };
     const performDelete = () => {
       let deletedPercentage = 0;
-      return ajax(`/admin/users/${user.get("id")}/delete_posts_batch`, {
-        type: "PUT"
-      })
+      return ajax(`/admin/users/${user.get("id")}/delete_posts_batch`,
+                  { type: "PUT" })
         .then(({ posts_deleted }) => {
           if (posts_deleted === 0) {
             user.set("post_count", 0);
             bootbox.hideAll();
           } else {
             deletedPosts += posts_deleted;
-            deletedPercentage = Math.floor(
-              (deletedPosts * 100) / user.get("post_count")
-            );
+            deletedPercentage =
+              Math.floor((deletedPosts * 100) / user.get("post_count"));
             $(".delete-posts-progress .progress-bar > span").css({
               width: `${deletedPercentage}%`
             });
@@ -151,34 +134,29 @@ const AdminUser = User.extend({
     };
 
     bootbox.dialog(message, buttons, { classes: "delete-all-posts" });
-  },
+  }
+  ,
 
-  revokeAdmin() {
-    return ajax(`/admin/users/${this.id}/revoke_admin`, {
-      type: "PUT"
-    }).then(() => {
-      this.setProperties({
-        admin: false,
-        can_grant_admin: true,
-        can_revoke_admin: false
+    revokeAdmin() {
+    return ajax(`/admin/users/${this.id}/revoke_admin`, { type: "PUT" })
+      .then(() => {
+        this.setProperties(
+          { admin: false, can_grant_admin: true, can_revoke_admin: false });
       });
-    });
-  },
+  }
+  ,
 
-  grantAdmin() {
-    return ajax(`/admin/users/${this.id}/grant_admin`, {
-      type: "PUT"
-    })
+    grantAdmin() {
+    return ajax(`/admin/users/${this.id}/grant_admin`, { type: "PUT" })
       .then(() => {
         bootbox.alert(I18n.t("admin.user.grant_admin_confirm"));
       })
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  revokeModeration() {
-    return ajax(`/admin/users/${this.id}/revoke_moderation`, {
-      type: "PUT"
-    })
+    revokeModeration() {
+    return ajax(`/admin/users/${this.id}/revoke_moderation`, { type: "PUT" })
       .then(() => {
         this.setProperties({
           moderator: false,
@@ -187,12 +165,11 @@ const AdminUser = User.extend({
         });
       })
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  grantModeration() {
-    return ajax(`/admin/users/${this.id}/grant_moderation`, {
-      type: "PUT"
-    })
+    grantModeration() {
+    return ajax(`/admin/users/${this.id}/grant_moderation`, { type: "PUT" })
       .then(() => {
         this.setProperties({
           moderator: true,
@@ -201,116 +178,105 @@ const AdminUser = User.extend({
         });
       })
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  disableSecondFactor() {
-    return ajax(`/admin/users/${this.id}/disable_second_factor`, {
-      type: "PUT"
-    })
+    disableSecondFactor() {
+    return ajax(`/admin/users/${this.id}/disable_second_factor`,
+                { type: "PUT" })
       .then(() => {
         this.set("second_factor_enabled", false);
       })
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  approve(approvedBy) {
-    return ajax(`/admin/users/${this.id}/approve`, {
-      type: "PUT"
-    }).then(() => {
-      this.setProperties({
-        can_approve: false,
-        approved: true,
-        approved_by: approvedBy
-      });
+    approve(approvedBy) {
+    return ajax(`/admin/users/${this.id}/approve`, { type: "PUT" }).then(() => {
+      this.setProperties(
+        { can_approve: false, approved: true, approved_by: approvedBy });
     });
-  },
+  }
+  ,
 
-  setOriginalTrustLevel() {
+    setOriginalTrustLevel() {
     this.set("originalTrustLevel", this.trust_level);
-  },
+  }
+  ,
 
-  dirty: propertyNotEqual("originalTrustLevel", "trust_level"),
+    dirty: propertyNotEqual("originalTrustLevel", "trust_level"),
 
-  saveTrustLevel() {
-    return ajax(`/admin/users/${this.id}/trust_level`, {
-      type: "PUT",
-      data: { level: this.trust_level }
-    })
+    saveTrustLevel() {
+    return ajax(`/admin/users/${this.id}/trust_level`,
+                { type: "PUT", data: { level: this.trust_level } })
       .then(() => window.location.reload())
       .catch(e => {
         let error;
         if (e.responseJSON && e.responseJSON.errors) {
           error = e.responseJSON.errors[0];
         }
-        error =
-          error ||
-          I18n.t("admin.user.trust_level_change_failed", {
-            error: this._formatError(e)
-          });
+        error = error || I18n.t("admin.user.trust_level_change_failed",
+                                { error: this._formatError(e) });
         bootbox.alert(error);
       });
-  },
+  }
+  ,
 
-  restoreTrustLevel() {
+    restoreTrustLevel() {
     this.set("trust_level", this.originalTrustLevel);
-  },
+  }
+  ,
 
-  lockTrustLevel(locked) {
-    return ajax(`/admin/users/${this.id}/trust_level_lock`, {
-      type: "PUT",
-      data: { locked: !!locked }
-    })
+    lockTrustLevel(locked) {
+    return ajax(`/admin/users/${this.id}/trust_level_lock`,
+                { type: "PUT", data: { locked: !!locked } })
       .then(() => window.location.reload())
       .catch(e => {
         let error;
         if (e.responseJSON && e.responseJSON.errors) {
           error = e.responseJSON.errors[0];
         }
-        error =
-          error ||
-          I18n.t("admin.user.trust_level_change_failed", {
-            error: this._formatError(e)
-          });
+        error = error || I18n.t("admin.user.trust_level_change_failed",
+                                { error: this._formatError(e) });
         bootbox.alert(error);
       });
-  },
+  }
+  ,
 
-  canLockTrustLevel: lt("trust_level", 4),
+    canLockTrustLevel: lt("trust_level", 4),
 
-  canSuspend: not("staff"),
+    canSuspend: not("staff"),
 
-  @discourseComputed("suspended_till", "suspended_at")
-  suspendDuration(suspendedTill, suspendedAt) {
+    @discourseComputed("suspended_till", "suspended_at")
+    suspendDuration(suspendedTill, suspendedAt) {
     suspendedAt = moment(suspendedAt);
     suspendedTill = moment(suspendedTill);
     return suspendedAt.format("L") + " - " + suspendedTill.format("L");
-  },
+  }
+  ,
 
-  suspend(data) {
-    return ajax(`/admin/users/${this.id}/suspend`, {
-      type: "PUT",
-      data
-    }).then(result => this.setProperties(result.suspension));
-  },
+    suspend(data) {
+    return ajax(`/admin/users/${this.id}/suspend`, { type: "PUT", data })
+      .then(result => this.setProperties(result.suspension));
+  }
+  ,
 
-  unsuspend() {
-    return ajax(`/admin/users/${this.id}/unsuspend`, {
-      type: "PUT"
-    }).then(result => this.setProperties(result.suspension));
-  },
+    unsuspend() {
+    return ajax(`/admin/users/${this.id}/unsuspend`, { type: "PUT" })
+      .then(result => this.setProperties(result.suspension));
+  }
+  ,
 
-  logOut() {
-    return ajax("/admin/users/" + this.id + "/log_out", {
-      type: "POST",
-      data: { username_or_email: this.username }
-    }).then(() => bootbox.alert(I18n.t("admin.user.logged_out")));
-  },
+    logOut() {
+    return ajax("/admin/users/" + this.id + "/log_out",
+                { type: "POST", data: { username_or_email: this.username } })
+      .then(() => bootbox.alert(I18n.t("admin.user.logged_out")));
+  }
+  ,
 
-  impersonate() {
-    return ajax("/admin/impersonate", {
-      type: "POST",
-      data: { username_or_email: this.username }
-    })
+    impersonate() {
+    return ajax("/admin/impersonate",
+                { type: "POST", data: { username_or_email: this.username } })
       .then(() => (document.location = Discourse.getURL("/")))
       .catch(e => {
         if (e.status === 404) {
@@ -319,90 +285,79 @@ const AdminUser = User.extend({
           bootbox.alert(I18n.t("admin.impersonate.invalid"));
         }
       });
-  },
+  }
+  ,
 
-  activate() {
-    return ajax(`/admin/users/${this.id}/activate`, {
-      type: "PUT"
-    })
+    activate() {
+    return ajax(`/admin/users/${this.id}/activate`, { type: "PUT" })
       .then(() => window.location.reload())
       .catch(e => {
-        const error = I18n.t("admin.user.activate_failed", {
-          error: this._formatError(e)
-        });
+        const error =
+          I18n.t("admin.user.activate_failed", { error: this._formatError(e) });
         bootbox.alert(error);
       });
-  },
+  }
+  ,
 
-  deactivate() {
-    return ajax(`/admin/users/${this.id}/deactivate`, {
-      type: "PUT",
-      data: { context: document.location.pathname }
-    })
+    deactivate() {
+    return ajax(`/admin/users/${this.id}/deactivate`,
+                { type: "PUT", data: { context: document.location.pathname } })
       .then(() => window.location.reload())
       .catch(e => {
-        const error = I18n.t("admin.user.deactivate_failed", {
-          error: this._formatError(e)
-        });
+        const error = I18n.t("admin.user.deactivate_failed",
+                             { error: this._formatError(e) });
         bootbox.alert(error);
       });
-  },
+  }
+  ,
 
-  unsilence() {
+    unsilence() {
     this.set("silencingUser", true);
 
-    return ajax(`/admin/users/${this.id}/unsilence`, {
-      type: "PUT"
-    })
+    return ajax(`/admin/users/${this.id}/unsilence`, { type: "PUT" })
       .then(result => this.setProperties(result.unsilence))
       .catch(e => {
-        const error = I18n.t("admin.user.unsilence_failed", {
-          error: this._formatError(e)
-        });
+        const error = I18n.t("admin.user.unsilence_failed",
+                             { error: this._formatError(e) });
         bootbox.alert(error);
       })
       .finally(() => this.set("silencingUser", false));
-  },
+  }
+  ,
 
-  silence(data) {
+    silence(data) {
     this.set("silencingUser", true);
-    return ajax(`/admin/users/${this.id}/silence`, {
-      type: "PUT",
-      data
-    })
+    return ajax(`/admin/users/${this.id}/silence`, { type: "PUT", data })
       .then(result => this.setProperties(result.silence))
       .catch(e => {
-        const error = I18n.t("admin.user.silence_failed", {
-          error: this._formatError(e)
-        });
+        const error =
+          I18n.t("admin.user.silence_failed", { error: this._formatError(e) });
         bootbox.alert(error);
       })
       .finally(() => this.set("silencingUser", false));
-  },
+  }
+  ,
 
-  sendActivationEmail() {
-    return ajax(userPath("action/send_activation_email"), {
-      type: "POST",
-      data: { username: this.username }
-    })
+    sendActivationEmail() {
+    return ajax(userPath("action/send_activation_email"),
+                { type: "POST", data: { username: this.username } })
       .then(() => bootbox.alert(I18n.t("admin.user.activation_email_sent")))
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  anonymize() {
+    anonymize() {
     const user = this;
     const message = I18n.t("admin.user.anonymize_confirm");
 
     const performAnonymize = function() {
-      return ajax(`/admin/users/${user.get("id")}/anonymize.json`, {
-        type: "PUT"
-      })
+      return ajax(`/admin/users/${user.get("id")}/anonymize.json`,
+                  { type: "PUT" })
         .then(function(data) {
           if (data.success) {
             if (data.username) {
               document.location = Discourse.getURL(
-                `/admin/users/${user.get("id")}/${data.username}`
-              );
+                `/admin/users/${user.get("id")}/${data.username}`);
             } else {
               document.location = Discourse.getURL("/admin/users/list/active");
             }
@@ -417,15 +372,9 @@ const AdminUser = User.extend({
     };
 
     const buttons = [
-      {
-        label: I18n.t("composer.cancel"),
-        class: "cancel",
-        link: true
-      },
-      {
-        label:
-          `${iconHTML("exclamation-triangle")} ` +
-          I18n.t("admin.user.anonymize_yes"),
+      { label: I18n.t("composer.cancel"), class: "cancel", link: true }, {
+        label: `${iconHTML("exclamation-triangle")} ` +
+                 I18n.t("admin.user.anonymize_yes"),
         class: "btn btn-danger",
         callback: function() {
           performAnonymize();
@@ -434,9 +383,10 @@ const AdminUser = User.extend({
     ];
 
     bootbox.dialog(message, buttons, { classes: "delete-user-modal" });
-  },
+  }
+  ,
 
-  destroy(opts) {
+    destroy(opts) {
     const user = this;
     const message = I18n.t("admin.user.delete_confirm");
     const location = document.location.pathname;
@@ -452,10 +402,8 @@ const AdminUser = User.extend({
       if (opts && opts.deletePosts) {
         formData["delete_posts"] = true;
       }
-      return ajax(`/admin/users/${user.get("id")}.json`, {
-        type: "DELETE",
-        data: formData
-      })
+      return ajax(`/admin/users/${user.get("id")}.json`,
+                  { type: "DELETE", data: formData })
         .then(function(data) {
           if (data.deleted) {
             if (/^\/admin\/users\/list\//.test(location)) {
@@ -477,15 +425,9 @@ const AdminUser = User.extend({
     };
 
     const buttons = [
-      {
-        label: I18n.t("composer.cancel"),
-        class: "btn",
-        link: true
-      },
-      {
-        label:
-          `${iconHTML("exclamation-triangle")} ` +
-          I18n.t("admin.user.delete_and_block"),
+      { label: I18n.t("composer.cancel"), class: "btn", link: true }, {
+        label: `${iconHTML("exclamation-triangle")} ` +
+                 I18n.t("admin.user.delete_and_block"),
         class: "btn btn-danger",
         callback: function() {
           performDestroy(true);
@@ -501,9 +443,10 @@ const AdminUser = User.extend({
     ];
 
     bootbox.dialog(message, buttons, { classes: "delete-user-modal" });
-  },
+  }
+  ,
 
-  loadDetails() {
+    loadDetails() {
     if (this.loadedDetails) {
       return Promise.resolve(this);
     }
@@ -512,25 +455,23 @@ const AdminUser = User.extend({
       const userProperties = Object.assign(result, { loadedDetails: true });
       this.setProperties(userProperties);
     });
-  },
+  }
+  ,
 
-  @discourseComputed("tl3_requirements")
-  tl3Requirements(requirements) {
+    @discourseComputed("tl3_requirements") tl3Requirements(requirements) {
     if (requirements) {
       return this.store.createRecord("tl3Requirements", requirements);
     }
-  },
+  }
+  ,
 
-  @discourseComputed("suspended_by")
-  suspendedBy: wrapAdmin,
+    @discourseComputed("suspended_by") suspendedBy: wrapAdmin,
 
-  @discourseComputed("silenced_by")
-  silencedBy: wrapAdmin,
+    @discourseComputed("silenced_by") silencedBy: wrapAdmin,
 
-  @discourseComputed("approved_by")
-  approvedBy: wrapAdmin,
+    @discourseComputed("approved_by") approvedBy: wrapAdmin,
 
-  _formatError(event) {
+    _formatError(event) {
     return `http: ${event.status} - ${event.body}`;
   }
 });
@@ -544,9 +485,8 @@ AdminUser.reopenClass({
   },
 
   findAll(query, userFilter) {
-    return ajax(`/admin/users/list/${query}.json`, {
-      data: userFilter
-    }).then(users => users.map(u => AdminUser.create(u)));
+    return ajax(`/admin/users/list/${query}.json`, { data: userFilter })
+      .then(users => users.map(u => AdminUser.create(u)));
   }
 });
 

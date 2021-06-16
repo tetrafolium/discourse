@@ -1,7 +1,7 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import EmberObject from "@ember/object";
-import { updateCsrfToken } from "discourse/lib/ajax";
-import { Promise } from "rsvp";
+import {updateCsrfToken} from "discourse/lib/ajax";
+import {Promise} from "rsvp";
 import Session from "discourse/models/session";
 import Site from "discourse/models/site";
 
@@ -9,19 +9,20 @@ const LoginMethod = EmberObject.extend({
   @discourseComputed
   title() {
     return this.title_override || I18n.t(`login.${this.name}.title`);
-  },
+  }
+  ,
 
-  @discourseComputed
-  prettyName() {
+    @discourseComputed prettyName() {
     return this.pretty_name_override || I18n.t(`login.${this.name}.name`);
-  },
+  }
+  ,
 
-  @discourseComputed
-  message() {
+    @discourseComputed message() {
     return this.message_override || I18n.t(`login.${this.name}.message`);
-  },
+  }
+  ,
 
-  doLogin({ reconnect = false, params = {} } = {}) {
+    doLogin({ reconnect = false, params = {} } = {}) {
     if (this.customLogin) {
       this.customLogin();
       return Promise.resolve();
@@ -41,9 +42,10 @@ const LoginMethod = EmberObject.extend({
     const paramKeys = Object.keys(params);
     if (paramKeys.length > 0) {
       authUrl += "?";
-      authUrl += paramKeys
-        .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
-        .join("&");
+      authUrl +=
+        paramKeys
+          .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+          .join("&");
     }
 
     return LoginMethod.buildPostForm(authUrl).then(form => form.submit());
@@ -79,9 +81,8 @@ export function findAll() {
 
   methods = [];
 
-  Site.currentProp("auth_providers").forEach(provider =>
-    methods.pushObject(LoginMethod.create(provider))
-  );
+  Site.currentProp("auth_providers")
+    .forEach(provider => methods.pushObject(LoginMethod.create(provider)));
 
   // exclude FA icon for Google, uses custom SVG
   methods.forEach(m => m.set("isGoogle", m.name === "google_oauth2"));

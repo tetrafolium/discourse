@@ -5,10 +5,8 @@ export default Component.extend({
   click(e) {
     const $target = $(e.target);
     if ($target.closest(".last-posted-at").length) {
-      this.appEvents.trigger("topic-entrance:show", {
-        topic: this.topic,
-        position: $target.offset()
-      });
+      this.appEvents.trigger("topic-entrance:show",
+                             { topic: this.topic, position: $target.offset() });
       return false;
     }
   }

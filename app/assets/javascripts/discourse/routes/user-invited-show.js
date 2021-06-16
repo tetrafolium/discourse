@@ -4,9 +4,8 @@ import showModal from "discourse/lib/show-modal";
 
 export default DiscourseRoute.extend({
   model(params) {
-    Invite.findInvitedCount(this.modelFor("user")).then(result =>
-      this.set("invitesCount", result)
-    );
+    Invite.findInvitedCount(this.modelFor("user"))
+      .then(result => this.set("invitesCount", result));
     this.inviteFilter = params.filter;
     return Invite.findInvitedBy(this.modelFor("user"), params.filter);
   },
@@ -32,16 +31,14 @@ export default DiscourseRoute.extend({
     showInvite() {
       showModal("share-and-invite", {
         modalClass: "share-and-invite",
-        panels: [
-          {
-            id: "invite",
-            title: "user.invited.create",
-            model: {
-              inviteModel: this.currentUser,
-              userInvitedShow: this.controllerFor("user-invited-show")
-            }
+        panels: [{
+          id: "invite",
+          title: "user.invited.create",
+          model: {
+            inviteModel: this.currentUser,
+            userInvitedShow: this.controllerFor("user-invited-show")
           }
-        ]
+        }]
       });
     }
   }

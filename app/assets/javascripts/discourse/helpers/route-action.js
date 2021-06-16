@@ -15,9 +15,7 @@ function getCurrentRouteInfos(router) {
 }
 
 function getRoutes(router) {
-  return emberArray(getCurrentRouteInfos(router))
-    .mapBy("_route")
-    .reverse();
+  return emberArray(getCurrentRouteInfos(router)).mapBy("_route").reverse();
 }
 
 function getRouteWithAction(router, actionName) {
@@ -34,8 +32,8 @@ function getRouteWithAction(router, actionName) {
 
 export default Helper.extend({
   router: computed(function() {
-    return getOwner(this).lookup("router:main");
-  }).readOnly(),
+            return getOwner(this).lookup("router:main");
+          }).readOnly(),
 
   compute([actionName, ...params]) {
     let router = get(this, "router");
@@ -43,10 +41,8 @@ export default Helper.extend({
 
     runInDebug(() => {
       let { handler } = getRouteWithAction(router, actionName);
-      assert(
-        `[ember-route-action-helper] Unable to find action ${actionName}`,
-        handler
-      );
+      assert(`[ember-route-action-helper] Unable to find action ${actionName}`,
+             handler);
     });
 
     let routeAction = function(...invocationArgs) {

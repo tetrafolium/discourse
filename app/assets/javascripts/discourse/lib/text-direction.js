@@ -15,8 +15,7 @@ export function isLTR(text) {
 
 export function setTextDirections($elem) {
   $elem.find("*").each((i, e) => {
-    let $e = $(e),
-      textContent = $e.text();
+    let $e = $(e), textContent = $e.text();
     if (textContent) {
       isRTL(textContent) ? $e.attr("dir", "rtl") : $e.attr("dir", "ltr");
     }

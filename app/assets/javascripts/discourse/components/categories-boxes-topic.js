@@ -4,8 +4,8 @@ import Component from "@ember/component";
 export default Component.extend({
   tagName: "li",
 
-  @discourseComputed("topic.pinned", "topic.closed", "topic.archived")
-  topicStatusIcon(pinned, closed, archived) {
+    @discourseComputed("topic.pinned", "topic.closed", "topic.archived")
+    topicStatusIcon(pinned, closed, archived) {
     if (pinned) {
       return "thumbtack";
     }

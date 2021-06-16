@@ -7,10 +7,7 @@ export default Component.extend({
   actions: {
     showBulkActions() {
       const controller = showModal("topic-bulk-actions", {
-        model: {
-          topics: this.selected,
-          category: this.category
-        },
+        model: { topics: this.selected, category: this.category },
         title: "topics.bulk.actions"
       });
 

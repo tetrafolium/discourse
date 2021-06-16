@@ -1,4 +1,4 @@
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import Controller from "@ember/controller";
 
 export default Controller.extend({

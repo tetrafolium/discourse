@@ -1,7 +1,7 @@
-import { createWidget } from "discourse/widgets/widget";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { longDate } from "discourse/lib/formatter";
-import { h } from "virtual-dom";
+import {createWidget} from "discourse/widgets/widget";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {longDate} from "discourse/lib/formatter";
+import {h} from "virtual-dom";
 
 function mult(val) {
   return 60 * 50 * 1000 * val;
@@ -52,20 +52,10 @@ export default createWidget("post-edits-indicator", {
       title = `${I18n.t("post.last_edited_on")} ${date}`;
     }
 
-    const contents = [
-      attrs.version > 1 ? attrs.version - 1 : "",
-      " ",
-      iconNode(icon)
-    ];
+    const contents =
+      [attrs.version > 1 ? attrs.version - 1 : "", " ", iconNode(icon)];
 
-    return h(
-      "a",
-      {
-        className,
-        attributes: { title, href: "#" }
-      },
-      contents
-    );
+    return h("a", { className, attributes: { title, href: "#" } }, contents);
   },
 
   click(e) {

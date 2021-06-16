@@ -1,4 +1,4 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import buildStaticRoute from "discourse/routes/build-static-route";
 
 const SignupRoute = buildStaticRoute("signup");

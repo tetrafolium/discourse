@@ -1,6 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
-import { exportEntity } from "discourse/lib/export-csv";
-import { outputExportResult } from "discourse/lib/export-result";
+import {exportEntity} from "discourse/lib/export-csv";
+import {outputExportResult} from "discourse/lib/export-result";
 import AdminUser from "admin/models/admin-user";
 
 export default DiscourseRoute.extend({

@@ -1,10 +1,10 @@
-import { later } from "@ember/runloop";
-import { createWidget, applyDecorators } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
+import {later} from "@ember/runloop";
+import {createWidget, applyDecorators} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
 import DiscourseURL from "discourse/lib/url";
-import { ajax } from "discourse/lib/ajax";
-import { userPath } from "discourse/lib/url";
-import { NotificationLevels } from "discourse/lib/notification-levels";
+import {ajax} from "discourse/lib/ajax";
+import {userPath} from "discourse/lib/url";
+import {NotificationLevels} from "discourse/lib/notification-levels";
 
 const flatten = array => [].concat.apply([], array);
 
@@ -17,9 +17,7 @@ createWidget("priority-faq-link", {
 
   html() {
     return [
-      I18n.t("faq"),
-      " ",
-      h("span.badge.badge-notification", I18n.t("new_item"))
+      I18n.t("faq"), " ", h("span.badge.badge-notification", I18n.t("new_item"))
     ];
   },
 
@@ -39,24 +37,18 @@ createWidget("priority-faq-link", {
 export default createWidget("hamburger-menu", {
   tagName: "div.hamburger-panel",
 
-  settings: {
-    showCategories: true,
-    maxWidth: 320,
-    showFAQ: true,
-    showAbout: true
-  },
+  settings:
+    {showCategories: true, maxWidth: 320, showFAQ: true, showAbout: true},
 
   adminLinks() {
     const { currentUser } = this;
 
-    const links = [
-      {
-        route: "admin",
-        className: "admin-link",
-        icon: "wrench",
-        label: "admin_title"
-      }
-    ];
+    const links = [{
+      route: "admin",
+      className: "admin-link",
+      icon: "wrench",
+      label: "admin_title"
+    }];
 
     if (currentUser.admin) {
       links.push({
@@ -114,14 +106,11 @@ export default createWidget("hamburger-menu", {
     }
 
     // Staff always see the review link. Non-staff will see it if there are items to review
-    if (
-      this.currentUser &&
-      (this.currentUser.staff || this.currentUser.reviewable_count)
-    ) {
+    if (this.currentUser &&
+        (this.currentUser.staff || this.currentUser.reviewable_count)) {
       links.push({
-        route: siteSettings.reviewable_default_topics
-          ? "review.topics"
-          : "review",
+        route: siteSettings.reviewable_default_topics ? "review.topics"
+                                                      : "review",
         className: "review",
         label: "review.title",
         badgeCount: "reviewable_count",
@@ -137,11 +126,8 @@ export default createWidget("hamburger-menu", {
     });
 
     if (siteSettings.enable_badges) {
-      links.push({
-        route: "badges",
-        className: "badge-link",
-        label: "badges.title"
-      });
+      links.push(
+        { route: "badges", className: "badge-link", label: "badges.title" });
     }
 
     if (this.showUserDirectory()) {
@@ -164,31 +150,28 @@ export default createWidget("hamburger-menu", {
       links.push({ route: "tags", label: "tagging.tags" });
     }
 
-    const extraLinks = flatten(
-      applyDecorators(this, "generalLinks", this.attrs, this.state)
-    );
+    const extraLinks =
+      flatten(applyDecorators(this, "generalLinks", this.attrs, this.state));
     return links.concat(extraLinks).map(l => this.attach("link", l));
   },
 
   listCategories() {
-    const maxCategoriesToDisplay = this.siteSettings
-      .header_dropdown_category_count;
+    const maxCategoriesToDisplay =
+      this.siteSettings.header_dropdown_category_count;
     let categories = [];
 
     if (this.currentUser) {
-      const allCategories = this.site
-        .get("categories")
-        .filter(c => c.notification_level !== NotificationLevels.MUTED);
+      const allCategories =
+        this.site.get("categories")
+          .filter(c => c.notification_level !== NotificationLevels.MUTED);
 
-      categories = allCategories
-        .filter(c => c.get("newTopics") > 0 || c.get("unreadTopics") > 0)
-        .sort((a, b) => {
-          return (
-            b.get("newTopics") +
-            b.get("unreadTopics") -
-            (a.get("newTopics") + a.get("unreadTopics"))
-          );
-        });
+      categories =
+        allCategories
+          .filter(c => c.get("newTopics") > 0 || c.get("unreadTopics") > 0)
+          .sort((a, b) => {
+            return (b.get("newTopics") + b.get("unreadTopics") -
+                    (a.get("newTopics") + a.get("unreadTopics")));
+          });
 
       const topCategoryIds = this.currentUser.get("top_category_ids") || [];
       topCategoryIds.forEach(id => {
@@ -198,21 +181,18 @@ export default createWidget("hamburger-menu", {
         }
       });
 
-      categories = categories.concat(
-        allCategories
-          .filter(c => !categories.includes(c))
-          .sort((a, b) => b.topic_count - a.topic_count)
-      );
+      categories =
+        categories.concat(allCategories.filter(c => !categories.includes(c))
+                            .sort((a, b) => b.topic_count - a.topic_count));
     } else {
-      categories = this.site
-        .get("categoriesByCount")
-        .filter(c => c.notification_level !== NotificationLevels.MUTED);
+      categories =
+        this.site.get("categoriesByCount")
+          .filter(c => c.notification_level !== NotificationLevels.MUTED);
     }
 
     if (!this.siteSettings.allow_uncategorized_topics) {
-      categories = categories.filter(
-        c => c.id !== this.site.uncategorized_category_id
-      );
+      categories =
+        categories.filter(c => c.id !== this.site.uncategorized_category_id);
     }
 
     const moreCount = categories.length - maxCategoriesToDisplay;
@@ -245,10 +225,8 @@ export default createWidget("hamburger-menu", {
       });
     }
 
-    if (
-      this.site.mobileView ||
-      (this.siteSettings.enable_mobile_theme && this.capabilities.touch)
-    ) {
+    if (this.site.mobileView ||
+        (this.siteSettings.enable_mobile_theme && this.capabilities.touch)) {
       links.push({
         action: "toggleMobileView",
         className: "mobile-toggle-link",
@@ -256,9 +234,8 @@ export default createWidget("hamburger-menu", {
       });
     }
 
-    const extraLinks = flatten(
-      applyDecorators(this, "footerLinks", this.attrs, this.state)
-    );
+    const extraLinks =
+      flatten(applyDecorators(this, "footerLinks", this.attrs, this.state));
     return links.concat(extraLinks).map(l => this.attach("link", l));
   },
 
@@ -275,50 +252,40 @@ export default createWidget("hamburger-menu", {
       this.settings.showFAQ && this.currentUser && !this.currentUser.read_faq;
 
     if (prioritizeFaq) {
-      results.push(
-        this.attach("menu-links", {
-          name: "faq-link",
-          heading: true,
-          contents: () => {
-            return this.attach("priority-faq-link", { href: faqUrl });
-          }
-        })
-      );
+      results.push(this.attach("menu-links", {
+        name: "faq-link",
+        heading: true,
+        contents: () => {
+          return this.attach("priority-faq-link", { href: faqUrl });
+        }
+      }));
     }
 
     if (currentUser && currentUser.staff) {
-      results.push(
-        this.attach("menu-links", {
-          name: "admin-links",
-          contents: () => {
-            const extraLinks = flatten(
-              applyDecorators(this, "admin-links", this.attrs, this.state)
-            );
-            return this.adminLinks().concat(extraLinks);
-          }
-        })
-      );
+      results.push(this.attach("menu-links", {
+        name: "admin-links",
+        contents: () => {
+          const extraLinks = flatten(
+            applyDecorators(this, "admin-links", this.attrs, this.state));
+          return this.adminLinks().concat(extraLinks);
+        }
+      }));
     }
 
-    results.push(
-      this.attach("menu-links", {
-        name: "general-links",
-        contents: () => this.generalLinks()
-      })
-    );
+    results.push(this.attach(
+      "menu-links",
+      { name: "general-links", contents: () => this.generalLinks() }));
 
     if (this.settings.showCategories) {
       results.push(this.listCategories());
       results.push(h("hr.categories-separator"));
     }
 
-    results.push(
-      this.attach("menu-links", {
-        name: "footer-links",
-        omitRule: true,
-        contents: () => this.footerLinks(prioritizeFaq, faqUrl)
-      })
-    );
+    results.push(this.attach("menu-links", {
+      name: "footer-links",
+      omitRule: true,
+      contents: () => this.footerLinks(prioritizeFaq, faqUrl)
+    }));
 
     return results;
   },
@@ -332,10 +299,8 @@ export default createWidget("hamburger-menu", {
 
   clickOutsideMobile(e) {
     const $centeredElement = $(document.elementFromPoint(e.clientX, e.clientY));
-    if (
-      $centeredElement.parents(".panel").length &&
-      !$centeredElement.hasClass("header-cloak")
-    ) {
+    if ($centeredElement.parents(".panel").length &&
+        !$centeredElement.hasClass("header-cloak")) {
       this.sendWidgetAction("toggleHamburger");
     } else {
       const $window = $(window);

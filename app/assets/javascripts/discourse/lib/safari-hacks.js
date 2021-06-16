@@ -1,10 +1,10 @@
-import { later } from "@ember/runloop";
+import {later} from "@ember/runloop";
 import discourseDebounce from "discourse/lib/debounce";
 import {
   safariHacksDisabled,
   iOSWithVisualViewport
 } from "discourse/lib/utilities";
-import { INPUT_DELAY } from "discourse-common/config/environment";
+import {INPUT_DELAY} from "discourse-common/config/environment";
 
 // TODO: remove calcHeight once iOS 13 adoption > 90%
 // In iOS 13 and up we use visualViewport API to calculate height
@@ -120,17 +120,14 @@ function positioningWorkaround($fixedElement) {
     // - invoking emoji dropdown via : and hitting return
     // - invoking a toolbar button
 
-    if (
-      lastTouchedElement &&
-      (document.visibilityState === "hidden" ||
-        $(lastTouchedElement).hasClass("select-kit-header") ||
-        $(lastTouchedElement).closest(".autocomplete").length ||
-        (lastTouchedElement.nodeName.toLowerCase() === "textarea" &&
+    if (lastTouchedElement &&
+        (document.visibilityState === "hidden" ||
+         $(lastTouchedElement).hasClass("select-kit-header") ||
+         $(lastTouchedElement).closest(".autocomplete").length ||
+         (lastTouchedElement.nodeName.toLowerCase() === "textarea" &&
           document.activeElement === lastTouchedElement) ||
-        ["span", "svg", "button"].includes(
-          lastTouchedElement.nodeName.toLowerCase()
-        ))
-    ) {
+         ["span", "svg", "button"].includes(
+           lastTouchedElement.nodeName.toLowerCase()))) {
       return;
     }
 
@@ -146,8 +143,7 @@ function positioningWorkaround($fixedElement) {
     // resets focus out of select-kit elements
     // might become redundant after select-kit refactoring
     $fixedElement.find(".select-kit.is-expanded > button").trigger("click");
-    $fixedElement
-      .find(".select-kit > button.is-focused")
+    $fixedElement.find(".select-kit > button.is-focused")
       .removeClass("is-focused");
 
     if ($(window).scrollTop() > 0) {

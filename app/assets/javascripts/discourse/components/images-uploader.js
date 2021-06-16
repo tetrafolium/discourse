@@ -3,19 +3,19 @@ import Component from "@ember/component";
 import UploadMixin from "discourse/mixins/upload";
 
 export default Component.extend(UploadMixin, {
-  type: "avatar",
-  tagName: "span",
+  type: "avatar", tagName: "span",
 
-  @discourseComputed("uploading")
-  uploadButtonText(uploading) {
+    @discourseComputed("uploading") uploadButtonText(uploading) {
     return uploading ? I18n.t("uploading") : I18n.t("upload");
-  },
+  }
+  ,
 
-  validateUploadedFilesOptions() {
+    validateUploadedFilesOptions() {
     return { imagesOnly: true };
-  },
+  }
+  ,
 
-  uploadDone(upload) {
+    uploadDone(upload) {
     this.done(upload);
   }
 });

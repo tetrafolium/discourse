@@ -1,7 +1,7 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import EmberObject, { get } from "@ember/object";
-import { isEmpty } from "@ember/utils";
-import { alias, sort } from "@ember/object/computed";
+import EmberObject, {get} from "@ember/object";
+import {isEmpty} from "@ember/utils";
+import {alias, sort} from "@ember/object/computed";
 import Archetype from "discourse/models/archetype";
 import PostActionType from "discourse/models/post-action-type";
 import Singleton from "discourse/mixins/singleton";
@@ -13,31 +13,32 @@ import deprecated from "discourse-common/lib/deprecated";
 const Site = RestModel.extend({
   isReadOnly: alias("is_readonly"),
 
-  init() {
+    init() {
     this._super(...arguments);
 
     this.topicCountDesc = ["topic_count:desc"];
-  },
+  }
+  ,
 
-  @discourseComputed("notification_types")
-  notificationLookup(notificationTypes) {
+    @discourseComputed("notification_types")
+    notificationLookup(notificationTypes) {
     const result = [];
-    Object.keys(notificationTypes).forEach(
-      k => (result[notificationTypes[k]] = k)
-    );
+    Object.keys(notificationTypes)
+      .forEach(k => (result[notificationTypes[k]] = k));
     return result;
-  },
+  }
+  ,
 
-  @discourseComputed("post_action_types.[]")
-  flagTypes() {
+    @discourseComputed("post_action_types.[]") flagTypes() {
     const postActionTypes = this.post_action_types;
     if (!postActionTypes) return [];
     return postActionTypes.filterBy("is_flag", true);
-  },
+  }
+  ,
 
-  categoriesByCount: sort("categories", "topicCountDesc"),
+    categoriesByCount: sort("categories", "topicCountDesc"),
 
-  collectUserFields(fields) {
+    collectUserFields(fields) {
     fields = fields || {};
 
     let siteFields = this.user_fields;
@@ -50,13 +51,13 @@ const Site = RestModel.extend({
       });
     }
     return [];
-  },
+  }
+  ,
 
-  // Sort subcategories under parents
-  @discourseComputed("categoriesByCount", "categories.[]")
-  sortedCategories(cats) {
-    const result = [],
-      remaining = {};
+    // Sort subcategories under parents
+    @discourseComputed("categoriesByCount",
+                       "categories.[]") sortedCategories(cats) {
+    const result = [], remaining = {};
 
     cats.forEach(c => {
       const parentCategoryId = parseInt(c.get("parent_category_id"), 10);
@@ -70,7 +71,7 @@ const Site = RestModel.extend({
 
     Object.keys(remaining).forEach(parentCategoryId => {
       const category = result.findBy("id", parseInt(parentCategoryId, 10)),
-        index = result.indexOf(category);
+            index = result.indexOf(category);
 
       if (index !== -1) {
         result.replace(index + 1, 0, remaining[parentCategoryId]);
@@ -78,39 +79,42 @@ const Site = RestModel.extend({
     });
 
     return result;
-  },
+  }
+  ,
 
-  @discourseComputed
-  baseUri() {
+    @discourseComputed baseUri() {
     return Discourse.baseUri;
-  },
+  }
+  ,
 
-  // Returns it in the correct order, by setting
-  @discourseComputed("categories.[]")
-  categoriesList() {
-    return this.siteSettings.fixed_category_positions
-      ? this.categories
-      : this.sortedCategories;
-  },
+    // Returns it in the correct order, by setting
+    @discourseComputed("categories.[]") categoriesList() {
+    return this.siteSettings.fixed_category_positions ? this.categories
+                                                      : this.sortedCategories;
+  }
+  ,
 
-  postActionTypeById(id) {
+    postActionTypeById(id) {
     return this.get("postActionByIdLookup.action" + id);
-  },
+  }
+  ,
 
-  topicFlagTypeById(id) {
+    topicFlagTypeById(id) {
     return this.get("topicFlagByIdLookup.action" + id);
-  },
+  }
+  ,
 
-  removeCategory(id) {
+    removeCategory(id) {
     const categories = this.categories;
     const existingCategory = categories.findBy("id", id);
     if (existingCategory) {
       categories.removeObject(existingCategory);
       delete this.categoriesById.categoryId;
     }
-  },
+  }
+  ,
 
-  updateCategory(newCategory) {
+    updateCategory(newCategory) {
     const categories = this.categories;
     const categoryId = get(newCategory, "id");
     const existingCategory = categories.findBy("id", categoryId);
@@ -154,26 +158,20 @@ Site.reopenClass(Singleton, {
             subcatMap[c.parent_category_id] || [];
           subcatMap[c.parent_category_id].push(c.id);
         }
-        return (result.categoriesById[c.id] = store.createRecord(
-          "category",
-          c
-        ));
+        return (result.categoriesById[c.id] =
+                  store.createRecord("category", c));
       });
 
       // Associate the categories with their parents
       result.categories.forEach(c => {
         let subcategoryIds = subcatMap[c.get("id")];
         if (subcategoryIds) {
-          c.set(
-            "subcategories",
-            subcategoryIds.map(id => result.categoriesById[id])
-          );
+          c.set("subcategories",
+                subcategoryIds.map(id => result.categoriesById[id]));
         }
         if (c.get("parent_category_id")) {
-          c.set(
-            "parentCategory",
-            result.categoriesById[c.get("parent_category_id")]
-          );
+          c.set("parentCategory",
+                result.categoriesById[c.get("parent_category_id")]);
         }
       });
     }
@@ -220,10 +218,8 @@ let warned = false;
 Object.defineProperty(Discourse, "Site", {
   get() {
     if (!warned) {
-      deprecated("Import the Site class instead of using Discourse.Site", {
-        since: "2.4.0",
-        dropFrom: "2.6.0"
-      });
+      deprecated("Import the Site class instead of using Discourse.Site",
+                 { since: "2.4.0", dropFrom: "2.6.0" });
       warned = true;
     }
     return Site;

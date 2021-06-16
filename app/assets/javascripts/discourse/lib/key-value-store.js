@@ -80,7 +80,8 @@ KeyValueStore.prototype = {
     }
     try {
       return JSON.parse(safeLocalStorage[this.context + key]);
-    } catch (e) {}
+    } catch (e) {
+    }
   }
 };
 

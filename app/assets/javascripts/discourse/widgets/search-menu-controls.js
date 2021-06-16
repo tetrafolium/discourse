@@ -1,7 +1,7 @@
-import { get } from "@ember/object";
-import { searchContextDescription } from "discourse/lib/search";
-import { h } from "virtual-dom";
-import { createWidget } from "discourse/widgets/widget";
+import {get} from "@ember/object";
+import {searchContextDescription} from "discourse/lib/search";
+import {h} from "virtual-dom";
+import {createWidget} from "discourse/widgets/widget";
 
 createWidget("search-term", {
   tagName: "input",
@@ -53,28 +53,18 @@ createWidget("search-context", {
     const result = [];
     if (ctx) {
       const description = searchContextDescription(
-        get(ctx, "type"),
-        get(ctx, "user.username") ||
-          get(ctx, "category.name") ||
-          get(ctx, "tag.id")
-      );
-      result.push(
-        h("label", [
-          h("input", { type: "checkbox", checked: attrs.contextEnabled }),
-          " ",
-          description
-        ])
-      );
+        get(ctx, "type"), get(ctx, "user.username") ||
+                            get(ctx, "category.name") || get(ctx, "tag.id"));
+      result.push(h("label", [
+        h("input", { type: "checkbox", checked: attrs.contextEnabled }), " ",
+        description
+      ]));
     }
 
     if (!attrs.contextEnabled) {
-      result.push(
-        this.attach("link", {
-          href: attrs.url,
-          label: "show_help",
-          className: "show-help"
-        })
-      );
+      result.push(this.attach(
+        "link",
+        { href: attrs.url, label: "show_help", className: "show-help" }));
     }
 
     result.push(h("div.clearfix"));

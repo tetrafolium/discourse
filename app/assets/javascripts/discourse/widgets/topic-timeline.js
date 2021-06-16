@@ -1,9 +1,9 @@
-import { later } from "@ember/runloop";
-import { createWidget } from "discourse/widgets/widget";
+import {later} from "@ember/runloop";
+import {createWidget} from "discourse/widgets/widget";
 import ComponentConnector from "discourse/widgets/component-connector";
-import { h } from "virtual-dom";
-import { relativeAge } from "discourse/lib/formatter";
-import { iconNode } from "discourse-common/lib/icon-library";
+import {h} from "virtual-dom";
+import {relativeAge} from "discourse/lib/formatter";
+import {iconNode} from "discourse-common/lib/icon-library";
 import RawHtml from "discourse/widgets/raw-html";
 import renderTags from "discourse/lib/render-tags";
 import renderTopicFeaturedLink from "discourse/lib/render-topic-featured-link";
@@ -15,17 +15,16 @@ const MAX_SCROLLAREA_HEIGHT = 300;
 
 function scrollareaHeight() {
   const composerHeight =
-      document.getElementById("reply-control").offsetHeight || 0,
-    headerHeight = document.querySelectorAll(".d-header")[0].offsetHeight || 0;
+    document.getElementById("reply-control").offsetHeight || 0,
+        headerHeight =
+          document.querySelectorAll(".d-header")[0].offsetHeight || 0;
 
   // scrollarea takes up about half of the timeline's height
   const availableHeight =
     (window.innerHeight - composerHeight - headerHeight) / 2;
 
-  return Math.max(
-    MIN_SCROLLAREA_HEIGHT,
-    Math.min(availableHeight, MAX_SCROLLAREA_HEIGHT)
-  );
+  return Math.max(MIN_SCROLLAREA_HEIGHT,
+                  Math.min(availableHeight, MAX_SCROLLAREA_HEIGHT));
 }
 
 function scrollareaRemaining() {
@@ -65,10 +64,9 @@ createWidget("timeline-last-read", {
 });
 
 function timelineDate(date) {
-  const fmt =
-    date.getFullYear() === new Date().getFullYear()
-      ? "long_no_year_no_time"
-      : "timeline_date";
+  const fmt = date.getFullYear() === new Date().getFullYear()
+                ? "long_no_year_no_time"
+                : "timeline_date";
   return moment(date).format(I18n.t(`dates.${fmt}`));
 }
 
@@ -87,12 +85,9 @@ createWidget("timeline-scroller", {
   html(attrs, state) {
     const { current, total, date } = attrs;
 
-    const contents = [
-      h(
-        "div.timeline-replies",
-        I18n.t(`topic.timeline.replies_short`, { current, total })
-      )
-    ];
+    const contents =
+      [h("div.timeline-replies",
+         I18n.t(`topic.timeline.replies_short`, { current, total }))];
 
     if (date) {
       contents.push(h("div.timeline-ago", timelineDate(date)));
@@ -101,10 +96,8 @@ createWidget("timeline-scroller", {
     if (attrs.showDockedButton && !state.dragging) {
       contents.push(attachBackButton(this));
     }
-    let result = [
-      h("div.timeline-handle"),
-      h("div.timeline-scroller-content", contents)
-    ];
+    let result =
+      [h("div.timeline-handle"), h("div.timeline-scroller-content", contents)];
 
     if (attrs.fullScreen) {
       result = [result[1], result[0]];
@@ -169,9 +162,8 @@ createWidget("timeline-scrollarea", {
     let date;
 
     if (daysAgo === undefined) {
-      const post = postStream
-        .get("posts")
-        .findBy("id", postStream.get("stream")[current]);
+      const post =
+        postStream.get("posts").findBy("id", postStream.get("stream")[current]);
 
       if (post) date = new Date(post.get("created_at"));
     } else if (daysAgo !== null) {
@@ -223,41 +215,31 @@ createWidget("timeline-scrollarea", {
     const hasBackPosition =
       position.lastRead > 3 &&
       Math.abs(position.lastRead - position.current) > 3 &&
-      Math.abs(position.lastRead - position.total) > 1 &&
-      position.lastRead &&
+      Math.abs(position.lastRead - position.total) > 1 && position.lastRead &&
       position.lastRead !== position.total;
 
     if (hasBackPosition) {
-      const lastReadTop = Math.round(
-        position.lastReadPercentage * scrollareaHeight()
-      );
+      const lastReadTop =
+        Math.round(position.lastReadPercentage * scrollareaHeight());
       showButton =
         before + SCROLLER_HEIGHT - 5 < lastReadTop || before > lastReadTop + 25;
     }
 
     const result = [
       this.attach("timeline-padding", { height: before }),
-      this.attach(
-        "timeline-scroller",
-        _.merge(position, {
-          showDockedButton: !attrs.mobileView && hasBackPosition && !showButton,
-          fullScreen: attrs.fullScreen
-        })
-      ),
+      this.attach("timeline-scroller", _.merge(position, {
+        showDockedButton: !attrs.mobileView && hasBackPosition && !showButton,
+        fullScreen: attrs.fullScreen
+      })),
       this.attach("timeline-padding", { height: after })
     ];
 
     if (hasBackPosition) {
-      const lastReadTop = Math.round(
-        position.lastReadPercentage * scrollareaHeight()
-      );
-      result.push(
-        this.attach("timeline-last-read", {
-          top: lastReadTop,
-          lastRead: position.lastRead,
-          showButton
-        })
-      );
+      const lastReadTop =
+        Math.round(position.lastReadPercentage * scrollareaHeight());
+      result.push(this.attach(
+        "timeline-last-read",
+        { top: lastReadTop, lastRead: position.lastRead, showButton }));
     }
 
     return result;
@@ -335,12 +317,8 @@ createWidget("timeline-controls", {
     const { fullScreen, currentUser, topic } = attrs;
 
     if (!fullScreen && currentUser) {
-      controls.push(
-        this.attach("topic-admin-menu-button", {
-          topic,
-          addKeyboardTargetClass: true
-        })
-      );
+      controls.push(this.attach("topic-admin-menu-button",
+                                { topic, addKeyboardTargetClass: true }));
     }
 
     return controls;
@@ -356,43 +334,33 @@ createWidget("timeline-footer-controls", {
 
     if (currentUser && !fullScreen) {
       if (topic.get("details.can_create_post")) {
-        controls.push(
-          this.attach("button", {
-            className: "btn-default create",
-            icon: "reply",
-            title: "topic.reply.help",
-            action: "replyToPost"
-          })
-        );
+        controls.push(this.attach("button", {
+          className: "btn-default create",
+          icon: "reply",
+          title: "topic.reply.help",
+          action: "replyToPost"
+        }));
       }
     }
 
     if (fullScreen) {
-      controls.push(
-        this.attach("button", {
-          className: "jump-to-post",
-          title: "topic.progress.jump_prompt_long",
-          label: "topic.progress.jump_prompt",
-          action: "jumpToPostPrompt"
-        })
-      );
+      controls.push(this.attach("button", {
+        className: "jump-to-post",
+        title: "topic.progress.jump_prompt_long",
+        label: "topic.progress.jump_prompt",
+        action: "jumpToPostPrompt"
+      }));
     }
 
     if (currentUser) {
-      controls.push(
-        new ComponentConnector(
-          this,
-          "topic-notifications-button",
-          {
-            notificationLevel,
-            topic,
-            showFullTitle: false,
-            appendReason: false,
-            placement: "bottom-end"
-          },
-          ["notificationLevel"]
-        )
-      );
+      controls.push(new ComponentConnector(this, "topic-notifications-button", {
+        notificationLevel,
+        topic,
+        showFullTitle: false,
+        appendReason: false,
+        placement: "bottom-end"
+      },
+                                           ["notificationLevel"]));
     }
 
     return controls;
@@ -453,36 +421,26 @@ export default createWidget("topic-timeline", {
     if (attrs.fullScreen) {
       let titleHTML = "";
       if (attrs.mobileView) {
-        titleHTML = new RawHtml({
-          html: `<span>${topic.get("fancyTitle")}</span>`
-        });
+        titleHTML =
+          new RawHtml({ html: `<span>${topic.get("fancyTitle")}</span>` });
       }
 
-      let elems = [
-        h(
-          "h2",
-          this.attach("link", {
-            contents: () => titleHTML,
-            className: "fancy-title",
-            action: "jumpTop"
-          })
-        )
-      ];
+      let elems = [h("h2", this.attach("link", {
+        contents: () => titleHTML,
+        className: "fancy-title",
+        action: "jumpTop"
+      }))];
 
       // duplicate of the {{topic-category}} component
       let category = [];
 
       if (!topic.get("isPrivateMessage")) {
         if (topic.category.parentCategory) {
-          category.push(
-            this.attach("category-link", {
-              category: topic.category.parentCategory
-            })
-          );
+          category.push(this.attach(
+            "category-link", { category: topic.category.parentCategory }));
         }
         category.push(
-          this.attach("category-link", { category: topic.category })
-        );
+          this.attach("category-link", { category: topic.category }));
       }
 
       const showTags = tagging_enabled && topic.tags && topic.tags.length > 0;
@@ -490,9 +448,8 @@ export default createWidget("topic-timeline", {
       if (showTags || topic_featured_link_enabled) {
         let extras = [];
         if (showTags) {
-          const tagsHtml = new RawHtml({
-            html: renderTags(topic, { mode: "list" })
-          });
+          const tagsHtml =
+            new RawHtml({ html: renderTags(topic, { mode: "list" }) });
           extras.push(h("div.list-tags", tagsHtml));
         }
         if (topic_featured_link_enabled) {
@@ -506,11 +463,8 @@ export default createWidget("topic-timeline", {
       }
 
       if (this.state.excerpt) {
-        elems.push(
-          new RawHtml({
-            html: `<div class='post-excerpt'>${this.state.excerpt}</div>`
-          })
-        );
+        elems.push(new RawHtml(
+          { html: `<div class='post-excerpt'>${this.state.excerpt}</div>` }));
       }
 
       result.push(h("div.title", elems));
@@ -527,28 +481,20 @@ export default createWidget("topic-timeline", {
       }
     }
 
-    const bottomAge = relativeAge(new Date(topic.last_posted_at), {
-      addAgo: true,
-      defaultFormat: timelineDate
-    });
+    const bottomAge =
+      relativeAge(new Date(topic.last_posted_at),
+                  { addAgo: true, defaultFormat: timelineDate });
     let scroller = [
-      h(
-        "div.timeline-date-wrapper",
-        this.attach("link", {
-          className: "start-date",
-          rawLabel: timelineDate(createdAt),
-          action: "jumpTop"
-        })
-      ),
+      h("div.timeline-date-wrapper", this.attach("link", {
+        className: "start-date",
+        rawLabel: timelineDate(createdAt),
+        action: "jumpTop"
+      })),
       this.attach("timeline-scrollarea", attrs),
-      h(
-        "div.timeline-date-wrapper",
-        this.attach("link", {
-          className: "now-date",
-          rawLabel: bottomAge,
-          action: "jumpBottom"
-        })
-      )
+      h("div.timeline-date-wrapper",
+        this.attach(
+          "link",
+          { className: "now-date", rawLabel: bottomAge, action: "jumpBottom" }))
     ];
 
     result.push(h("div.timeline-scrollarea-wrapper", scroller));

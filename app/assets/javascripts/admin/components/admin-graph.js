@@ -12,14 +12,12 @@ export default Component.extend({
 
     var data = {
       labels: rawData.map(r => r.x),
-      datasets: [
-        {
-          data: rawData.map(r => r.y),
-          label: model.get("title"),
-          backgroundColor: `rgba(200,220,240,${this.type === "bar" ? 1 : 0.3})`,
-          borderColor: "#08C"
-        }
-      ]
+      datasets: [{
+        data: rawData.map(r => r.y),
+        label: model.get("title"),
+        backgroundColor: `rgba(200,220,240,${this.type === "bar" ? 1 : 0.3})`,
+        borderColor: "#08C"
+      }]
     };
 
     const config = {
@@ -33,16 +31,7 @@ export default Component.extend({
               moment(context[0].xLabel, "YYYY-MM-DD").format("LL")
           }
         },
-        scales: {
-          yAxes: [
-            {
-              display: true,
-              ticks: {
-                stepSize: 1
-              }
-            }
-          ]
-        }
+        scales: { yAxes: [{ display: true, ticks: { stepSize: 1 } }] }
       }
     };
 
@@ -50,8 +39,7 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    loadScript("/javascripts/Chart.min.js").then(() =>
-      this.refreshChart.apply(this)
-    );
+    loadScript("/javascripts/Chart.min.js")
+      .then(() => this.refreshChart.apply(this));
   }
 });

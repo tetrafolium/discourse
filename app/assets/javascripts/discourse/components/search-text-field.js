@@ -1,18 +1,18 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { on } from "discourse-common/utils/decorators";
+import {on} from "discourse-common/utils/decorators";
 import TextField from "discourse/components/text-field";
-import { applySearchAutocomplete } from "discourse/lib/search";
+import {applySearchAutocomplete} from "discourse/lib/search";
 
 export default TextField.extend({
   autocomplete: "discourse",
 
-  @discourseComputed("searchService.searchContextEnabled")
-  placeholder(searchContextEnabled) {
+    @discourseComputed("searchService.searchContextEnabled")
+    placeholder(searchContextEnabled) {
     return searchContextEnabled ? "" : I18n.t("search.full_page_title");
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  becomeFocused() {
+    @on("didInsertElement") becomeFocused() {
     const $searchInput = $(this.element);
     applySearchAutocomplete($searchInput, this.siteSettings);
 

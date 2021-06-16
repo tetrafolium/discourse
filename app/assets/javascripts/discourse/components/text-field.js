@@ -1,18 +1,12 @@
-import { TextField } from "@ember/component";
+import {TextField} from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
-import { siteDir, isRTL, isLTR } from "discourse/lib/text-direction";
+import {siteDir, isRTL, isLTR} from "discourse/lib/text-direction";
 
 export default TextField.extend({
-  attributeBindings: [
-    "autocorrect",
-    "autocapitalize",
-    "autofocus",
-    "maxLength",
-    "dir"
-  ],
+  attributeBindings:
+    ["autocorrect", "autocapitalize", "autofocus", "maxLength", "dir"],
 
-  @discourseComputed
-  dir() {
+    @discourseComputed dir() {
     if (this.siteSettings.support_mixed_text_direction) {
       let val = this.value;
       if (val) {
@@ -21,9 +15,10 @@ export default TextField.extend({
         return siteDir();
       }
     }
-  },
+  }
+  ,
 
-  keyUp(event) {
+    keyUp(event) {
     this._super(event);
 
     if (this.siteSettings.support_mixed_text_direction) {
@@ -36,16 +31,16 @@ export default TextField.extend({
         this.set("dir", siteDir());
       }
     }
-  },
-
-  @discourseComputed("placeholderKey")
-  placeholder: {
-    get() {
-      if (this._placeholder) return this._placeholder;
-      return this.placeholderKey ? I18n.t(this.placeholderKey) : "";
-    },
-    set(value) {
-      return (this._placeholder = value);
-    }
   }
+  ,
+
+    @discourseComputed("placeholderKey") placeholder: {
+      get() {
+        if (this._placeholder) return this._placeholder;
+        return this.placeholderKey ? I18n.t(this.placeholderKey) : "";
+      },
+      set(value) {
+        return (this._placeholder = value);
+      }
+    }
 });

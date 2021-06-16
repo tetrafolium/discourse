@@ -1,4 +1,4 @@
-import { htmlHelper } from "discourse-common/lib/helpers";
+import {htmlHelper} from "discourse-common/lib/helpers";
 
 const TITLE_SUBS = {
   all: "all_time",
@@ -15,58 +15,42 @@ export default htmlHelper((period, options) => {
     let finish;
 
     if (options.hash.fullDay) {
-      finish = moment()
-        .utc()
-        .subtract(1, "days");
+      finish = moment().utc().subtract(1, "days");
     } else {
       finish = moment();
     }
 
     switch (period) {
-      case "yearly":
-        dateString =
-          finish
-            .clone()
-            .subtract(1, "year")
-            .format(I18n.t("dates.long_with_year_no_time")) +
-          " - " +
-          finish.format(I18n.t("dates.long_with_year_no_time"));
-        break;
-      case "quarterly":
-        dateString =
-          finish
-            .clone()
-            .subtract(3, "month")
-            .format(I18n.t("dates.long_no_year_no_time")) +
-          " - " +
-          finish.format(I18n.t("dates.long_no_year_no_time"));
-        break;
-      case "weekly":
-        dateString =
-          finish
-            .clone()
-            .subtract(1, "week")
-            .format(I18n.t("dates.long_no_year_no_time")) +
-          " - " +
-          finish.format(I18n.t("dates.long_no_year_no_time"));
-        break;
-      case "monthly":
-        dateString =
-          finish
-            .clone()
-            .subtract(1, "month")
-            .format(I18n.t("dates.long_no_year_no_time")) +
-          " - " +
-          finish.format(I18n.t("dates.long_no_year_no_time"));
-        break;
-      case "daily":
-        dateString = finish
-          .clone()
-          .format(I18n.t("dates.full_no_year_no_time"));
-        break;
+    case "yearly":
+      dateString = finish.clone().subtract(1, "year").format(
+                     I18n.t("dates.long_with_year_no_time")) +
+                   " - " +
+                   finish.format(I18n.t("dates.long_with_year_no_time"));
+      break;
+    case "quarterly":
+      dateString = finish.clone()
+                     .subtract(3, "month")
+                     .format(I18n.t("dates.long_no_year_no_time")) +
+                   " - " + finish.format(I18n.t("dates.long_no_year_no_time"));
+      break;
+    case "weekly":
+      dateString = finish.clone().subtract(1, "week").format(
+                     I18n.t("dates.long_no_year_no_time")) +
+                   " - " + finish.format(I18n.t("dates.long_no_year_no_time"));
+      break;
+    case "monthly":
+      dateString = finish.clone()
+                     .subtract(1, "month")
+                     .format(I18n.t("dates.long_no_year_no_time")) +
+                   " - " + finish.format(I18n.t("dates.long_no_year_no_time"));
+      break;
+    case "daily":
+      dateString = finish.clone().format(I18n.t("dates.full_no_year_no_time"));
+      break;
     }
 
-    return `<span class="date-section">${title}</span><span class='top-date-string'>${dateString}</span>`;
+    return `<span class="date-section">${
+      title}</span><span class='top-date-string'>${dateString}</span>`;
   } else {
     return title;
   }

@@ -1,5 +1,5 @@
-import { createWidget } from "discourse/widgets/widget";
-import { emojiUrlFor, emojiUnescape } from "discourse/lib/text";
+import {createWidget} from "discourse/widgets/widget";
+import {emojiUrlFor, emojiUnescape} from "discourse/lib/text";
 import RawHtml from "discourse/widgets/raw-html";
 
 export function replaceEmoji(str) {

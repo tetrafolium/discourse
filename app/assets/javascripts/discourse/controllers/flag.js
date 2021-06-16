@@ -1,28 +1,20 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { not } from "@ember/object/computed";
+import {not} from "@ember/object/computed";
 import EmberObject from "@ember/object";
 import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import ActionSummary from "discourse/models/action-summary";
-import { MAX_MESSAGE_LENGTH } from "discourse/models/post-action-type";
+import {MAX_MESSAGE_LENGTH} from "discourse/models/post-action-type";
 import optionalService from "discourse/lib/optional-service";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default Controller.extend(ModalFunctionality, {
-  adminTools: optionalService(),
-  userDetails: null,
-  selected: null,
-  flagTopic: null,
-  message: null,
-  isWarning: false,
-  topicActionByName: null,
-  spammerDetails: null,
+  adminTools: optionalService(), userDetails: null, selected: null,
+    flagTopic: null, message: null, isWarning: false, topicActionByName: null,
+    spammerDetails: null,
 
-  onShow() {
-    this.setProperties({
-      selected: null,
-      spammerDetails: null
-    });
+    onShow() {
+    this.setProperties({ selected: null, spammerDetails: null });
 
     let adminTools = this.adminTools;
     if (adminTools) {
@@ -30,28 +22,29 @@ export default Controller.extend(ModalFunctionality, {
         this.set("spammerDetails", result);
       });
     }
-  },
+  }
+  ,
 
-  @discourseComputed("spammerDetails.canDelete", "selected.name_key")
-  showDeleteSpammer(canDeleteSpammer, nameKey) {
+    @discourseComputed("spammerDetails.canDelete", "selected.name_key")
+    showDeleteSpammer(canDeleteSpammer, nameKey) {
     return canDeleteSpammer && nameKey === "spam";
-  },
+  }
+  ,
 
-  @discourseComputed("flagTopic")
-  title(flagTopic) {
+    @discourseComputed("flagTopic") title(flagTopic) {
     return flagTopic ? "flagging_topic.title" : "flagging.title";
-  },
+  }
+  ,
 
-  @discourseComputed("post", "flagTopic", "model.actions_summary.@each.can_act")
-  flagsAvailable() {
+    @discourseComputed("post", "flagTopic",
+                       "model.actions_summary.@each.can_act") flagsAvailable() {
     if (!this.flagTopic) {
       // flagging post
       let flagsAvailable = this.get("model.flagsAvailable");
 
       // "message user" option should be at the top
       const notifyUserIndex = flagsAvailable.indexOf(
-        flagsAvailable.filterBy("name_key", "notify_user")[0]
-      );
+        flagsAvailable.filterBy("name_key", "notify_user")[0]);
       if (notifyUserIndex !== -1) {
         const notifyUser = flagsAvailable[notifyUserIndex];
         flagsAvailable.splice(notifyUserIndex, 1);
@@ -75,128 +68,119 @@ export default Controller.extend(ModalFunctionality, {
         });
       });
     }
-  },
+  }
+  ,
 
-  @discourseComputed("post", "flagTopic", "model.actions_summary.@each.can_act")
-  staffFlagsAvailable() {
-    return (
-      this.get("model.flagsAvailable") &&
-      this.get("model.flagsAvailable").length > 1
-    );
-  },
+    @discourseComputed("post", "flagTopic",
+                       "model.actions_summary.@each.can_act")
+    staffFlagsAvailable() {
+    return (this.get("model.flagsAvailable") &&
+            this.get("model.flagsAvailable").length > 1);
+  }
+  ,
 
-  @discourseComputed("selected.is_custom_flag", "message.length")
-  submitEnabled() {
+    @discourseComputed("selected.is_custom_flag",
+                       "message.length") submitEnabled() {
     const selected = this.selected;
     if (!selected) return false;
 
     if (selected.get("is_custom_flag")) {
       const len = this.get("message.length") || 0;
-      return (
-        len >= Discourse.SiteSettings.min_personal_message_post_length &&
-        len <= MAX_MESSAGE_LENGTH
-      );
+      return (len >= Discourse.SiteSettings.min_personal_message_post_length &&
+              len <= MAX_MESSAGE_LENGTH);
     }
     return true;
-  },
+  }
+  ,
 
-  submitDisabled: not("submitEnabled"),
+    submitDisabled: not("submitEnabled"),
 
-  // Staff accounts can "take action"
-  @discourseComputed("flagTopic", "selected.is_custom_flag")
-  canTakeAction(flagTopic, isCustomFlag) {
+    // Staff accounts can "take action"
+    @discourseComputed("flagTopic", "selected.is_custom_flag")
+    canTakeAction(flagTopic, isCustomFlag) {
     return !flagTopic && !isCustomFlag && this.currentUser.get("staff");
-  },
+  }
+  ,
 
-  @discourseComputed("selected.is_custom_flag")
-  submitIcon(isCustomFlag) {
+    @discourseComputed("selected.is_custom_flag") submitIcon(isCustomFlag) {
     return isCustomFlag ? "envelope" : "flag";
-  },
+  }
+  ,
 
-  @discourseComputed("selected.is_custom_flag", "flagTopic")
-  submitLabel(isCustomFlag, flagTopic) {
+    @discourseComputed("selected.is_custom_flag",
+                       "flagTopic") submitLabel(isCustomFlag, flagTopic) {
     if (isCustomFlag) {
-      return flagTopic
-        ? "flagging_topic.notify_action"
-        : "flagging.notify_action";
+      return flagTopic ? "flagging_topic.notify_action"
+                       : "flagging.notify_action";
     }
     return flagTopic ? "flagging_topic.action" : "flagging.action";
-  },
+  }
+  ,
 
-  actions: {
-    deleteSpammer() {
-      let details = this.spammerDetails;
-      if (details) {
-        details.deleteUser().then(() => window.location.reload());
-      }
-    },
+    actions: {
+      deleteSpammer() {
+        let details = this.spammerDetails;
+        if (details) {
+          details.deleteUser().then(() => window.location.reload());
+        }
+      },
 
-    takeAction() {
-      this.send("createFlag", { takeAction: true });
-      this.set("model.hidden", true);
-    },
+      takeAction() {
+        this.send("createFlag", { takeAction: true });
+        this.set("model.hidden", true);
+      },
 
-    createFlag(opts) {
-      let postAction; // an instance of ActionSummary
+      createFlag(opts) {
+        let postAction; // an instance of ActionSummary
 
-      if (!this.flagTopic) {
-        postAction = this.get("model.actions_summary").findBy(
-          "id",
-          this.get("selected.id")
-        );
-      } else {
-        postAction = this.get(
-          "topicActionByName." + this.get("selected.name_key")
-        );
-      }
+        if (!this.flagTopic) {
+          postAction = this.get("model.actions_summary")
+                         .findBy("id", this.get("selected.id"));
+        } else {
+          postAction =
+            this.get("topicActionByName." + this.get("selected.name_key"));
+        }
 
-      let params = this.get("selected.is_custom_flag")
-        ? { message: this.message }
-        : {};
-      if (opts) {
-        params = $.extend(params, opts);
-      }
+        let params =
+          this.get("selected.is_custom_flag") ? { message: this.message } : {};
+        if (opts) {
+          params = $.extend(params, opts);
+        }
 
-      this.appEvents.trigger(
-        this.flagTopic ? "topic:flag-created" : "post:flag-created",
-        this.model,
-        postAction,
-        params
-      );
+        this.appEvents.trigger(this.flagTopic ? "topic:flag-created"
+                                              : "post:flag-created",
+                               this.model, postAction, params);
 
-      this.send("hideModal");
+        this.send("hideModal");
 
-      postAction
-        .act(this.model, params)
-        .then(() => {
-          this.send("closeModal");
-          if (params.message) {
-            this.set("message", "");
-          }
-          this.appEvents.trigger("post-stream:refresh", {
-            id: this.get("model.id")
+        postAction.act(this.model, params)
+          .then(() => {
+            this.send("closeModal");
+            if (params.message) {
+              this.set("message", "");
+            }
+            this.appEvents.trigger("post-stream:refresh",
+                                   { id: this.get("model.id") });
+          })
+          .catch(error => {
+            this.send("closeModal");
+            popupAjaxError(error);
           });
-        })
-        .catch(error => {
-          this.send("closeModal");
-          popupAjaxError(error);
-        });
+      },
+
+      createFlagAsWarning() {
+        this.send("createFlag", { isWarning: true });
+        this.set("model.hidden", true);
+      },
+
+      changePostActionType(action) {
+        this.set("selected", action);
+      }
     },
 
-    createFlagAsWarning() {
-      this.send("createFlag", { isWarning: true });
-      this.set("model.hidden", true);
-    },
-
-    changePostActionType(action) {
-      this.set("selected", action);
-    }
-  },
-
-  @discourseComputed("flagTopic", "selected.name_key")
-  canSendWarning(flagTopic, nameKey) {
-    return (
-      !flagTopic && this.currentUser.get("staff") && nameKey === "notify_user"
-    );
+    @discourseComputed("flagTopic",
+                       "selected.name_key") canSendWarning(flagTopic, nameKey) {
+    return (!flagTopic && this.currentUser.get("staff") &&
+            nameKey === "notify_user");
   }
 });

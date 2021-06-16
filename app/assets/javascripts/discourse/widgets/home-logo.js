@@ -1,15 +1,13 @@
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
 import DiscourseURL from "discourse/lib/url";
 
 export default createWidget("home-logo", {
   tagName: "div.title",
 
-  settings: {
-    href: Discourse.getURL("/")
-  },
+  settings: {href: Discourse.getURL("/")},
 
   href() {
     const href = this.settings.href;
@@ -43,11 +41,8 @@ export default createWidget("home-logo", {
       if (logoSmallUrl.length) {
         return h("img#site-logo.logo-small", {
           key: "logo-small",
-          attributes: {
-            src: Discourse.getURL(logoSmallUrl),
-            width: 36,
-            alt: title
-          }
+          attributes:
+            { src: Discourse.getURL(logoSmallUrl), width: 36, alt: title }
         });
       } else {
         return iconNode("home");
@@ -68,11 +63,9 @@ export default createWidget("home-logo", {
   },
 
   html() {
-    return h(
-      "a",
-      { attributes: { href: this.href(), "data-auto-route": true } },
-      this.logo()
-    );
+    return h("a",
+             { attributes: { href: this.href(), "data-auto-route": true } },
+             this.logo());
   },
 
   click(e) {

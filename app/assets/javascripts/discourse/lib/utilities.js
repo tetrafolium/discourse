@@ -1,22 +1,22 @@
-import { escape } from "pretty-text/sanitizer";
+import {escape} from "pretty-text/sanitizer";
 import toMarkdown from "discourse/lib/to-markdown";
 
 const homepageSelector = "meta[name=discourse_current_homepage]";
 
 export function translateSize(size) {
   switch (size) {
-    case "tiny":
-      return 20;
-    case "small":
-      return 25;
-    case "medium":
-      return 32;
-    case "large":
-      return 45;
-    case "extra_large":
-      return 60;
-    case "huge":
-      return 120;
+  case "tiny":
+    return 20;
+  case "small":
+    return 25;
+  case "medium":
+    return 32;
+  case "large":
+    return 45;
+  case "extra_large":
+    return 60;
+  case "huge":
+    return 120;
   }
   return size;
 }
@@ -73,25 +73,13 @@ export function avatarImg(options, getURL) {
     title = ` title='${escaped}' aria-label='${escaped}'`;
   }
 
-  return (
-    "<img alt='' width='" +
-    size +
-    "' height='" +
-    size +
-    "' src='" +
-    getURL(url) +
-    "' class='" +
-    classes +
-    "'" +
-    title +
-    ">"
-  );
+  return ("<img alt='' width='" + size + "' height='" + size + "' src='" +
+          getURL(url) + "' class='" + classes + "'" + title + ">");
 }
 
 export function tinyAvatar(avatarTemplate, options) {
   return avatarImg(
-    _.merge({ avatarTemplate: avatarTemplate, size: "tiny" }, options)
-  );
+    _.merge({ avatarTemplate: avatarTemplate, size: "tiny" }, options));
 }
 
 export function postUrl(slug, topicId, postNumber) {
@@ -110,7 +98,8 @@ export function postUrl(slug, topicId, postNumber) {
 
 export function emailValid(email) {
   // see:  http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
-  const re = /^[a-zA-Z0-9!#$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#$%&'\*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$/;
+  const re =
+    /^[a-zA-Z0-9!#$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#$%&'\*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$/;
   return re.test(email);
 }
 
@@ -159,11 +148,9 @@ export function caretRowCol(el) {
   var rows = el.value.slice(0, cp).split("\n");
   var rowNum = rows.length;
 
-  var colNum =
-    cp -
-    rows.splice(0, rowNum - 1).reduce(function(sum, row) {
-      return sum + row.length + 1;
-    }, 0);
+  var colNum = cp - rows.splice(0, rowNum - 1).reduce(function(sum, row) {
+    return sum + row.length + 1;
+  }, 0);
 
   return { rowNum: rowNum, colNum: colNum };
 }
@@ -224,11 +211,8 @@ export function setDefaultHomepage(homepage) {
   }
 }
 
-export function determinePostReplaceSelection({
-  selection,
-  needle,
-  replacement
-}) {
+export function determinePostReplaceSelection(
+  {selection, needle, replacement}) {
   const diff =
     replacement.end - replacement.start - (needle.end - needle.start);
 
@@ -274,9 +258,8 @@ export function iOSWithVisualViewport() {
 
 export function isiPad() {
   if (iPadDetected === undefined) {
-    iPadDetected =
-      navigator.userAgent.match(/iPad/g) &&
-      !navigator.userAgent.match(/Trident/g);
+    iPadDetected = navigator.userAgent.match(/iPad/g) &&
+                   !navigator.userAgent.match(/Trident/g);
   }
   return iPadDetected;
 }
@@ -303,10 +286,8 @@ const toArray = items => {
 };
 
 export function clipboardData(e, canUpload) {
-  const clipboard =
-    e.clipboardData ||
-    e.originalEvent.clipboardData ||
-    e.delegatedEvent.originalEvent.clipboardData;
+  const clipboard = e.clipboardData || e.originalEvent.clipboardData ||
+                    e.delegatedEvent.originalEvent.clipboardData;
 
   const types = toArray(clipboard.types);
   let files = toArray(clipboard.files);
@@ -319,10 +300,8 @@ export function clipboardData(e, canUpload) {
   canUpload = files && canUpload && types.includes("Files");
   const canUploadImage =
     canUpload && files.filter(f => f.type.match("^image/"))[0];
-  const canPasteHtml =
-    Discourse.SiteSettings.enable_rich_text_paste &&
-    types.includes("text/html") &&
-    !canUploadImage;
+  const canPasteHtml = Discourse.SiteSettings.enable_rich_text_paste &&
+                       types.includes("text/html") && !canUploadImage;
 
   return { clipboard, types, canUpload, canPasteHtml };
 }
@@ -350,9 +329,7 @@ export function fillMissingDates(data, startDate, endDate) {
         data.splice(i, 0, { x: currentMoment, y: 0 });
       }
     }
-    currentMoment = moment(currentMoment)
-      .add(1, "day")
-      .format("YYYY-MM-DD");
+    currentMoment = moment(currentMoment).add(1, "day").format("YYYY-MM-DD");
   }
   return data;
 }
@@ -390,11 +367,8 @@ function reportToLogster(name, error) {
     stacktrace: error.stack
   };
 
-  Ember.$.ajax(`${Discourse.BaseUri}/logs/report_js_error`, {
-    data,
-    type: "POST",
-    cache: false
-  });
+  Ember.$.ajax(`${Discourse.BaseUri}/logs/report_js_error`,
+               { data, type: "POST", cache: false });
 }
 // this function is used in lib/theme_javascript_compiler.rb
 export function rescueThemeError(name, error, api) {
@@ -408,17 +382,17 @@ export function rescueThemeError(name, error, api) {
   }
 
   const path = `${Discourse.BaseUri}/admin/customize/themes`;
-  const message = I18n.t("themes.broken_theme_alert", {
-    theme: name,
-    path: `<a href="${path}">${path}</a>`
-  });
+  const message =
+    I18n.t("themes.broken_theme_alert",
+           { theme: name, path: `<a href="${path}">${path}</a>` });
   const alertDiv = document.createElement("div");
   alertDiv.classList.add("broken-theme-alert");
   alertDiv.innerHTML = `⚠️ ${message}`;
   document.body.prepend(alertDiv);
 }
 
-const CODE_BLOCKS_REGEX = /^(    |\t).*|`[^`]+`|^```[^]*?^```|\[code\][^]*?\[\/code\]/gm;
+const CODE_BLOCKS_REGEX =
+  /^(    |\t).*|`[^`]+`|^```[^]*?^```|\[code\][^]*?\[\/code\]/gm;
 //                        |      ^     |   ^   |      ^      |           ^           |
 //                               |         |          |                  |
 //                               |         |          |       code blocks between [code]

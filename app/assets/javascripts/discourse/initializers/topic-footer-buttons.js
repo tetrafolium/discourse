@@ -1,5 +1,7 @@
 import showModal from "discourse/lib/show-modal";
-import { registerTopicFooterButton } from "discourse/lib/register-topic-footer-button";
+import {
+  registerTopicFooterButton
+} from "discourse/lib/register-topic-footer-button";
 
 export default {
   name: "topic-footer-buttons",
@@ -12,15 +14,11 @@ export default {
       label: "topic.share.title",
       title: "topic.share.help",
       action() {
-        const panels = [
-          {
-            id: "share",
-            title: "topic.share.extended_title",
-            model: {
-              topic: this.topic
-            }
-          }
-        ];
+        const panels = [{
+          id: "share",
+          title: "topic.share.extended_title",
+          model: { topic: this.topic }
+        }];
 
         if (this.canInviteTo && !this.inviteDisabled) {
           let invitePanelTitle;
@@ -36,28 +34,20 @@ export default {
           panels.push({
             id: "invite",
             title: invitePanelTitle,
-            model: {
-              inviteModel: this.topic
-            }
+            model: { inviteModel: this.topic }
           });
         }
 
-        showModal("share-and-invite", {
-          modalClass: "share-and-invite",
-          panels
-        });
+        showModal("share-and-invite",
+                  { modalClass: "share-and-invite", panels });
       },
       dropdown() {
         return this.site.mobileView;
       },
       classNames: ["share-and-invite"],
       dependentKeys: [
-        "topic.shareUrl",
-        "topic.isPrivateMessage",
-        "canInviteTo",
-        "inviteDisabled",
-        "isPM",
-        "invitingToTopic"
+        "topic.shareUrl", "topic.isPrivateMessage", "canInviteTo",
+        "inviteDisabled", "isPM", "invitingToTopic"
       ]
     });
 
@@ -74,10 +64,8 @@ export default {
       classNames: ["flag-topic"],
       dependentKeys: ["topic.details.can_flag_topic", "topic.isPrivateMessage"],
       displayed() {
-        return (
-          this.get("topic.details.can_flag_topic") &&
-          !this.get("topic.isPrivateMessage")
-        );
+        return (this.get("topic.details.can_flag_topic") &&
+                !this.get("topic.isPrivateMessage"));
       }
     });
 
@@ -96,9 +84,8 @@ export default {
       },
       title() {
         const bookmarked = this.get("topic.bookmarked");
-        return bookmarked
-          ? "bookmarked.help.unbookmark"
-          : "bookmarked.help.bookmark";
+        return bookmarked ? "bookmarked.help.unbookmark"
+                          : "bookmarked.help.bookmark";
       },
       action: "toggleBookmark",
       dropdown() {
@@ -124,10 +111,7 @@ export default {
       action: "toggleArchiveMessage",
       classNames: ["standard", "archive-topic"],
       dependentKeys: [
-        "canArchive",
-        "archiveIcon",
-        "archiveLabel",
-        "archiveTitle",
+        "canArchive", "archiveIcon", "archiveLabel", "archiveTitle",
         "toggleArchiveMessage"
       ],
       dropdown() {

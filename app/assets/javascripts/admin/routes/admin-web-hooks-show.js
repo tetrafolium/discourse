@@ -1,5 +1,5 @@
-import { get } from "@ember/object";
-import { isEmpty } from "@ember/utils";
+import {get} from "@ember/object";
+import {isEmpty} from "@ember/utils";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({

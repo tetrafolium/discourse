@@ -2,31 +2,24 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
   queryParams: {
-    start_date: { refreshModel: true },
-    end_date: { refreshModel: true },
-    filters: { refreshModel: true }
+    start_date: {refreshModel: true},
+    end_date: {refreshModel: true},
+    filters: {refreshModel: true}
   },
 
   model(params) {
     params.customFilters = params.filters;
     delete params.filters;
 
-    params.startDate =
-      params.start_date ||
-      moment
-        .utc()
-        .subtract(1, "day")
-        .subtract(1, "month")
-        .startOf("day")
-        .format("YYYY-MM-DD");
+    params.startDate = params.start_date || moment.utc()
+                                              .subtract(1, "day")
+                                              .subtract(1, "month")
+                                              .startOf("day")
+                                              .format("YYYY-MM-DD");
     delete params.start_date;
 
     params.endDate =
-      params.end_date ||
-      moment
-        .utc()
-        .endOf("day")
-        .format("YYYY-MM-DD");
+      params.end_date || moment.utc().endOf("day").format("YYYY-MM-DD");
     delete params.end_date;
 
     return params;

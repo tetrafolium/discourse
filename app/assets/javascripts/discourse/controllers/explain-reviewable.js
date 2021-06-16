@@ -8,8 +8,7 @@ export default Controller.extend(ModalFunctionality, {
   onShow() {
     this.setProperties({ loading: true, reviewableExplanation: null });
 
-    this.store
-      .find("reviewable-explanation", this.model.id)
+    this.store.find("reviewable-explanation", this.model.id)
       .then(result => this.set("reviewableExplanation", result))
       .finally(() => this.set("loading", false));
   }

@@ -1,4 +1,4 @@
-import { later } from "@ember/runloop";
+import {later} from "@ember/runloop";
 //  Subscribe to "asset-version" change events via the Message Bus
 export default {
   name: "asset-version",

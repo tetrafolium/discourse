@@ -6,11 +6,11 @@ export default DiscourseRoute.extend({
   },
 
   queryParams: {
-    order: { refreshModel: true, replace: true },
-    asc: { refreshModel: true, replace: true },
-    filter: { refreshModel: true },
-    type: { refreshModel: true, replace: true },
-    username: { refreshModel: true }
+    order: {refreshModel: true, replace: true},
+    asc: {refreshModel: true, replace: true},
+    filter: {refreshModel: true},
+    type: {refreshModel: true, replace: true},
+    username: {refreshModel: true}
   },
 
   model(params) {
@@ -19,9 +19,6 @@ export default DiscourseRoute.extend({
   },
 
   setupController(controller, model) {
-    controller.setProperties({
-      model,
-      filterInput: this._params.filter
-    });
+    controller.setProperties({ model, filterInput: this._params.filter });
   }
 });

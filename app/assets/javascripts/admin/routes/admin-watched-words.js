@@ -2,9 +2,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 import WatchedWord from "admin/models/watched-word";
 
 export default DiscourseRoute.extend({
-  queryParams: {
-    filter: { replace: true }
-  },
+  queryParams: {filter: {replace: true}},
 
   model() {
     return WatchedWord.findAll();
@@ -18,9 +16,7 @@ export default DiscourseRoute.extend({
   },
 
   afterModel(watchedWordsList) {
-    this.controllerFor("adminWatchedWords").set(
-      "allWatchedWords",
-      watchedWordsList
-    );
+    this.controllerFor("adminWatchedWords")
+      .set("allWatchedWords", watchedWordsList);
   }
 });

@@ -4,13 +4,12 @@ import EmberObject from "@ember/object";
 export default EmberObject.extend({
   showDefault: null,
 
-  @discourseComputed("defaultIcon")
-  renderDiv(defaultIcon) {
+    @discourseComputed("defaultIcon") renderDiv(defaultIcon) {
     return (defaultIcon || this.statuses.length > 0) && !this.noDiv;
-  },
+  }
+  ,
 
-  @discourseComputed
-  statuses() {
+    @discourseComputed statuses() {
     const topic = this.topic;
     const results = [];
 
@@ -29,12 +28,8 @@ export default EmberObject.extend({
         extraClasses = "op-bookmark";
       }
 
-      results.push({
-        extraClasses,
-        icon: "bookmark",
-        key: "bookmarked",
-        href: url
-      });
+      results.push(
+        { extraClasses, icon: "bookmark", key: "bookmarked", href: url });
     }
 
     if (topic.get("closed") && topic.get("archived")) {
@@ -59,10 +54,8 @@ export default EmberObject.extend({
 
     results.forEach(result => {
       result.title = I18n.t(`topic_statuses.${result.key}.help`);
-      if (
-        this.currentUser &&
-        (result.key === "pinned" || result.key === "unpinned")
-      ) {
+      if (this.currentUser &&
+          (result.key === "pinned" || result.key === "unpinned")) {
         result.openTag = "a href";
         result.closeTag = "a";
       } else {

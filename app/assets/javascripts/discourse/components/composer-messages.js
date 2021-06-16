@@ -1,6 +1,6 @@
-import { not } from "@ember/object/computed";
+import {not} from "@ember/object/computed";
 import EmberObject from "@ember/object";
-import { scheduleOnce } from "@ember/runloop";
+import {scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
 import LinkLookup from "discourse/lib/link-lookup";
 
@@ -99,18 +99,15 @@ export default Component.extend({
     if (composer.get("privateMessage")) {
       const recipients = composer.targetRecipientsArray;
 
-      if (
-        recipients.length > 0 &&
-        recipients.every(r => r.name === this.currentUser.get("username"))
-      ) {
-        const message =
-          this._yourselfConfirm ||
-          composer.store.createRecord("composer-message", {
-            id: "yourself_confirm",
-            templateName: "custom-body",
-            title: I18n.t("composer.yourself_confirm.title"),
-            body: I18n.t("composer.yourself_confirm.body")
-          });
+      if (recipients.length > 0 &&
+          recipients.every(r => r.name === this.currentUser.get("username"))) {
+        const message = this._yourselfConfirm ||
+                        composer.store.createRecord("composer-message", {
+                          id: "yourself_confirm",
+                          templateName: "custom-body",
+                          title: I18n.t("composer.yourself_confirm.title"),
+                          body: I18n.t("composer.yourself_confirm.body")
+                        });
         this.send("popup", message);
       }
     }
@@ -148,13 +145,12 @@ export default Component.extend({
     this._lastSimilaritySearch = concat;
 
     const similarTopics = this.similarTopics;
-    const message =
-      this._similarTopicsMessage ||
-      composer.store.createRecord("composer-message", {
-        id: "similar_topics",
-        templateName: "similar-topics",
-        extraClass: "similar-topics"
-      });
+    const message = this._similarTopicsMessage ||
+                    composer.store.createRecord("composer-message", {
+                      id: "similar_topics",
+                      templateName: "similar-topics",
+                      extraClass: "similar-topics"
+                    });
 
     this._similarTopicsMessage = message;
 
@@ -204,11 +200,9 @@ export default Component.extend({
 
       this.set("checkedMessages", true);
       const queuedForTyping = this.queuedForTyping;
-      messages.forEach(msg =>
-        msg.wait_for_typing
-          ? queuedForTyping.addObject(msg)
-          : this.send("popup", msg)
-      );
+      messages.forEach(msg => msg.wait_for_typing
+                                ? queuedForTyping.addObject(msg)
+                                : this.send("popup", msg));
     };
 
     if (_messagesCache.cacheKey === cacheKey) {

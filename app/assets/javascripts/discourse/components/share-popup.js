@@ -1,25 +1,22 @@
-import { isEmpty } from "@ember/utils";
-import { bind, scheduleOnce } from "@ember/runloop";
+import {isEmpty} from "@ember/utils";
+import {bind, scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
-import { longDateNoYear } from "discourse/lib/formatter";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
+import {longDateNoYear} from "discourse/lib/formatter";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 import Sharing from "discourse/lib/sharing";
-import { nativeShare } from "discourse/lib/pwa-utils";
+import {nativeShare} from "discourse/lib/pwa-utils";
 
 export default Component.extend({
-  elementId: "share-link",
-  classNameBindings: ["visible"],
-  link: null,
-  visible: null,
+  elementId: "share-link", classNameBindings: ["visible"], link: null,
+    visible: null,
 
-  @discourseComputed
-  sources() {
+    @discourseComputed sources() {
     return Sharing.activeSources(this.siteSettings.share_links);
-  },
+  }
+  ,
 
-  @discourseComputed("type", "postNumber")
-  shareTitle(type, postNumber) {
+    @discourseComputed("type", "postNumber") shareTitle(type, postNumber) {
     if (type === "topic") {
       return I18n.t("share.topic");
     }
@@ -27,14 +24,15 @@ export default Component.extend({
       return I18n.t("share.post", { postNumber });
     }
     return I18n.t("share.topic");
-  },
+  }
+  ,
 
-  @discourseComputed("date")
-  displayDate(date) {
+    @discourseComputed("date") displayDate(date) {
     return longDateNoYear(new Date(date));
-  },
+  }
+  ,
 
-  _focusUrl() {
+    _focusUrl() {
     const link = this.link;
     if (!this.capabilities.touch) {
       const $linkInput = $("#share-link input");
@@ -50,9 +48,10 @@ export default Component.extend({
       range.selectNode($linkForTouch[0]);
       window.getSelection().addRange(range);
     }
-  },
+  }
+  ,
 
-  _showUrl($target, url) {
+    _showUrl($target, url) {
     const $currentTargetOffset = $target.offset();
     const $this = $(this.element);
 
@@ -89,9 +88,10 @@ export default Component.extend({
     this.set("visible", true);
 
     scheduleOnce("afterRender", this, this._focusUrl);
-  },
+  }
+  ,
 
-  _mouseDownHandler(event) {
+    _mouseDownHandler(event) {
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -105,9 +105,10 @@ export default Component.extend({
     this.send("close");
 
     return true;
-  },
+  }
+  ,
 
-  _clickHandler(event) {
+    _clickHandler(event) {
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -135,9 +136,10 @@ export default Component.extend({
     }
 
     return false;
-  },
+  }
+  ,
 
-  _keydownHandler(event) {
+    _keydownHandler(event) {
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -145,35 +147,36 @@ export default Component.extend({
     if (event.keyCode === 27) {
       this.send("close");
     }
-  },
+  }
+  ,
 
-  _shareUrlHandler(url, $target) {
+    _shareUrlHandler(url, $target) {
     this._showUrl($target, url);
-  },
+  }
+  ,
 
-  @on("init")
-  _setupHandlers() {
+    @on("init") _setupHandlers() {
     this._boundMouseDownHandler = bind(this, this._mouseDownHandler);
     this._boundClickHandler = bind(this, this._clickHandler);
     this._boundKeydownHandler = bind(this, this._keydownHandler);
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     $("html")
       .on("mousedown.outside-share-link", this._boundMouseDownHandler)
-      .on(
-        "click.discourse-share-link",
-        "button[data-share-url], .post-info .post-date[data-share-url]",
-        this._boundClickHandler
-      )
+      .on("click.discourse-share-link",
+          "button[data-share-url], .post-info .post-date[data-share-url]",
+          this._boundClickHandler)
       .on("keydown.share-view", this._boundKeydownHandler);
 
     this.appEvents.on("share:url", this, "_shareUrlHandler");
-  },
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     this._super(...arguments);
 
     $("html")
@@ -182,31 +185,26 @@ export default Component.extend({
       .off("keydown.share-view", this._boundKeydownHandler);
 
     this.appEvents.off("share:url", this, "_shareUrlHandler");
-  },
-
-  actions: {
-    replyAsNewTopic() {
-      const postStream = this.get("topic.postStream");
-      const postId = this.postId || postStream.findPostIdForPostNumber(1);
-      const post = postStream.findLoadedPost(postId);
-      this.replyAsNewTopic(post);
-      this.send("close");
-    },
-
-    close() {
-      this.setProperties({
-        link: null,
-        postNumber: null,
-        postId: null,
-        visible: false
-      });
-    },
-
-    share(source) {
-      Sharing.shareSource(source, {
-        url: this.link,
-        title: this.get("topic.title")
-      });
-    }
   }
+  ,
+
+    actions: {
+      replyAsNewTopic() {
+        const postStream = this.get("topic.postStream");
+        const postId = this.postId || postStream.findPostIdForPostNumber(1);
+        const post = postStream.findLoadedPost(postId);
+        this.replyAsNewTopic(post);
+        this.send("close");
+      },
+
+      close() {
+        this.setProperties(
+          { link: null, postNumber: null, postId: null, visible: false });
+      },
+
+      share(source) {
+        Sharing.shareSource(source,
+                            { url: this.link, title: this.get("topic.title") });
+      }
+    }
 });

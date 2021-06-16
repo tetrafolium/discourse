@@ -7,7 +7,6 @@ export default Component.extend({
   _highlightOnInsert: function() {
     const term = this.highlight;
     highlightText($(this.element), term);
-  }
-    .observes("highlight")
-    .on("didInsertElement")
+  }.observes("highlight")
+                        .on("didInsertElement")
 });

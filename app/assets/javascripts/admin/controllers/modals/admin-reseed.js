@@ -1,6 +1,6 @@
 import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 
 export default Controller.extend(ModalFunctionality, {
   loading: true,
@@ -11,10 +11,8 @@ export default Controller.extend(ModalFunctionality, {
   onShow() {
     ajax("/admin/customize/reseed")
       .then(result => {
-        this.setProperties({
-          categories: result.categories,
-          topics: result.topics
-        });
+        this.setProperties(
+          { categories: result.categories, topics: result.topics });
       })
       .finally(() => this.set("loading", false));
   },
@@ -33,10 +31,8 @@ export default Controller.extend(ModalFunctionality, {
         },
         method: "POST"
       })
-        .then(
-          () => this.send("closeModal"),
-          () => bootbox.alert(I18n.t("generic_error"))
-        )
+        .then(() => this.send("closeModal"),
+              () => bootbox.alert(I18n.t("generic_error")))
         .finally(() => this.set("reseeding", false));
     }
   }

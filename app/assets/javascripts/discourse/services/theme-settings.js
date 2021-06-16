@@ -1,4 +1,4 @@
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 import Service from "@ember/service";
 
 export default Service.extend({

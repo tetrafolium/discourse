@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { SECOND_FACTOR_METHODS } from "discourse/models/user";
+import {SECOND_FACTOR_METHODS} from "discourse/models/user";
 
 export default Component.extend({
   actions: {

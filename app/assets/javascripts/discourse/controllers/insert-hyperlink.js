@@ -1,8 +1,8 @@
-import { isEmpty } from "@ember/utils";
-import { cancel, debounce, scheduleOnce } from "@ember/runloop";
+import {isEmpty} from "@ember/utils";
+import {cancel, debounce, scheduleOnce} from "@ember/runloop";
 import Controller from "@ember/controller";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import { searchForTerm } from "discourse/lib/search";
+import {searchForTerm} from "discourse/lib/search";
 
 export default Controller.extend(ModalFunctionality, {
   _debounced: null,
@@ -22,8 +22,7 @@ export default Controller.extend(ModalFunctionality, {
 
       element.addEventListener("keydown", e => this.keyDown(e));
 
-      element
-        .closest(".modal-inner-container")
+      element.closest(".modal-inner-container")
         .addEventListener("mousedown", e => this.mouseDown(e));
 
       document.querySelector("input.link-url").focus();
@@ -32,31 +31,30 @@ export default Controller.extend(ModalFunctionality, {
 
   keyDown(e) {
     switch (e.which) {
-      case 40:
-        this.highlightRow(e, "down");
-        break;
-      case 38:
-        this.highlightRow(e, "up");
-        break;
-      case 13:
-        // override Enter behaviour when a row is selected
-        if (this.selectedRow > -1) {
-          const selected = document.querySelectorAll(
-            ".internal-link-results .search-link"
-          )[this.selectedRow];
-          this.selectLink(selected);
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        break;
-      case 27:
-        // Esc should cancel dropdown first
-        if (this.searchResults.length) {
-          this.set("searchResults", []);
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        break;
+    case 40:
+      this.highlightRow(e, "down");
+      break;
+    case 38:
+      this.highlightRow(e, "up");
+      break;
+    case 13:
+      // override Enter behaviour when a row is selected
+      if (this.selectedRow > -1) {
+        const selected = document.querySelectorAll(
+          ".internal-link-results .search-link")[this.selectedRow];
+        this.selectLink(selected);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      break;
+    case 27:
+      // Esc should cancel dropdown first
+      if (this.searchResults.length) {
+        this.set("searchResults", []);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      break;
     }
   },
 
@@ -71,9 +69,8 @@ export default Controller.extend(ModalFunctionality, {
       direction === "down" ? this.selectedRow + 1 : this.selectedRow - 1;
 
     if (index > -1 && index < this.searchResults.length) {
-      document
-        .querySelectorAll(".internal-link-results .search-link")
-        [index].focus();
+      document.querySelectorAll(".internal-link-results .search-link")[index]
+        .focus();
       this.set("selectedRow", index);
     } else {
       this.set("selectedRow", -1);
@@ -84,11 +81,8 @@ export default Controller.extend(ModalFunctionality, {
   },
 
   selectLink(el) {
-    this.setProperties({
-      linkUrl: el.href,
-      searchResults: [],
-      selectedRow: -1
-    });
+    this.setProperties(
+      { linkUrl: el.href, searchResults: [], selectedRow: -1 });
 
     if (!this.linkText && el.dataset.title) {
       this.set("linkText", el.dataset.title);
@@ -100,9 +94,7 @@ export default Controller.extend(ModalFunctionality, {
   triggerSearch() {
     if (this.linkUrl.length > 3 && this.linkUrl.indexOf("http") === -1) {
       this.set("searchLoading", true);
-      this._activeSearch = searchForTerm(this.linkUrl, {
-        typeFilter: "topic"
-      });
+      this._activeSearch = searchForTerm(this.linkUrl, { typeFilter: "topic" });
       this._activeSearch
         .then(results => {
           if (results && results.topics && results.topics.length > 0) {
@@ -124,17 +116,13 @@ export default Controller.extend(ModalFunctionality, {
     if (this._activeSearch) {
       this._activeSearch.abort();
     }
-    this.setProperties({
-      searchResults: [],
-      searchLoading: false
-    });
+    this.setProperties({ searchResults: [], searchLoading: false });
   },
 
   onClose() {
     const element = document.querySelector(".insert-link");
     element.removeEventListener("keydown", this.keyDown);
-    element
-      .closest(".modal-inner-container")
+    element.closest(".modal-inner-container")
       .removeEventListener("mousedown", this.mouseDown);
 
     cancel(this._debounced);

@@ -49,10 +49,8 @@ export default Component.extend({
     this._super(...arguments);
     const name = this.name;
     if (name) {
-      const args = buildArgsWithDeprecations(
-        this.args || {},
-        this.deprecatedArgs || {}
-      );
+      const args =
+        buildArgsWithDeprecations(this.args || {}, this.deprecatedArgs || {});
       this.set("connectors", renderedConnectorsFor(name, args, this));
     }
   }

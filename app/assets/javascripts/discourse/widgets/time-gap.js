@@ -1,5 +1,5 @@
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
 
 function description(attrs) {
   const daysSince = attrs.daysSince;

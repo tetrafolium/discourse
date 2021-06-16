@@ -1,14 +1,10 @@
 import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
-import { hashString } from "discourse/lib/hash";
-import { underscore } from "@ember/string";
+import {ajax} from "discourse/lib/ajax";
+import {hashString} from "discourse/lib/hash";
+import {underscore} from "@ember/string";
 
 const ADMIN_MODELS = [
-  "plugin",
-  "theme",
-  "embeddable-host",
-  "web-hook",
-  "web-hook-event",
+  "plugin", "theme", "embeddable-host", "web-hook", "web-hook-event",
   "flagged-topic"
 ];
 
@@ -45,29 +41,27 @@ export default EmberObject.extend({
   appendQueryParams(path, findArgs, extension) {
     if (findArgs) {
       if (typeof findArgs === "object") {
-        const queryString = Object.keys(findArgs)
-          .reject(k => !findArgs[k])
-          .map(k => k + "=" + encodeURIComponent(findArgs[k]));
+        const queryString =
+          Object.keys(findArgs)
+            .reject(k => !findArgs[k])
+            .map(k => k + "=" + encodeURIComponent(findArgs[k]));
 
         if (queryString.length) {
-          return `${path}${extension ? extension : ""}?${queryString.join(
-            "&"
-          )}`;
+          return `${path}${extension ? extension : ""}?${
+            queryString.join("&")}`;
         }
       } else {
         // It's serializable as a string if not an object
         return `${path}/${encodeURIComponent(findArgs)}${
-          extension ? extension : ""
-        }`;
+          extension ? extension : ""}`;
       }
     }
     return path;
   },
 
   pathFor(store, type, findArgs) {
-    let path =
-      this.basePath(store, type, findArgs) +
-      underscore(store.pluralize(this.apiNameFor(type)));
+    let path = this.basePath(store, type, findArgs) +
+               underscore(store.pluralize(this.apiNameFor(type)));
     return this.appendQueryParams(path, findArgs);
   },
 
@@ -112,28 +106,24 @@ export default EmberObject.extend({
     const typeField = underscore(this.apiNameFor(type));
     data[typeField] = attrs;
 
-    return ajax(
-      this.pathFor(store, type, id),
-      this.getPayload("PUT", data)
-    ).then(function(json) {
-      return new Result(json[typeField], json);
-    });
+    return ajax(this.pathFor(store, type, id), this.getPayload("PUT", data))
+      .then(function(json) {
+        return new Result(json[typeField], json);
+      });
   },
 
   createRecord(store, type, attrs) {
     const data = {};
     const typeField = underscore(this.apiNameFor(type));
     data[typeField] = attrs;
-    return ajax(this.pathFor(store, type), this.getPayload("POST", data)).then(
-      function(json) {
+    return ajax(this.pathFor(store, type), this.getPayload("POST", data))
+      .then(function(json) {
         return new Result(json[typeField], json);
-      }
-    );
+      });
   },
 
   destroyRecord(store, type, record) {
-    return ajax(this.pathFor(store, type, record.get("id")), {
-      method: "DELETE"
-    });
+    return ajax(this.pathFor(store, type, record.get("id")),
+                { method: "DELETE" });
   }
 });

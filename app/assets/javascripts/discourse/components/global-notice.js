@@ -1,7 +1,7 @@
-import { bind, cancel } from "@ember/runloop";
+import {bind, cancel} from "@ember/runloop";
 import Component from "@ember/component";
 import LogsNotice from "discourse/services/logs-notice";
-import EmberObject, { computed } from "@ember/object";
+import EmberObject, {computed} from "@ember/object";
 
 const _pluginNotices = [];
 
@@ -36,10 +36,8 @@ const Notice = EmberObject.extend({
       dismissDuration: null
     };
 
-    this.options = this.set(
-      "options",
-      Object.assign(defaults, this.options || {})
-    );
+    this.options =
+      this.set("options", Object.assign(defaults, this.options || {}));
   }
 });
 
@@ -59,89 +57,64 @@ export default Component.extend({
   },
 
   notices: computed(
-    "site.isReadOnly",
-    "siteSettings.disable_emails",
+    "site.isReadOnly", "siteSettings.disable_emails",
     "logNotice.{id,text,hidden}",
     function() {
       let notices = [];
 
       if ($.cookie("dosp") === "1") {
         $.removeCookie("dosp", { path: "/" });
-        notices.push(
-          Notice.create({
-            text: I18n.t("forced_anonymous"),
-            id: "forced-anonymous"
-          })
-        );
+        notices.push(Notice.create(
+          { text: I18n.t("forced_anonymous"), id: "forced-anonymous" }));
       }
 
       if (this.session && this.session.safe_mode) {
-        notices.push(
-          Notice.create({ text: I18n.t("safe_mode.enabled"), id: "safe-mode" })
-        );
+        notices.push(Notice.create(
+          { text: I18n.t("safe_mode.enabled"), id: "safe-mode" }));
       }
 
       if (this.site.isReadOnly) {
-        notices.push(
-          Notice.create({
-            text: I18n.t("read_only_mode.enabled"),
-            id: "alert-read-only"
-          })
-        );
+        notices.push(Notice.create(
+          { text: I18n.t("read_only_mode.enabled"), id: "alert-read-only" }));
       }
 
-      if (
-        this.siteSettings.disable_emails === "yes" ||
-        this.siteSettings.disable_emails === "non-staff"
-      ) {
-        notices.push(
-          Notice.create({
-            text: I18n.t("emails_are_disabled"),
-            id: "alert-emails-disabled"
-          })
-        );
+      if (this.siteSettings.disable_emails === "yes" ||
+          this.siteSettings.disable_emails === "non-staff") {
+        notices.push(Notice.create({
+          text: I18n.t("emails_are_disabled"),
+          id: "alert-emails-disabled"
+        }));
       }
 
       if (this.site.wizard_required) {
-        const requiredText = I18n.t("wizard_required", {
-          url: Discourse.getURL("/wizard")
-        });
+        const requiredText =
+          I18n.t("wizard_required", { url: Discourse.getURL("/wizard") });
         notices.push(Notice.create({ text: requiredText, id: "alert-wizard" }));
       }
 
-      if (
-        this.get("currentUser.staff") &&
-        this.siteSettings.bootstrap_mode_enabled
-      ) {
+      if (this.get("currentUser.staff") &&
+          this.siteSettings.bootstrap_mode_enabled) {
         if (this.siteSettings.bootstrap_mode_min_users > 0) {
-          notices.push(
-            Notice.create({
-              text: I18n.t("bootstrap_mode_enabled", {
-                min_users: this.siteSettings.bootstrap_mode_min_users
-              }),
-              id: "alert-bootstrap-mode"
-            })
-          );
+          notices.push(Notice.create({
+            text:
+              I18n.t("bootstrap_mode_enabled",
+                     { min_users: this.siteSettings.bootstrap_mode_min_users }),
+            id: "alert-bootstrap-mode"
+          }));
         } else {
-          notices.push(
-            Notice.create({
-              text: I18n.t("bootstrap_mode_disabled"),
-              id: "alert-bootstrap-mode"
-            })
-          );
+          notices.push(Notice.create({
+            text: I18n.t("bootstrap_mode_disabled"),
+            id: "alert-bootstrap-mode"
+          }));
         }
       }
 
-      if (
-        this.siteSettings.global_notice &&
-        this.siteSettings.global_notice.length
-      ) {
-        notices.push(
-          Notice.create({
-            text: this.siteSettings.global_notice,
-            id: "alert-global-notice"
-          })
-        );
+      if (this.siteSettings.global_notice &&
+          this.siteSettings.global_notice.length) {
+        notices.push(Notice.create({
+          text: this.siteSettings.global_notice,
+          id: "alert-global-notice"
+        }));
       }
 
       if (this.logNotice) {
@@ -173,8 +146,7 @@ export default Component.extend({
           }
         }
       });
-    }
-  ),
+    }),
 
   actions: {
     dismissNotice(notice) {
@@ -203,10 +175,8 @@ export default Component.extend({
   _tearDownObservers() {
     if (this._boundLogsNoticeHandler) {
       LogsNotice.current().removeObserver("text", this._boundLogsNoticeHandler);
-      LogsNotice.current().removeObserver(
-        "hidden",
-        this._boundLogsNoticeHandler
-      );
+      LogsNotice.current().removeObserver("hidden",
+                                          this._boundLogsNoticeHandler);
       cancel(this._boundLogsNoticeHandler);
     }
   },

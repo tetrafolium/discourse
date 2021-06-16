@@ -1,7 +1,7 @@
-import { warn } from "@ember/debug";
-import { equal } from "@ember/object/computed";
+import {warn} from "@ember/debug";
+import {equal} from "@ember/object/computed";
 import EmberObject from "@ember/object";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 const RestModel = EmberObject.extend({
   isNew: equal("__state", "new"),
@@ -19,15 +19,13 @@ const RestModel = EmberObject.extend({
     props = props || this.updateProperties();
 
     this.set("isSaving", true);
-    return this.store
-      .update(this.__type, this.id, props)
+    return this.store.update(this.__type, this.id, props)
       .then(res => {
         const payload = this.__munge(res.payload || res.responseJson);
 
         if (payload.success === "OK") {
-          warn("An update call should return the updated attributes", {
-            id: "discourse.rest-model.update-attributes"
-          });
+          warn("An update call should return the updated attributes",
+               { id: "discourse.rest-model.update-attributes" });
           res = props;
         }
 
@@ -51,8 +49,7 @@ const RestModel = EmberObject.extend({
     const adapter = this.store.adapterFor(this.__type);
 
     this.set("isSaving", true);
-    return adapter
-      .createRecord(this.store, this.__type, props)
+    return adapter.createRecord(this.store, this.__type, props)
       .then(res => {
         if (!res) {
           throw new Error("Received no data back from createRecord");
@@ -73,8 +70,7 @@ const RestModel = EmberObject.extend({
 
   createProperties() {
     throw new Error(
-      "You must overwrite `createProperties()` before saving a record"
-    );
+      "You must overwrite `createProperties()` before saving a record");
   },
 
   save(props) {

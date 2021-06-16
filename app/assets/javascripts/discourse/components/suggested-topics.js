@@ -1,52 +1,46 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { computed, get } from "@ember/object";
+import {computed, get} from "@ember/object";
 import Component from "@ember/component";
-import { categoryBadgeHTML } from "discourse/helpers/category-link";
+import {categoryBadgeHTML} from "discourse/helpers/category-link";
 import Site from "discourse/models/site";
 
 export default Component.extend({
-  elementId: "suggested-topics",
-  classNames: ["suggested-topics"],
+  elementId: "suggested-topics", classNames: ["suggested-topics"],
 
-  suggestedTitleLabel: computed("topic", function() {
-    const href = this.currentUser && this.currentUser.pmPath(this.topic);
-    if (this.topic.get("isPrivateMessage") && href) {
-      return "suggested_topics.pm_title";
-    } else {
-      return "suggested_topics.title";
-    }
-  }),
+    suggestedTitleLabel: computed(
+      "topic",
+      function() {
+        const href = this.currentUser && this.currentUser.pmPath(this.topic);
+        if (this.topic.get("isPrivateMessage") && href) {
+          return "suggested_topics.pm_title";
+        } else {
+          return "suggested_topics.title";
+        }
+      }),
 
-  @discourseComputed("topic", "topicTrackingState.messageCount")
-  browseMoreMessage(topic) {
+    @discourseComputed("topic", "topicTrackingState.messageCount")
+    browseMoreMessage(topic) {
     // TODO decide what to show for pms
     if (topic.get("isPrivateMessage")) {
       return;
     }
 
     const opts = {
-      latestLink: `<a href="${Discourse.getURL("/latest")}">${I18n.t(
-        "topic.view_latest_topics"
-      )}</a>`
+      latestLink: `<a href="${Discourse.getURL("/latest")}">${
+        I18n.t("topic.view_latest_topics")}</a>`
     };
     let category = topic.get("category");
 
-    if (
-      category &&
-      get(category, "id") === Site.currentProp("uncategorized_category_id")
-    ) {
+    if (category &&
+        get(category, "id") === Site.currentProp("uncategorized_category_id")) {
       category = null;
     }
 
     if (category) {
       opts.catLink = categoryBadgeHTML(category);
     } else {
-      opts.catLink =
-        '<a href="' +
-        Discourse.getURL("/categories") +
-        '">' +
-        I18n.t("topic.browse_all_categories") +
-        "</a>";
+      opts.catLink = '<a href="' + Discourse.getURL("/categories") + '">' +
+                     I18n.t("topic.browse_all_categories") + "</a>";
     }
 
     const unreadTopics = this.topicTrackingState.countUnread();

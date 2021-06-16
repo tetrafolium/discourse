@@ -1,21 +1,20 @@
-import { isEmpty } from "@ember/utils";
-import { equal, and, empty } from "@ember/object/computed";
+import {isEmpty} from "@ember/utils";
+import {equal, and, empty} from "@ember/object/computed";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { FORMAT } from "select-kit/components/future-date-input-selector";
-import { PUBLISH_TO_CATEGORY_STATUS_TYPE } from "discourse/controllers/edit-topic-timer";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
+import {FORMAT} from "select-kit/components/future-date-input-selector";
+import {
+  PUBLISH_TO_CATEGORY_STATUS_TYPE
+} from "discourse/controllers/edit-topic-timer";
 
 export default Component.extend({
-  selection: null,
-  date: null,
-  time: null,
-  includeDateTime: true,
-  isCustom: equal("selection", "pick_date_and_time"),
-  isBasedOnLastPost: equal("selection", "set_based_on_last_post"),
-  displayDateAndTimePicker: and("includeDateTime", "isCustom"),
-  displayLabel: null,
+  selection: null, date: null, time: null, includeDateTime: true,
+    isCustom: equal("selection", "pick_date_and_time"),
+    isBasedOnLastPost: equal("selection", "set_based_on_last_post"),
+    displayDateAndTimePicker: and("includeDateTime", "isCustom"),
+    displayLabel: null,
 
-  init() {
+    init() {
     this._super(...arguments);
 
     if (this.input) {
@@ -31,12 +30,12 @@ export default Component.extend({
         this._updateInput();
       }
     }
-  },
+  }
+  ,
 
-  timeInputDisabled: empty("date"),
+    timeInputDisabled: empty("date"),
 
-  @observes("date", "time")
-  _updateInput() {
+    @observes("date", "time") _updateInput() {
     if (!this.date) {
       this.set("time", null);
     }
@@ -50,15 +49,16 @@ export default Component.extend({
     } else {
       this.attrs.onChangeInput && this.attrs.onChangeInput(null);
     }
-  },
+  }
+  ,
 
-  @observes("isBasedOnLastPost")
-  _updateBasedOnLastPost() {
+    @observes("isBasedOnLastPost") _updateBasedOnLastPost() {
     this.set("basedOnLastPost", this.isBasedOnLastPost);
-  },
+  }
+  ,
 
-  @discourseComputed("input", "isBasedOnLastPost")
-  duration(input, isBasedOnLastPost) {
+    @discourseComputed("input",
+                       "isBasedOnLastPost") duration(input, isBasedOnLastPost) {
     const now = moment();
 
     if (isBasedOnLastPost) {
@@ -66,43 +66,30 @@ export default Component.extend({
     } else {
       return moment(input) - now;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("input", "isBasedOnLastPost")
-  executeAt(input, isBasedOnLastPost) {
+    @discourseComputed("input", "isBasedOnLastPost")
+    executeAt(input, isBasedOnLastPost) {
     if (isBasedOnLastPost) {
-      return moment()
-        .add(input, "hours")
-        .format(FORMAT);
+      return moment().add(input, "hours").format(FORMAT);
     } else {
       return input;
     }
-  },
+  }
+  ,
 
-  didReceiveAttrs() {
+    didReceiveAttrs() {
     this._super(...arguments);
 
     if (this.label) this.set("displayLabel", I18n.t(this.label));
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "statusType",
-    "input",
-    "isCustom",
-    "date",
-    "time",
-    "willCloseImmediately",
-    "categoryId"
-  )
-  showTopicStatusInfo(
-    statusType,
-    input,
-    isCustom,
-    date,
-    time,
-    willCloseImmediately,
-    categoryId
-  ) {
+    @discourseComputed("statusType", "input", "isCustom", "date", "time",
+                       "willCloseImmediately", "categoryId")
+    showTopicStatusInfo(statusType, input, isCustom, date, time,
+                        willCloseImmediately, categoryId) {
     if (!statusType || willCloseImmediately) return false;
 
     if (statusType === PUBLISH_TO_CATEGORY_STATUS_TYPE && isEmpty(categoryId)) {
@@ -117,23 +104,24 @@ export default Component.extend({
     } else {
       return input;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("isBasedOnLastPost", "input", "lastPostedAt")
-  willCloseImmediately(isBasedOnLastPost, input, lastPostedAt) {
+    @discourseComputed("isBasedOnLastPost", "input", "lastPostedAt")
+    willCloseImmediately(isBasedOnLastPost, input, lastPostedAt) {
     if (isBasedOnLastPost && input) {
       let closeDate = moment(lastPostedAt);
       closeDate = closeDate.add(input, "hours");
       return closeDate < moment();
     }
-  },
+  }
+  ,
 
-  @discourseComputed("isBasedOnLastPost", "lastPostedAt")
-  willCloseI18n(isBasedOnLastPost, lastPostedAt) {
+    @discourseComputed("isBasedOnLastPost", "lastPostedAt")
+    willCloseI18n(isBasedOnLastPost, lastPostedAt) {
     if (isBasedOnLastPost) {
-      const diff = Math.round(
-        (new Date() - new Date(lastPostedAt)) / (1000 * 60 * 60)
-      );
+      const diff =
+        Math.round((new Date() - new Date(lastPostedAt)) / (1000 * 60 * 60));
       return I18n.t("topic.auto_close_immediate", { count: diff });
     }
   }

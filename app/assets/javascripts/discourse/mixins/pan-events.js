@@ -24,13 +24,13 @@ export default Mixin.create({
 
   addTouchListeners($element) {
     if (this.site.mobileView) {
-      $element
-        .on("touchstart", e => e.touches && this._panStart(e.touches[0]))
-        .on("touchmove", e => {
-          const touchEvent = e.touches[0];
-          touchEvent.type = "pointermove";
-          this._panMove(touchEvent, e);
-        })
+      $element.on("touchstart", e => e.touches && this._panStart(e.touches[0]))
+        .on("touchmove",
+            e => {
+              const touchEvent = e.touches[0];
+              touchEvent.type = "pointermove";
+              this._panMove(touchEvent, e);
+            })
         .on("touchend", e => this._panMove({ type: "pointerup" }, e))
         .on("touchcancel", e => this._panMove({ type: "pointercancel" }, e));
     }
@@ -38,8 +38,7 @@ export default Mixin.create({
 
   removeTouchListeners($element) {
     if (this.site.mobileView) {
-      $element
-        .off("touchstart")
+      $element.off("touchstart")
         .off("touchmove")
         .off("touchend")
         .off("touchcancel");
@@ -69,18 +68,16 @@ export default Mixin.create({
     //calculate delta x, y, distance from START location
     const deltaX = e.clientX - oldState.startLocation.x;
     const deltaY = e.clientY - oldState.startLocation.y;
-    const distance = Math.round(
-      Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
-    );
+    const distance =
+      Math.round(Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)));
 
     //calculate velocity from previous event center location
     const eventDeltaX = e.clientX - oldState.center.x;
     const eventDeltaY = e.clientY - oldState.center.y;
     const velocityX = eventDeltaX / timeDiffSeconds;
     const velocityY = eventDeltaY / timeDiffSeconds;
-    const deltaDistance = Math.sqrt(
-      Math.pow(eventDeltaX, 2) + Math.pow(eventDeltaY, 2)
-    );
+    const deltaDistance =
+      Math.sqrt(Math.pow(eventDeltaX, 2) + Math.pow(eventDeltaY, 2));
     const velocity = deltaDistance / timeDiffSeconds;
 
     return {
@@ -129,10 +126,8 @@ export default Mixin.create({
     newState.originalEvent = originalEvent;
     if (previousState.start && "panStart" in this) {
       this.panStart(newState);
-    } else if (
-      (e.type === "pointerup" || e.type === "pointercancel") &&
-      "panEnd" in this
-    ) {
+    } else if ((e.type === "pointerup" || e.type === "pointercancel") &&
+               "panEnd" in this) {
       this.panEnd(newState);
     } else if (e.type === "pointermove" && "panMove" in this) {
       this.panMove(newState);

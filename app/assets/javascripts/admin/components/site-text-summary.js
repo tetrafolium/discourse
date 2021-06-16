@@ -1,29 +1,26 @@
 import Component from "@ember/component";
-import { on } from "discourse-common/utils/decorators";
+import {on} from "discourse-common/utils/decorators";
 
 export default Component.extend({
-  classNames: ["site-text"],
-  classNameBindings: ["siteText.overridden"],
+  classNames: ["site-text"], classNameBindings: ["siteText.overridden"],
 
-  @on("didInsertElement")
-  highlightTerm() {
+    @on("didInsertElement") highlightTerm() {
     const term = this._searchTerm();
 
     if (term) {
-      $(
-        this.element.querySelector(".site-text-id, .site-text-value")
-      ).highlight(term, {
-        className: "text-highlight"
-      });
+      $(this.element.querySelector(".site-text-id, .site-text-value"))
+        .highlight(term, { className: "text-highlight" });
     }
     $(this.element.querySelector(".site-text-value")).ellipsis();
-  },
+  }
+  ,
 
-  click() {
+    click() {
     this.editAction(this.siteText);
-  },
+  }
+  ,
 
-  _searchTerm() {
+    _searchTerm() {
     const regex = this.searchRegex;
     const siteText = this.siteText;
 

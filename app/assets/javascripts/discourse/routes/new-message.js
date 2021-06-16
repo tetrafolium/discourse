@@ -1,4 +1,4 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
 import User from "discourse/models/user";
 import Group from "discourse/models/group";
@@ -16,18 +16,11 @@ export default DiscourseRoute.extend({
           User.findByUsername(encodeURIComponent(params.username))
             .then(user => {
               if (user.can_send_private_message_to_user) {
-                next(() =>
-                  e.send(
-                    "createNewMessageViaParams",
-                    user.username,
-                    params.title,
-                    params.body
-                  )
-                );
+                next(() => e.send("createNewMessageViaParams", user.username,
+                                  params.title, params.body));
               } else {
                 bootbox.alert(
-                  I18n.t("composer.cant_send_pm", { username: user.username })
-                );
+                  I18n.t("composer.cant_send_pm", { username: user.username }));
               }
             })
             .catch(() => bootbox.alert(I18n.t("generic_error")));
@@ -36,18 +29,11 @@ export default DiscourseRoute.extend({
           Group.messageable(groupName)
             .then(result => {
               if (result.messageable) {
-                next(() =>
-                  e.send(
-                    "createNewMessageViaParams",
-                    groupName,
-                    params.title,
-                    params.body
-                  )
-                );
+                next(() => e.send("createNewMessageViaParams", groupName,
+                                  params.title, params.body));
               } else {
                 bootbox.alert(
-                  I18n.t("composer.cant_send_pm", { username: groupName })
-                );
+                  I18n.t("composer.cant_send_pm", { username: groupName }));
               }
             })
             .catch(() => bootbox.alert(I18n.t("generic_error")));

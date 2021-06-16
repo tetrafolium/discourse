@@ -1,27 +1,19 @@
 import ArrayProxy from "@ember/array/proxy";
 import discourseComputed from "discourse-common/utils/decorators";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 export default ArrayProxy.extend({
-  loading: false,
-  loadingMore: false,
-  totalRows: 0,
-  refreshing: false,
+  loading: false, loadingMore: false, totalRows: 0, refreshing: false,
 
-  content: null,
-  loadMoreUrl: null,
-  refreshUrl: null,
-  findArgs: null,
-  store: null,
-  __type: null,
-  resultSetMeta: null,
+    content: null, loadMoreUrl: null, refreshUrl: null, findArgs: null,
+    store: null, __type: null, resultSetMeta: null,
 
-  @discourseComputed("totalRows", "length")
-  canLoadMore(totalRows, length) {
+    @discourseComputed("totalRows", "length") canLoadMore(totalRows, length) {
     return length < totalRows;
-  },
+  }
+  ,
 
-  loadMore() {
+    loadMore() {
     const loadMoreUrl = this.loadMoreUrl;
     if (!loadMoreUrl) {
       return;
@@ -31,15 +23,15 @@ export default ArrayProxy.extend({
     if (this.length < totalRows && !this.loadingMore) {
       this.set("loadingMore", true);
 
-      return this.store
-        .appendResults(this, this.__type, loadMoreUrl)
+      return this.store.appendResults(this, this.__type, loadMoreUrl)
         .finally(() => this.set("loadingMore", false));
     }
 
     return Promise.resolve();
-  },
+  }
+  ,
 
-  refresh() {
+    refresh() {
     if (this.refreshing) {
       return;
     }
@@ -50,8 +42,7 @@ export default ArrayProxy.extend({
     }
 
     this.set("refreshing", true);
-    return this.store
-      .refreshResults(this, this.__type, refreshUrl)
+    return this.store.refreshResults(this, this.__type, refreshUrl)
       .finally(() => this.set("refreshing", false));
   }
 });

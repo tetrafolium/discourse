@@ -1,5 +1,5 @@
 import Application from "@ember/application";
-import { mapRoutes } from "discourse/mapping-router";
+import {mapRoutes} from "discourse/mapping-router";
 
 export default {
   name: "map-routes",

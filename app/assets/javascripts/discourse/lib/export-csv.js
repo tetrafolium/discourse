@@ -1,11 +1,9 @@
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {ajax} from "discourse/lib/ajax";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 function exportEntityByType(type, entity, args) {
-  return ajax("/export_csv/export_entity.json", {
-    method: "POST",
-    data: { entity, args }
-  });
+  return ajax("/export_csv/export_entity.json",
+              { method: "POST", data: { entity, args } });
 }
 
 export function exportUserArchive() {

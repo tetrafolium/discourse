@@ -1,17 +1,12 @@
-import Controller, { inject as controller } from "@ember/controller";
+import Controller, {inject as controller} from "@ember/controller";
 import discourseDebounce from "discourse/lib/debounce";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
 
 export default Controller.extend({
-  application: controller(),
-  queryParams: ["order", "asc", "filter", "type"],
-  order: null,
-  asc: null,
-  filter: "",
-  type: null,
+  application: controller(), queryParams: ["order", "asc", "filter", "type"],
+    order: null, asc: null, filter: "", type: null,
 
-  @discourseComputed("model.extras.type_filters")
-  types(typeFilters) {
+    @discourseComputed("model.extras.type_filters") types(typeFilters) {
     const types = [];
 
     if (typeFilters) {
@@ -21,25 +16,27 @@ export default Controller.extend({
     }
 
     return types;
-  },
-
-  @observes("filterInput")
-  _setFilter: discourseDebounce(function() {
-    this.set("filter", this.filterInput);
-  }, 500),
-
-  @observes("model.canLoadMore")
-  _showFooter() {
-    this.set("application.showFooter", !this.get("model.canLoadMore"));
-  },
-
-  actions: {
-    loadMore() {
-      this.model.loadMore();
-    },
-
-    new() {
-      this.transitionToRoute("groups.new");
-    }
   }
+  ,
+
+    @observes("filterInput") _setFilter: discourseDebounce(
+      function() {
+        this.set("filter", this.filterInput);
+      },
+      500),
+
+    @observes("model.canLoadMore") _showFooter() {
+    this.set("application.showFooter", !this.get("model.canLoadMore"));
+  }
+  ,
+
+    actions: {
+      loadMore() {
+        this.model.loadMore();
+      },
+
+      new () {
+        this.transitionToRoute("groups.new");
+      }
+    }
 });

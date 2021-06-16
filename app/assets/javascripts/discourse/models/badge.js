@@ -1,20 +1,20 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { none } from "@ember/object/computed";
+import {none} from "@ember/object/computed";
 import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import BadgeGrouping from "discourse/models/badge-grouping";
 import RestModel from "discourse/models/rest";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 const Badge = RestModel.extend({
   newBadge: none("id"),
 
-  @discourseComputed
-  url() {
+    @discourseComputed url() {
     return Discourse.getURL(`/badges/${this.id}/${this.slug}`);
-  },
+  }
+  ,
 
-  updateFromJson(json) {
+    updateFromJson(json) {
     if (json.badge) {
       Object.keys(json.badge).forEach(key => this.set(key, json.badge[key]));
     }
@@ -25,17 +25,17 @@ const Badge = RestModel.extend({
         }
       });
     }
-  },
+  }
+  ,
 
-  @discourseComputed("badge_type.name")
-  badgeTypeClassName(type) {
+    @discourseComputed("badge_type.name") badgeTypeClassName(type) {
     type = type || "";
     return `badge-type-${type.toLowerCase()}`;
-  },
+  }
+  ,
 
-  save(data) {
-    let url = "/admin/badges",
-      type = "POST";
+    save(data) {
+    let url = "/admin/badges", type = "POST";
 
     if (this.id) {
       // We are updating an existing badge.
@@ -51,14 +51,13 @@ const Badge = RestModel.extend({
       .catch(error => {
         throw new Error(error);
       });
-  },
+  }
+  ,
 
-  destroy() {
+    destroy() {
     if (this.newBadge) return Promise.resolve();
 
-    return ajax(`/admin/badges/${this.id}`, {
-      type: "DELETE"
-    });
+    return ajax(`/admin/badges/${this.id}`, { type: "DELETE" });
   }
 });
 
@@ -69,18 +68,14 @@ Badge.reopenClass({
     if ("badge_types" in json) {
       json.badge_types.forEach(
         badgeTypeJson =>
-          (badgeTypes[badgeTypeJson.id] = EmberObject.create(badgeTypeJson))
-      );
+          (badgeTypes[badgeTypeJson.id] = EmberObject.create(badgeTypeJson)));
     }
 
     const badgeGroupings = {};
     if ("badge_groupings" in json) {
       json.badge_groupings.forEach(
-        badgeGroupingJson =>
-          (badgeGroupings[badgeGroupingJson.id] = BadgeGrouping.create(
-            badgeGroupingJson
-          ))
-      );
+        badgeGroupingJson => (badgeGroupings[badgeGroupingJson.id] =
+                                BadgeGrouping.create(badgeGroupingJson)));
     }
 
     // Create Badge objects.
@@ -112,15 +107,13 @@ Badge.reopenClass({
       listable = "?only_listable=true";
     }
 
-    return ajax(`/badges.json${listable}`, { data: opts }).then(badgesJson =>
-      Badge.createFromJson(badgesJson)
-    );
+    return ajax(`/badges.json${listable}`, { data: opts })
+      .then(badgesJson => Badge.createFromJson(badgesJson));
   },
 
   findById(id) {
-    return ajax(`/badges/${id}`).then(badgeJson =>
-      Badge.createFromJson(badgeJson)
-    );
+    return ajax(`/badges/${id}`)
+      .then(badgeJson => Badge.createFromJson(badgeJson));
   }
 });
 

@@ -7,80 +7,80 @@ export function Placeholder(viewName) {
 }
 
 export default EmberObject.extend(EmberArray, {
-  posts: null,
-  _appendingIds: null,
+  posts: null, _appendingIds: null,
 
-  init() {
+    init() {
     this._appendingIds = {};
-  },
+  }
+  ,
 
-  @discourseComputed
-  length() {
-    return (
-      this.get("posts.length") + Object.keys(this._appendingIds || {}).length
-    );
-  },
+    @discourseComputed length() {
+    return (this.get("posts.length") +
+            Object.keys(this._appendingIds || {}).length);
+  }
+  ,
 
-  nextObject(index) {
+    nextObject(index) {
     return this.objectAt(index);
-  },
+  }
+  ,
 
-  _changeArray(cb, offset, removed, inserted) {
+    _changeArray(cb, offset, removed, inserted) {
     this.arrayContentWillChange(offset, removed, inserted);
     cb();
     this.arrayContentDidChange(offset, removed, inserted);
     this.notifyPropertyChange("length");
-  },
+  }
+  ,
 
-  clear(cb) {
+    clear(cb) {
     this._changeArray(cb, 0, this.get("posts.length"), 0);
-  },
+  }
+  ,
 
-  appendPost(cb) {
+    appendPost(cb) {
     this._changeArray(cb, this.get("posts.length"), 0, 1);
-  },
+  }
+  ,
 
-  removePost(cb) {
+    removePost(cb) {
     this._changeArray(cb, this.get("posts.length") - 1, 1, 0);
-  },
+  }
+  ,
 
-  refreshAll(cb) {
+    refreshAll(cb) {
     const length = this.get("posts.length");
     this._changeArray(cb, 0, length, length);
-  },
+  }
+  ,
 
-  appending(postIds) {
-    this._changeArray(
-      () => {
-        const appendingIds = this._appendingIds;
-        postIds.forEach(pid => (appendingIds[pid] = true));
-      },
-      this.length,
-      0,
-      postIds.length
-    );
-  },
+    appending(postIds) {
+    this._changeArray(() => {
+      const appendingIds = this._appendingIds;
+      postIds.forEach(pid => (appendingIds[pid] = true));
+    }, this.length, 0, postIds.length);
+  }
+  ,
 
-  finishedAppending(postIds) {
+    finishedAppending(postIds) {
     this._changeArray(
       () => {
         const appendingIds = this._appendingIds;
         postIds.forEach(pid => delete appendingIds[pid]);
       },
-      this.get("posts.length") - postIds.length,
-      postIds.length,
-      postIds.length
-    );
-  },
+      this.get("posts.length") - postIds.length, postIds.length,
+      postIds.length);
+  }
+  ,
 
-  finishedPrepending(postIds) {
+    finishedPrepending(postIds) {
     this._changeArray(function() {}, 0, 0, postIds.length);
-  },
+  }
+  ,
 
-  objectAt(index) {
+    objectAt(index) {
     const posts = this.posts;
-    return index < posts.length
-      ? posts[index]
-      : new Placeholder("post-placeholder");
+    return index < posts.length ? posts[index]
+                                : new Placeholder("post-placeholder");
   }
 });

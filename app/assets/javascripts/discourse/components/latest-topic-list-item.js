@@ -6,11 +6,8 @@ import {
 
 export default Component.extend({
   attributeBindings: ["topic.id:data-topic-id"],
-  classNameBindings: [
-    ":latest-topic-list-item",
-    "topic.archived",
-    "topic.visited"
-  ],
+  classNameBindings:
+    [":latest-topic-list-item", "topic.archived", "topic.visited"],
 
   showEntrance,
   navigateToTopic,

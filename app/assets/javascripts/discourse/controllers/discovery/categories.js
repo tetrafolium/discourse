@@ -1,8 +1,8 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { reads } from "@ember/object/computed";
-import { inject as controller } from "@ember/controller";
+import {reads} from "@ember/object/computed";
+import {inject as controller} from "@ember/controller";
 import DiscoveryController from "discourse/controllers/discovery";
-import { dasherize } from "@ember/string";
+import {dasherize} from "@ember/string";
 
 const subcategoryStyleComponentNames = {
   rows: "categories_only",
@@ -14,31 +14,28 @@ const subcategoryStyleComponentNames = {
 export default DiscoveryController.extend({
   discovery: controller(),
 
-  // this makes sure the composer isn't scoping to a specific category
-  category: null,
+    // this makes sure the composer isn't scoping to a specific category
+    category: null,
 
-  canEdit: reads("currentUser.staff"),
+    canEdit: reads("currentUser.staff"),
 
-  @discourseComputed("model.categories.[].featuredTopics.length")
-  latestTopicOnly() {
-    return (
-      this.get("model.categories").find(
-        c => c.get("featuredTopics.length") > 1
-      ) === undefined
-    );
-  },
+    @discourseComputed("model.categories.[].featuredTopics.length")
+    latestTopicOnly() {
+    return (this.get("model.categories")
+              .find(c => c.get("featuredTopics.length") > 1) === undefined);
+  }
+  ,
 
-  @discourseComputed("model.parentCategory")
-  categoryPageStyle(parentCategory) {
+    @discourseComputed("model.parentCategory")
+    categoryPageStyle(parentCategory) {
     let style = this.site.mobileView
-      ? "categories_with_featured_topics"
-      : this.siteSettings.desktop_category_page_style;
+                  ? "categories_with_featured_topics"
+                  : this.siteSettings.desktop_category_page_style;
 
     if (parentCategory) {
-      style =
-        subcategoryStyleComponentNames[
-          parentCategory.get("subcategory_list_style")
-        ] || style;
+      style = subcategoryStyleComponentNames[parentCategory.get(
+                "subcategory_list_style")] ||
+              style;
     }
 
     const componentName =
@@ -46,8 +43,8 @@ export default DiscoveryController.extend({
         ? "categories_only"
         : style;
     return dasherize(componentName);
-  },
-  actions: {
+  }
+  , actions: {
     refresh() {
       this.send("triggerRefresh");
     }

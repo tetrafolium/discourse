@@ -10,8 +10,7 @@ export default DiscourseRoute.extend({
   },
 
   model() {
-    return this.store.createRecord("tagGroup", {
-      name: I18n.t("tagging.groups.new_name")
-    });
+    return this.store.createRecord("tagGroup",
+                                   { name: I18n.t("tagging.groups.new_name") });
   }
 });

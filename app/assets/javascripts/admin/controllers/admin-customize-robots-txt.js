@@ -1,8 +1,8 @@
-import { not } from "@ember/object/computed";
+import {not} from "@ember/object/computed";
 import Controller from "@ember/controller";
-import { ajax } from "discourse/lib/ajax";
-import { bufferedProperty } from "discourse/mixins/buffered-content";
-import { propertyEqual } from "discourse/lib/computed";
+import {ajax} from "discourse/lib/ajax";
+import {bufferedProperty} from "discourse/mixins/buffered-content";
+import {propertyEqual} from "discourse/lib/computed";
 
 export default Controller.extend(bufferedProperty("model"), {
   saved: false,
@@ -12,10 +12,7 @@ export default Controller.extend(bufferedProperty("model"), {
 
   actions: {
     save() {
-      this.setProperties({
-        isSaving: true,
-        saved: false
-      });
+      this.setProperties({ isSaving: true, saved: false });
 
       ajax("robots.json", {
         method: "PUT",
@@ -30,10 +27,7 @@ export default Controller.extend(bufferedProperty("model"), {
     },
 
     reset() {
-      this.setProperties({
-        isSaving: true,
-        saved: false
-      });
+      this.setProperties({ isSaving: true, saved: false });
       ajax("robots.json", { method: "DELETE" })
         .then(data => {
           this.buffered.set("robots_txt", data.robots_txt);

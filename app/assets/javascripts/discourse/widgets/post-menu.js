@@ -1,9 +1,9 @@
-import { next, run } from "@ember/runloop";
-import { applyDecorators, createWidget } from "discourse/widgets/widget";
-import { avatarAtts } from "discourse/widgets/actions-summary";
-import { h } from "virtual-dom";
+import {next, run} from "@ember/runloop";
+import {applyDecorators, createWidget} from "discourse/widgets/widget";
+import {avatarAtts} from "discourse/widgets/actions-summary";
+import {h} from "virtual-dom";
 import showModal from "discourse/lib/show-modal";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import ENV from "discourse-common/config/environment";
 
 const LIKE_ACTION = 2;
@@ -14,23 +14,19 @@ function animateHeart($elem, start, end, complete) {
     return run(this, complete);
   }
 
-  $elem
-    .stop()
+  $elem.stop()
     .css("textIndent", start)
-    .animate(
-      { textIndent: end },
-      {
-        complete,
-        step(now) {
-          $(this)
-            .css("transform", "scale(" + now + ")")
-            .addClass("d-liked")
-            .removeClass("d-unliked");
-        },
-        duration: 150
+    .animate({ textIndent: end }, {
+      complete,
+      step(now) {
+        $(this)
+          .css("transform", "scale(" + now + ")")
+          .addClass("d-liked")
+          .removeClass("d-unliked");
       },
-      "linear"
-    );
+      duration: 150
+    },
+             "linear");
 }
 
 const _builders = {};
@@ -89,11 +85,9 @@ function likeCount(attrs) {
   const count = attrs.likeCount;
 
   if (count > 0) {
-    const title = attrs.liked
-      ? count === 1
-        ? "post.has_likes_title_only_you"
-        : "post.has_likes_title_you"
-      : "post.has_likes_title";
+    const title = attrs.liked ? count === 1 ? "post.has_likes_title_only_you"
+                                            : "post.has_likes_title_you"
+                              : "post.has_likes_title";
     let icon = attrs.yours ? "d-liked" : "";
     let addContainer = attrs.yours;
     const additionalClass = attrs.yours ? "my-likes" : "regular-likes";
@@ -123,9 +117,8 @@ registerButton("like", attrs => {
     return likeCount(attrs);
   }
 
-  const className = attrs.liked
-    ? "toggle-like has-like fade-out"
-    : "toggle-like like";
+  const className =
+    attrs.liked ? "toggle-like has-like fade-out" : "toggle-like like";
 
   const button = {
     action: "like",
@@ -143,9 +136,8 @@ registerButton("like", attrs => {
     button.title = "post.controls.has_liked";
     button.disabled = true;
   } else {
-    button.title = attrs.liked
-      ? "post.controls.undo_like"
-      : "post.controls.like";
+    button.title =
+      attrs.liked ? "post.controls.undo_like" : "post.controls.like";
   }
 
   return button;
@@ -229,11 +221,8 @@ registerButton("replies", (attrs, state, siteSettings) => {
   }
 
   // Omit replies if the setting `suppress_reply_directly_below` is enabled
-  if (
-    replyCount === 1 &&
-    attrs.replyDirectlyBelow &&
-    siteSettings.suppress_reply_directly_below
-  ) {
+  if (replyCount === 1 && attrs.replyDirectlyBelow &&
+      siteSettings.suppress_reply_directly_below) {
     return;
   }
 
@@ -255,10 +244,7 @@ registerButton("share", attrs => {
     className: "share",
     title: "post.controls.share",
     icon: "link",
-    data: {
-      "share-url": attrs.shareUrl,
-      "post-number": attrs.post_number
-    }
+    data: { "share-url": attrs.shareUrl, "post-number": attrs.post_number }
   };
 });
 
@@ -314,9 +300,8 @@ registerButton("bookmarkWithReminder", (attrs, state, siteSettings) => {
     classNames.push("bookmarked");
 
     if (attrs.bookmarkReminderAt) {
-      let reminderAtDate = moment(attrs.bookmarkReminderAt).tz(
-        Discourse.currentUser.timezone
-      );
+      let reminderAtDate =
+        moment(attrs.bookmarkReminderAt).tz(Discourse.currentUser.timezone);
       title = "bookmarks.created_with_reminder";
       titleOptions = {
         date: reminderAtDate.format(I18n.t("dates.long_with_year"))
@@ -447,12 +432,10 @@ export default createWidget("post-menu", {
     const { currentUser, keyValueStore, siteSettings } = this;
 
     const hiddenSetting = siteSettings.post_menu_hidden_items || "";
-    const hiddenButtons = hiddenSetting
-      .split("|")
-      .filter(s => !attrs.bookmarked || s !== "bookmark")
-      .filter(
-        s => !attrs.bookmarkedWithReminder || s !== "bookmarkWithReminder"
-      );
+    const hiddenButtons = hiddenSetting.split("|")
+                            .filter(s => !attrs.bookmarked || s !== "bookmark")
+                            .filter(s => !attrs.bookmarkedWithReminder ||
+                                         s !== "bookmarkWithReminder");
 
     if (currentUser && keyValueStore) {
       const likedPostId = keyValueStore.getInt("likedPostId");
@@ -467,10 +450,8 @@ export default createWidget("post-menu", {
 
     // filter menu items based on site settings
     const orderedButtons = this.menuItems().filter(button => {
-      if (
-        this.siteSettings.enable_bookmarks_with_reminders &&
-        button === "bookmark"
-      ) {
+      if (this.siteSettings.enable_bookmarks_with_reminders &&
+          button === "bookmark") {
         return false;
       }
       return true;
@@ -488,11 +469,9 @@ export default createWidget("post-menu", {
       if (button) {
         allButtons.push(button);
 
-        if (
-          (attrs.yours && button.attrs && button.attrs.alwaysShowYours) ||
-          (attrs.reviewableId && i === "flag") ||
-          hiddenButtons.indexOf(i) === -1
-        ) {
+        if ((attrs.yours && button.attrs && button.attrs.alwaysShowYours) ||
+            (attrs.reviewableId && i === "flag") ||
+            hiddenButtons.indexOf(i) === -1) {
           visibleButtons.push(button);
         }
       }
@@ -540,20 +519,20 @@ export default createWidget("post-menu", {
 
           if (button) {
             switch (position) {
-              case "first":
-                visibleButtons.unshift(button);
-                break;
-              case "second":
-                visibleButtons.splice(1, 0, button);
-                break;
-              case "second-last-hidden":
-                if (!state.collapsed) {
-                  visibleButtons.splice(visibleButtons.length - 2, 0, button);
-                }
-                break;
-              default:
-                visibleButtons.push(button);
-                break;
+            case "first":
+              visibleButtons.unshift(button);
+              break;
+            case "second":
+              visibleButtons.splice(1, 0, button);
+              break;
+            case "second-last-hidden":
+              if (!state.collapsed) {
+                visibleButtons.splice(visibleButtons.length - 2, 0, button);
+              }
+              break;
+            default:
+              visibleButtons.push(button);
+              break;
             }
           }
         }
@@ -573,50 +552,38 @@ export default createWidget("post-menu", {
       postControls.push(this.attach("post-admin-menu", attrs));
     }
 
-    const contents = [
-      h(
-        "nav.post-controls.clearfix" +
-          (this.state.collapsed ? ".collapsed" : ".expanded"),
-        postControls
-      )
-    ];
+    const contents = [h("nav.post-controls.clearfix" +
+                          (this.state.collapsed ? ".collapsed" : ".expanded"),
+                        postControls)];
 
     if (state.readers.length) {
       const remaining = state.totalReaders - state.readers.length;
-      const description =
-        remaining > 0
-          ? "post.actions.people.read_capped"
-          : "post.actions.people.read";
+      const description = remaining > 0 ? "post.actions.people.read_capped"
+                                        : "post.actions.people.read";
       const count = remaining > 0 ? remaining : state.totalReaders;
 
-      contents.push(
-        this.attach("small-user-list", {
-          users: state.readers,
-          addSelf: false,
-          listClassName: "who-read",
-          description,
-          count
-        })
-      );
+      contents.push(this.attach("small-user-list", {
+        users: state.readers,
+        addSelf: false,
+        listClassName: "who-read",
+        description,
+        count
+      }));
     }
 
     if (state.likedUsers.length) {
       const remaining = state.total - state.likedUsers.length;
-      const description =
-        remaining > 0
-          ? "post.actions.people.like_capped"
-          : "post.actions.people.like";
+      const description = remaining > 0 ? "post.actions.people.like_capped"
+                                        : "post.actions.people.like";
       const count = remaining > 0 ? remaining : state.total;
 
-      contents.push(
-        this.attach("small-user-list", {
-          users: state.likedUsers,
-          addSelf: attrs.liked && remaining === 0,
-          listClassName: "who-liked",
-          description,
-          count
-        })
-      );
+      contents.push(this.attach("small-user-list", {
+        users: state.likedUsers,
+        addSelf: attrs.liked && remaining === 0,
+        listClassName: "who-liked",
+        description,
+        count
+      }));
     }
 
     return contents;
@@ -636,9 +603,8 @@ export default createWidget("post-menu", {
 
   showMoreActions() {
     this.state.collapsed = false;
-    const likesPromise = !this.state.likedUsers.length
-      ? this.getWhoLiked()
-      : Promise.resolve();
+    const likesPromise =
+      !this.state.likedUsers.length ? this.getWhoLiked() : Promise.resolve();
 
     return likesPromise.then(() => {
       if (!this.state.readers.length && this.attrs.showReadIndicator) {
@@ -693,10 +659,8 @@ export default createWidget("post-menu", {
     const { attrs, state } = this;
 
     return this.store
-      .find("post-action-user", {
-        id: attrs.id,
-        post_action_type_id: LIKE_ACTION
-      })
+      .find("post-action-user",
+            { id: attrs.id, post_action_type_id: LIKE_ACTION })
       .then(users => {
         state.likedUsers = users.map(avatarAtts);
         state.total = users.totalRows;

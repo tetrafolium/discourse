@@ -1,7 +1,7 @@
-import { later } from "@ember/runloop";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { formatUsername } from "discourse/lib/utilities";
+import {later} from "@ember/runloop";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {formatUsername} from "discourse/lib/utilities";
 import hbs from "discourse/widgets/hbs-compiler";
 
 const UserMenuAction = {
@@ -115,10 +115,7 @@ createWidget("user-menu-links", {
 
     return h("ul.menu-links-row", [
       links.map(l => h("li.user", this.linkHtml(l))),
-      h(
-        "li.glyphs",
-        glyphs.map(l => this.glyphHtml(l))
-      )
+      h("li.glyphs", glyphs.map(l => this.glyphHtml(l)))
     ]);
   },
 
@@ -138,10 +135,8 @@ createWidget("user-menu-links", {
   },
 
   isActive({ action, actionParam }) {
-    return (
-      action === UserMenuAction.QUICK_ACCESS &&
-      actionParam === this.attrs.currentQuickAccess
-    );
+    return (action === UserMenuAction.QUICK_ACCESS &&
+            actionParam === this.attrs.currentQuickAccess);
   }
 });
 
@@ -166,10 +161,7 @@ export default createWidget("user-menu", {
   tagName: "div.user-menu",
   buildKey: () => "user-menu",
 
-  settings: {
-    maxWidth: 320,
-    showLogoutButton: true
-  },
+  settings: {maxWidth: 320, showLogoutButton: true},
 
   defaultState() {
     return {
@@ -184,10 +176,7 @@ export default createWidget("user-menu", {
     const { currentQuickAccess } = this.state;
 
     const result = [
-      this.attach("user-menu-links", {
-        path,
-        currentQuickAccess
-      }),
+      this.attach("user-menu-links", { path, currentQuickAccess }),
       this.quickAccessPanel(path)
     ];
 
@@ -203,7 +192,7 @@ export default createWidget("user-menu", {
     return this.state.markRead();
   },
 
-  itemsLoaded({ hasUnread, markRead }) {
+  itemsLoaded({hasUnread, markRead}) {
     this.state.hasUnread = hasUnread;
     this.state.markRead = markRead;
   },
@@ -217,10 +206,8 @@ export default createWidget("user-menu", {
 
   clickOutsideMobile(e) {
     const $centeredElement = $(document.elementFromPoint(e.clientX, e.clientY));
-    if (
-      $centeredElement.parents(".panel").length &&
-      !$centeredElement.hasClass("header-cloak")
-    ) {
+    if ($centeredElement.parents(".panel").length &&
+        !$centeredElement.hasClass("header-cloak")) {
       this.sendWidgetAction("toggleUserMenu");
     } else {
       const $window = $(window);
@@ -252,9 +239,7 @@ export default createWidget("user-menu", {
   quickAccessPanel(path) {
     const { showLogoutButton } = this.settings;
     // This deliberately does NOT fallback to a default quick access panel.
-    return this.attach(`quick-access-${this.state.currentQuickAccess}`, {
-      path,
-      showLogoutButton
-    });
+    return this.attach(`quick-access-${this.state.currentQuickAccess}`,
+                       { path, showLogoutButton });
   }
 });

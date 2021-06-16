@@ -4,39 +4,33 @@ import FilterModeMixin from "discourse/mixins/filter-mode";
 
 export default Component.extend(FilterModeMixin, {
   tagName: "li",
-  classNameBindings: [
-    "active",
-    "content.hasIcon:has-icon",
-    "content.classNames",
-    "isHidden:hidden"
-  ],
-  attributeBindings: ["content.title:title"],
-  hidden: false,
-  rerenderTriggers: ["content.count"],
-  activeClass: "",
-  hrefLink: null,
+    classNameBindings:
+      [
+        "active", "content.hasIcon:has-icon", "content.classNames",
+        "isHidden:hidden"
+      ],
+    attributeBindings: ["content.title:title"], hidden: false,
+    rerenderTriggers: ["content.count"], activeClass: "", hrefLink: null,
 
-  @discourseComputed("content.filterType", "filterType", "content.active")
-  active(contentFilterType, filterType, active) {
+    @discourseComputed("content.filterType", "filterType", "content.active")
+    active(contentFilterType, filterType, active) {
     if (active !== undefined) {
       return active;
     }
     return contentFilterType === filterType;
-  },
+  }
+  ,
 
-  @discourseComputed("content.count")
-  isHidden(count) {
-    return (
-      !this.active &&
-      this.currentUser &&
-      this.currentUser.trust_level > 0 &&
-      (this.content.get("name") === "new" ||
-        this.content.get("name") === "unread") &&
-      count < 1
-    );
-  },
+    @discourseComputed("content.count") isHidden(count) {
+    return (!this.active && this.currentUser &&
+            this.currentUser.trust_level > 0 &&
+            (this.content.get("name") === "new" ||
+             this.content.get("name") === "unread") &&
+            count < 1);
+  }
+  ,
 
-  didReceiveAttrs() {
+    didReceiveAttrs() {
     this._super(...arguments);
     const content = this.content;
 

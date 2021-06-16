@@ -1,7 +1,7 @@
-import { get } from "@ember/object";
-import { registerUnbound } from "discourse-common/lib/helpers";
-import { avatarImg, formatUsername } from "discourse/lib/utilities";
-import { prioritizeNameInUx } from "discourse/lib/settings";
+import {get} from "@ember/object";
+import {registerUnbound} from "discourse-common/lib/helpers";
+import {avatarImg, formatUsername} from "discourse/lib/utilities";
+import {prioritizeNameInUx} from "discourse/lib/settings";
 
 let _customAvatarHelpers;
 
@@ -34,18 +34,15 @@ function renderAvatar(user, options) {
   if (user) {
     const name = get(user, options.namePath || "name");
     const username = get(user, options.usernamePath || "username");
-    const avatarTemplate = get(
-      user,
-      options.avatarTemplatePath || "avatar_template"
-    );
+    const avatarTemplate =
+      get(user, options.avatarTemplatePath || "avatar_template");
 
     if (!username || !avatarTemplate) {
       return "";
     }
 
-    let displayName = prioritizeNameInUx(name)
-      ? name
-      : formatUsername(username);
+    let displayName =
+      prioritizeNameInUx(name) ? name : formatUsername(username);
 
     let title = options.title;
     if (!title && !options.ignoreTitle) {
@@ -78,4 +75,4 @@ registerUnbound("avatar", function(user, params) {
   return new Handlebars.SafeString(renderAvatar.call(this, user, params));
 });
 
-export { renderAvatar };
+export {renderAvatar};

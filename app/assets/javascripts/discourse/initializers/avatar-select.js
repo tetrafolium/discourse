@@ -1,16 +1,14 @@
 import showModal from "discourse/lib/show-modal";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 
 export default {
   name: "avatar-select",
 
   initialize(container) {
-    this.selectableAvatarsEnabled = container.lookup(
-      "site-settings:main"
-    ).selectable_avatars_enabled;
+    this.selectableAvatarsEnabled =
+      container.lookup("site-settings:main").selectable_avatars_enabled;
 
-    container
-      .lookup("service:app-events")
+    container.lookup("service:app-events")
       .on("show-avatar-select", this, "_showAvatarSelect");
   },
 
@@ -28,9 +26,8 @@ export default {
     modal.setProperties({ user, selected });
 
     if (this.selectableAvatarsEnabled) {
-      ajax("/site/selectable-avatars.json").then(avatars =>
-        modal.set("selectableAvatars", avatars)
-      );
+      ajax("/site/selectable-avatars.json")
+        .then(avatars => modal.set("selectableAvatars", avatars));
     }
   }
 };

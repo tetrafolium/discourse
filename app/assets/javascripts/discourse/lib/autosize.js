@@ -1,21 +1,18 @@
-const set =
-  typeof Set === "function"
-    ? new Set()
-    : (function() {
-        const list = [];
+const set = typeof Set === "function" ? new Set() : (function() {
+  const list = [];
 
-        return {
-          has(key) {
-            return Boolean(list.indexOf(key) > -1);
-          },
-          add(key) {
-            list.push(key);
-          },
-          delete(key) {
-            list.splice(list.indexOf(key), 1);
-          }
-        };
-      })();
+  return {
+    has(key) {
+      return Boolean(list.indexOf(key) > -1);
+    },
+    add(key) {
+      list.push(key);
+    },
+    delete (key) {
+      list.splice(list.indexOf(key), 1);
+    }
+  };
+})();
 
 function assign(ta, { setOverflowX = true, setOverflowY = true } = {}) {
   if (!ta || !ta.nodeName || ta.nodeName !== "TEXTAREA" || set.has(ta)) return;
@@ -36,9 +33,8 @@ function assign(ta, { setOverflowX = true, setOverflowY = true } = {}) {
     }
 
     if (style.boxSizing === "content-box") {
-      heightOffset = -(
-        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
-      );
+      heightOffset =
+        -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
     } else {
       heightOffset =
         parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
@@ -180,9 +176,8 @@ function exportUpdate(ta) {
 
 let autosize = (el, options) => {
   if (el) {
-    Array.prototype.forEach.call(el.length ? el : [el], x =>
-      assign(x, options)
-    );
+    Array.prototype.forEach.call(el.length ? el : [el],
+                                 x => assign(x, options));
   }
   return el;
 };

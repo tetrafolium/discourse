@@ -1,31 +1,31 @@
-import { isEmpty } from "@ember/utils";
-import { alias } from "@ember/object/computed";
-import { schedule } from "@ember/runloop";
+import {isEmpty} from "@ember/utils";
+import {alias} from "@ember/object/computed";
+import {schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import { escapeExpression } from "discourse/lib/utilities";
+import {escapeExpression} from "discourse/lib/utilities";
 import discourseComputed from "discourse-common/utils/decorators";
 import Sharing from "discourse/lib/sharing";
 
 export default Component.extend({
   tagName: null,
 
-  type: alias("panel.model.type"),
+    type: alias("panel.model.type"),
 
-  topic: alias("panel.model.topic"),
+    topic: alias("panel.model.topic"),
 
-  @discourseComputed
-  sources() {
+    @discourseComputed sources() {
     return Sharing.activeSources(this.siteSettings.share_links);
-  },
+  }
+  ,
 
-  @discourseComputed("type", "topic.title")
-  shareTitle(type, topicTitle) {
+    @discourseComputed("type", "topic.title") shareTitle(type, topicTitle) {
     topicTitle = escapeExpression(topicTitle);
     return I18n.t("share.topic_html", { topicTitle });
-  },
+  }
+  ,
 
-  @discourseComputed("panel.model.shareUrl", "topic.shareUrl")
-  shareUrl(forcedShareUrl, shareUrl) {
+    @discourseComputed("panel.model.shareUrl",
+                       "topic.shareUrl") shareUrl(forcedShareUrl, shareUrl) {
     shareUrl = forcedShareUrl || shareUrl;
 
     if (isEmpty(shareUrl)) {
@@ -39,25 +39,22 @@ export default Component.extend({
     }
 
     return encodeURI(shareUrl);
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     const shareUrl = this.shareUrl;
     const $linkInput = $(this.element.querySelector(".topic-share-url"));
-    const $linkForTouch = $(
-      this.element.querySelector(".topic-share-url-for-touch a")
-    );
+    const $linkForTouch =
+      $(this.element.querySelector(".topic-share-url-for-touch a"));
 
     schedule("afterRender", () => {
       if (!this.capabilities.touch) {
         $linkForTouch.parent().remove();
 
-        $linkInput
-          .val(shareUrl)
-          .select()
-          .focus();
+        $linkInput.val(shareUrl).select().focus();
       } else {
         $linkInput.remove();
 
@@ -68,14 +65,13 @@ export default Component.extend({
         window.getSelection().addRange(range);
       }
     });
-  },
-
-  actions: {
-    share(source) {
-      Sharing.shareSource(source, {
-        url: this.shareUrl,
-        title: this.get("topic.title")
-      });
-    }
   }
+  ,
+
+    actions: {
+      share(source) {
+        Sharing.shareSource(
+          source, { url: this.shareUrl, title: this.get("topic.title") });
+      }
+    }
 });

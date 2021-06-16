@@ -5,9 +5,8 @@ import PreloadStore from "preload-store";
 export default DiscourseRoute.extend({
   model() {
     if (PreloadStore.get("badges")) {
-      return PreloadStore.getAndRemove("badges").then(json =>
-        Badge.createFromJson(json)
-      );
+      return PreloadStore.getAndRemove("badges").then(
+        json => Badge.createFromJson(json));
     } else {
       return Badge.findAll({ onlyListable: true });
     }

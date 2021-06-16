@@ -1,5 +1,5 @@
-import { htmlHelper } from "discourse-common/lib/helpers";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {htmlHelper} from "discourse-common/lib/helpers";
+import {iconHTML} from "discourse-common/lib/icon-library";
 import {
   PENDING,
   APPROVED,
@@ -10,16 +10,16 @@ import {
 
 function dataFor(status) {
   switch (status) {
-    case PENDING:
-      return { name: "pending" };
-    case APPROVED:
-      return { icon: "check", name: "approved" };
-    case REJECTED:
-      return { icon: "times", name: "rejected" };
-    case IGNORED:
-      return { icon: "external-link-alt", name: "ignored" };
-    case DELETED:
-      return { icon: "trash-alt", name: "deleted" };
+  case PENDING:
+    return { name: "pending" };
+  case APPROVED:
+    return { icon: "check", name: "approved" };
+  case REJECTED:
+    return { icon: "times", name: "rejected" };
+  case IGNORED:
+    return { icon: "external-link-alt", name: "ignored" };
+  case DELETED:
+    return { icon: "trash-alt", name: "deleted" };
   }
 }
 

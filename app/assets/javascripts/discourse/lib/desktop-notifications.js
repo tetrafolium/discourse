@@ -1,8 +1,8 @@
-import { later } from "@ember/runloop";
+import {later} from "@ember/runloop";
 import DiscourseURL from "discourse/lib/url";
 import KeyValueStore from "discourse/lib/key-value-store";
-import { formatUsername } from "discourse/lib/utilities";
-import { Promise } from "rsvp";
+import {formatUsername} from "discourse/lib/utilities";
+import {Promise} from "rsvp";
 import Site from "discourse/models/site";
 import User from "discourse/models/user";
 
@@ -32,16 +32,14 @@ function init(messageBus, appEvents) {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.info(
-      "Discourse desktop notifications are disabled - localStorage denied."
-    );
+      "Discourse desktop notifications are disabled - localStorage denied.");
     return;
   }
 
   if (!("Notification" in window)) {
     // eslint-disable-next-line no-console
     console.info(
-      "Discourse desktop notifications are disabled - not supported by browser"
-    );
+      "Discourse desktop notifications are disabled - not supported by browser");
     return;
   }
 
@@ -56,8 +54,7 @@ function init(messageBus, appEvents) {
     // eslint-disable-next-line no-console
     console.warn(
       "Unexpected error, Notification is defined on window but not a responding correctly " +
-        e
-    );
+      e);
   }
 
   liveEnabled = true;
@@ -71,18 +68,15 @@ function init(messageBus, appEvents) {
 }
 
 function confirmNotification() {
-  const notification = new Notification(
-    I18n.t("notifications.popup.confirm_title", {
-      site_title: Discourse.SiteSettings.title
-    }),
-    {
-      body: I18n.t("notifications.popup.confirm_body"),
-      icon:
-        Discourse.SiteSettings.site_logo_small_url ||
-        Discourse.SiteSettings.site_logo_url,
-      tag: "confirm-subscription"
-    }
-  );
+  const notification =
+    new Notification(I18n.t("notifications.popup.confirm_title",
+                            { site_title: Discourse.SiteSettings.title }),
+                     {
+                       body: I18n.t("notifications.popup.confirm_body"),
+                       icon: Discourse.SiteSettings.site_logo_small_url ||
+                               Discourse.SiteSettings.site_logo_url,
+                       tag: "confirm-subscription"
+                     });
 
   const clickEventHandler = () => notification.close();
 
@@ -111,11 +105,8 @@ function setupNotifications(appEvents) {
     }
   });
 
-  if (
-    document &&
-    typeof document.hidden !== "undefined" &&
-    document["hidden"]
-  ) {
+  if (document && typeof document.hidden !== "undefined" &&
+      document["hidden"]) {
     primaryTab = false;
   } else {
     primaryTab = true;
@@ -159,23 +150,17 @@ function onNotification(data) {
 
   const notificationBody = data.excerpt;
 
-  const notificationIcon =
-    Discourse.SiteSettings.site_logo_small_url ||
-    Discourse.SiteSettings.site_logo_url;
+  const notificationIcon = Discourse.SiteSettings.site_logo_small_url ||
+                           Discourse.SiteSettings.site_logo_url;
 
-  const notificationTag =
-    "discourse-notification-" +
-    Discourse.SiteSettings.title +
-    "-" +
-    data.topic_id;
+  const notificationTag = "discourse-notification-" +
+                          Discourse.SiteSettings.title + "-" + data.topic_id;
 
   requestPermission().then(function() {
     // This shows the notification!
-    const notification = new Notification(notificationTitle, {
-      body: notificationBody,
-      icon: notificationIcon,
-      tag: notificationTag
-    });
+    const notification = new Notification(
+      notificationTitle,
+      { body: notificationBody, icon: notificationIcon, tag: notificationTag });
 
     function clickEventHandler() {
       DiscourseURL.routeTo(data.post_url);
@@ -213,10 +198,8 @@ function requestPermission() {
 }
 
 function i18nKey(notification_type) {
-  return (
-    "notifications.popup." +
-    Site.current().get("notificationLookup")[notification_type]
-  );
+  return ("notifications.popup." +
+          Site.current().get("notificationLookup")[notification_type]);
 }
 
 function alertChannel(user) {

@@ -1,4 +1,4 @@
-import { debounce } from "@ember/runloop";
+import {debounce} from "@ember/runloop";
 import Mixin from "@ember/object/mixin";
 // Small buffer so that very tiny scrolls don't trigger mobile header switch
 const MOBILE_SCROLL_TOLERANCE = 5;
@@ -21,9 +21,8 @@ export default Mixin.create({
     const prevDirection = this.mobileScrollDirection;
     const currDirection = delta > 0 ? "down" : null;
 
-    const distanceToBottom = Math.floor(
-      $("body").height() - offset - $(window).height()
-    );
+    const distanceToBottom =
+      Math.floor($("body").height() - offset - $(window).height());
 
     // Handle Safari top overscroll first
     if (offset < 0) {

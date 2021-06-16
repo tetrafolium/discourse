@@ -1,5 +1,5 @@
 import Connector from "discourse/widgets/connector";
-import { h } from "virtual-dom";
+import {h} from "virtual-dom";
 import PostCooked from "discourse/widgets/post-cooked";
 import RawHtml from "discourse/widgets/raw-html";
 

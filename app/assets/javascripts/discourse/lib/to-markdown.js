@@ -2,8 +2,7 @@ const trimLeft = text => text.replace(/^\s+/, "");
 const trimRight = text => text.replace(/\s+$/, "");
 const countPipes = text => (text.replace(/\\\|/, "").match(/\|/g) || []).length;
 const msoListClasses = [
-  "MsoListParagraphCxSpFirst",
-  "MsoListParagraphCxSpMiddle",
+  "MsoListParagraphCxSpFirst", "MsoListParagraphCxSpMiddle",
   "MsoListParagraphCxSpLast"
 ];
 const hasChild = (e, n) => {
@@ -42,25 +41,9 @@ export class Tag {
 
   static blocks() {
     return [
-      "address",
-      "article",
-      "dd",
-      "div",
-      "dl",
-      "dt",
-      "fieldset",
-      "figcaption",
-      "figure",
-      "footer",
-      "form",
-      "header",
-      "hgroup",
-      "hr",
-      "main",
-      "nav",
-      "p",
-      "pre",
-      "section"
+      "address", "article", "dd", "div", "dl", "dt", "fieldset", "figcaption",
+      "figure", "footer", "form", "header", "hgroup", "hr", "main", "nav", "p",
+      "pre", "section"
     ];
   }
 
@@ -70,11 +53,7 @@ export class Tag {
 
   static emphases() {
     return [
-      ["b", "**"],
-      ["strong", "**"],
-      ["i", "*"],
-      ["em", "*"],
-      ["s", "~~"],
+      ["b", "**"], ["strong", "**"], ["i", "*"], ["em", "*"], ["s", "~~"],
       ["strike", "~~"]
     ];
   }
@@ -85,20 +64,8 @@ export class Tag {
 
   static trimmable() {
     return [
-      ...Tag.blocks(),
-      ...Tag.headings(),
-      ...Tag.slices(),
-      "aside",
-      "li",
-      "td",
-      "th",
-      "br",
-      "hr",
-      "blockquote",
-      "table",
-      "ol",
-      "tr",
-      "ul"
+      ...Tag.blocks(), ...Tag.headings(), ...Tag.slices(), "aside", "li", "td",
+      "th", "br", "hr", "blockquote", "table", "ol", "tr", "ul"
     ];
   }
 
@@ -127,7 +94,8 @@ export class Tag {
   }
 
   static aside() {
-    return class extends Tag.block("aside") {
+    return class extends Tag.block
+    ("aside") {
       constructor() {
         super();
       }
@@ -137,9 +105,8 @@ export class Tag {
           return super.toMarkdown();
         }
 
-        const blockquote = this.element.children.find(
-          child => child.name === "blockquote"
-        );
+        const blockquote =
+          this.element.children.find(child => child.name === "blockquote");
 
         if (!blockquote) {
           return super.toMarkdown();
@@ -155,10 +122,9 @@ export class Tag {
         const post = this.element.attributes["data-post"];
         const topic = this.element.attributes["data-topic"];
 
-        const prefix =
-          username && post && topic
-            ? `[quote="${username}, post:${post}, topic:${topic}"]`
-            : "[quote]";
+        const prefix = username && post && topic
+                         ? `[quote="${username}, post:${post}, topic:${topic}"]`
+                         : "[quote]";
 
         return `\n\n${prefix}\n${text}\n[/quote]\n\n`;
       }
@@ -245,10 +211,8 @@ export class Tag {
           return text;
         } else if ("hashtag" === attr.class && "#" === text[0]) {
           return text;
-        } else if (
-          ["lightbox", "d-lazyload"].includes(attr.class) &&
-          hasChild(e, "img")
-        ) {
+        } else if (["lightbox", "d-lazyload"].includes(attr.class) &&
+                   hasChild(e, "img")) {
           let href = attr.href;
           const img = (e.children || []).find(c => c.name === "img");
           const base62SHA1 = img.attributes["data-base62-sha1"];
@@ -297,9 +261,8 @@ export class Tag {
           const title = attr.title;
 
           if (width && height) {
-            const pipe = this.element.parentNames.includes("table")
-              ? "\\|"
-              : "|";
+            const pipe =
+              this.element.parentNames.includes("table") ? "\\|" : "|";
             alt = `${alt}${pipe}${width}x${height}`;
           }
 
@@ -352,21 +315,19 @@ export class Tag {
   }
 
   static li() {
-    return class extends Tag.slice("li", "\n") {
+    return class extends Tag.slice
+    ("li", "\n") {
       decorate(text) {
-        let indent = this.element
-          .filterParentNames(["ol", "ul"])
-          .slice(1)
-          .map(() => "\t")
-          .join("");
+        let indent = this.element.filterParentNames(["ol", "ul"])
+                       .slice(1)
+                       .map(() => "\t")
+                       .join("");
         const attrs = this.element.attributes;
 
         if (msoListClasses.includes(attrs.class)) {
           try {
-            const level = parseInt(
-              attrs.style.match(/level./)[0].replace("level", ""),
-              10
-            );
+            const level =
+              parseInt(attrs.style.match(/level./)[0].replace("level", ""), 10);
             indent = Array(level).join("\t") + indent;
           } finally {
             if (attrs.class === "MsoListParagraphCxSpFirst") {
@@ -396,9 +357,7 @@ export class Tag {
           this.inline = true;
         }
 
-        text = $("<textarea />")
-          .html(text)
-          .text();
+        text = $("<textarea />").html(text).text();
         return super.decorate(text);
       }
     };
@@ -411,17 +370,15 @@ export class Tag {
       }
 
       decorate(text) {
-        text = text
-          .trim()
-          .replace(/\n{2,}>/g, "\n>")
-          .replace(/\n/g, "\n> ");
+        text = text.trim().replace(/\n{2,}>/g, "\n>").replace(/\n/g, "\n> ");
         return super.decorate(text);
       }
     };
   }
 
   static table() {
-    return class extends Tag.block("table") {
+    return class extends Tag.block
+    ("table") {
       constructor() {
         super();
         this.isValid = true;
@@ -445,10 +402,12 @@ export class Tag {
         const rows = text.trim().split("\n");
         const pipeCount = countPipes(rows[0]);
         this.isValid =
-          this.isValid &&
-          rows.length > 1 &&
-          pipeCount > 2 &&
-          rows.reduce((a, c) => a && countPipes(c) <= pipeCount); // Unsupported table format for Markdown conversion
+          this.isValid && rows.length > 1 && pipeCount > 2 &&
+          rows.reduce(
+            (a, c) =>
+              a &&
+              countPipes(c) <=
+                pipeCount); // Unsupported table format for Markdown conversion
 
         if (this.isValid) {
           const splitterRow =
@@ -465,7 +424,8 @@ export class Tag {
   }
 
   static list(name) {
-    return class extends Tag.block(name) {
+    return class extends Tag.block
+    (name) {
       decorate(text) {
         let smallGap = "";
         const parent = this.element.parent;
@@ -486,16 +446,14 @@ export class Tag {
   }
 
   static ol() {
-    return class extends Tag.list("ol") {
+    return class extends Tag.list
+    ("ol") {
       decorate(text) {
         text = "\n" + text;
         const bullet = text.match(/\n\t*\*/)[0];
 
-        for (
-          let i = parseInt(this.element.attributes.start || 1, 10);
-          text.includes(bullet);
-          i++
-        ) {
+        for (let i = parseInt(this.element.attributes.start || 1, 10);
+             text.includes(bullet); i++) {
           text = text.replace(bullet, bullet.replace("*", `${i}.`));
         }
 
@@ -505,7 +463,8 @@ export class Tag {
   }
 
   static tr() {
-    return class extends Tag.slice("tr", "|\n") {
+    return class extends Tag.slice
+    ("tr", "|\n") {
       decorate(text) {
         if (!this.element.next) {
           this.suffix = "|";
@@ -568,8 +527,8 @@ class Element {
   }
 
   tag() {
-    const tag = new (tags().filter(t => new t().name === this.name)[0] ||
-      Tag)();
+    const tag =
+      new (tags().filter(t => new t().name === this.name)[0] || Tag)();
     tag.element = this;
     return tag;
   }
@@ -646,7 +605,8 @@ function trimUnwanted(html) {
     html = html.replace(match[0], match[0].replace(/>\s{2,}</, "> <"));
   }
 
-  html = html.replace(/<!\[if !?\S*]>[^!]*<!\[endif]>/g, ""); // to support ms word list tags
+  html = html.replace(/<!\[if !?\S*]>[^!]*<!\[endif]>/g,
+                      ""); // to support ms word list tags
 
   return html;
 }
@@ -660,11 +620,7 @@ function putPlaceholders(html) {
   while (match) {
     const placeholder = `DISCOURSE_PLACEHOLDER_${placeholders.length + 1}`;
     let code = match[1];
-    code = $("<div />")
-      .html(code)
-      .text()
-      .replace(/^\n/, "")
-      .replace(/\n$/, "");
+    code = $("<div />").html(code).text().replace(/^\n/, "").replace(/\n$/, "");
     placeholders.push([placeholder, code]);
     html = html.replace(match[0], `<code>${placeholder}</code>`);
     match = codeRegEx.exec(origHtml);
@@ -720,16 +676,14 @@ export default function toMarkdown(html) {
   try {
     const { elements, placeholders } = putPlaceholders(html);
     let markdown = Element.parse(elements).trim();
-    markdown = markdown
-      .replace(/^<b>/, "")
-      .replace(/<\/b>$/, "")
-      .trim(); // fix for google doc copy paste
-    markdown = markdown
-      .replace(/\n +/g, "\n")
-      .replace(/ +\n/g, "\n")
-      .replace(/ {2,}/g, " ")
-      .replace(/\n{3,}/g, "\n\n")
-      .replace(/\t/g, "  ");
+    markdown = markdown.replace(/^<b>/, "")
+                 .replace(/<\/b>$/, "")
+                 .trim(); // fix for google doc copy paste
+    markdown = markdown.replace(/\n +/g, "\n")
+                 .replace(/ +\n/g, "\n")
+                 .replace(/ {2,}/g, " ")
+                 .replace(/\n{3,}/g, "\n\n")
+                 .replace(/\t/g, "  ");
     return replacePlaceholders(markdown, placeholders);
   } catch (err) {
     return "";

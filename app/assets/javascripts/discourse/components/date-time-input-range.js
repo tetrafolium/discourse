@@ -1,4 +1,4 @@
-import { equal } from "@ember/object/computed";
+import {equal} from "@ember/object/computed";
 import Component from "@ember/component";
 export default Component.extend({
   classNames: ["d-date-time-input-range"],
@@ -26,10 +26,7 @@ export default Component.extend({
   actions: {
     _onChange(options, value) {
       if (this.onChange) {
-        const state = {
-          from: this.from,
-          to: this.to
-        };
+        const state = { from: this.from, to: this.to };
 
         const diff = {};
         diff[options.prop] = value;

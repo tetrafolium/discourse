@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { fmt } from "discourse/lib/computed";
+import {fmt} from "discourse/lib/computed";
 
 export default Component.extend({
   panel: null,

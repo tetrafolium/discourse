@@ -5,7 +5,7 @@ import {
   filterQueryParams,
   findTopicList
 } from "discourse/routes/build-topic-route";
-import { queryParams } from "discourse/controllers/discovery-sortable";
+import {queryParams} from "discourse/controllers/discovery-sortable";
 import PermissionType from "discourse/models/permission-type";
 import Category from "discourse/models/category";
 import FilterModeMixin from "discourse/mixins/filter-mode";
@@ -21,18 +21,14 @@ export default DiscourseRoute.extend(FilterModeMixin, {
   },
 
   model(params) {
-    const tag = this.store.createRecord("tag", {
-      id: Handlebars.Utils.escapeExpression(params.tag_id)
-    });
+    const tag = this.store.createRecord(
+      "tag", { id: Handlebars.Utils.escapeExpression(params.tag_id) });
     if (params.additional_tags) {
-      this.set(
-        "additionalTags",
-        params.additional_tags.split("/").map(t => {
-          return this.store.createRecord("tag", {
-            id: Handlebars.Utils.escapeExpression(t)
-          }).id;
-        })
-      );
+      this.set("additionalTags", params.additional_tags.split("/").map(t => {
+        return this.store
+          .createRecord("tag", { id: Handlebars.Utils.escapeExpression(t) })
+          .id;
+      }));
     } else {
       this.set("additionalTags", null);
     }
@@ -43,8 +39,7 @@ export default DiscourseRoute.extend(FilterModeMixin, {
 
     if (tag && tag.get("id") !== "none" && this.currentUser) {
       // If logged in, we should get the tag's user settings
-      return this.store
-        .find("tagNotification", tag.get("id").toLowerCase())
+      return this.store.find("tagNotification", tag.get("id").toLowerCase())
         .then(tn => {
           this.set("tagNotification", tn);
           return tag;
@@ -56,15 +51,13 @@ export default DiscourseRoute.extend(FilterModeMixin, {
 
   afterModel(tag, transition) {
     const controller = this.controllerFor("tags.show");
-    controller.setProperties({
-      loading: true,
-      showInfo: false
-    });
+    controller.setProperties({ loading: true, showInfo: false });
 
     const params = filterQueryParams(transition.to.queryParams, {});
-    const category = this.categorySlugPathWithID
-      ? Category.findBySlugPathWithID(this.categorySlugPathWithID)
-      : null;
+    const category =
+      this.categorySlugPathWithID
+        ? Category.findBySlugPathWithID(this.categorySlugPathWithID)
+        : null;
     const topicFilter = this.navMode;
     const tagId = tag ? tag.id.toLowerCase() : "none";
     let filter;
@@ -87,31 +80,31 @@ export default DiscourseRoute.extend(FilterModeMixin, {
       filter = `tag/${tagId}/l/${topicFilter}`;
     }
 
-    return findTopicList(this.store, this.topicTrackingState, filter, params, {
-      cached: true
-    }).then(list => {
-      if (list.topic_list.tags && list.topic_list.tags.length === 1) {
-        // Update name of tag (case might be different)
-        tag.setProperties({
-          id: list.topic_list.tags[0].name,
-          staff: list.topic_list.tags[0].staff
+    return findTopicList(this.store, this.topicTrackingState, filter, params,
+                         { cached: true })
+      .then(list => {
+        if (list.topic_list.tags && list.topic_list.tags.length === 1) {
+          // Update name of tag (case might be different)
+          tag.setProperties({
+            id: list.topic_list.tags[0].name,
+            staff: list.topic_list.tags[0].staff
+          });
+        }
+        controller.setProperties({
+          list,
+          canCreateTopic: list.get("can_create_topic"),
+          loading: false,
+          canCreateTopicOnCategory:
+            this.get("category.permission") === PermissionType.FULL,
+          canCreateTopicOnTag:
+            !tag.get("staff") || this.get("currentUser.staff")
         });
-      }
-      controller.setProperties({
-        list,
-        canCreateTopic: list.get("can_create_topic"),
-        loading: false,
-        canCreateTopicOnCategory:
-          this.get("category.permission") === PermissionType.FULL,
-        canCreateTopicOnTag: !tag.get("staff") || this.get("currentUser.staff")
       });
-    });
   },
 
   titleToken() {
-    const filterText = I18n.t(
-      `filters.${this.navMode.replace("/", ".")}.title`
-    );
+    const filterText =
+      I18n.t(`filters.${this.navMode.replace("/", ".")}.title`);
     const controller = this.controllerFor("tags.show");
 
     if (controller.get("model.id")) {
@@ -122,21 +115,17 @@ export default DiscourseRoute.extend(FilterModeMixin, {
           category: this.get("category.name")
         });
       } else {
-        return I18n.t("tagging.filters.without_category", {
-          filter: filterText,
-          tag: controller.get("model.id")
-        });
+        return I18n.t("tagging.filters.without_category",
+                      { filter: filterText, tag: controller.get("model.id") });
       }
     } else {
       if (this.category) {
-        return I18n.t("tagging.filters.untagged_with_category", {
-          filter: filterText,
-          category: this.get("category.name")
-        });
+        return I18n.t(
+          "tagging.filters.untagged_with_category",
+          { filter: filterText, category: this.get("category.name") });
       } else {
-        return I18n.t("tagging.filters.untagged_without_category", {
-          filter: filterText
-        });
+        return I18n.t("tagging.filters.untagged_without_category",
+                      { filter: filterText });
       }
     }
   },
@@ -187,15 +176,9 @@ export default DiscourseRoute.extend(FilterModeMixin, {
             if (controller.get("model.id")) {
               const composerModel = this.controllerFor("composer").get("model");
 
-              composerModel.set(
-                "tags",
-                _.compact(
-                  _.flatten([
-                    controller.get("model.id"),
-                    controller.get("additionalTags")
-                  ])
-                )
-              );
+              composerModel.set("tags", _.compact(_.flatten([
+                controller.get("model.id"), controller.get("additionalTags")
+              ])));
             }
           });
       }

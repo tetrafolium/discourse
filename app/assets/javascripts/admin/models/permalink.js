@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import EmberObject from "@ember/object";
 
 const Permalink = EmberObject.extend({
@@ -14,19 +14,16 @@ const Permalink = EmberObject.extend({
   },
 
   destroy: function() {
-    return ajax("/admin/permalinks/" + this.id + ".json", {
-      type: "DELETE"
-    });
+    return ajax("/admin/permalinks/" + this.id + ".json", { type: "DELETE" });
   }
 });
 
 Permalink.reopenClass({
   findAll: function(filter) {
-    return ajax("/admin/permalinks.json", { data: { filter: filter } }).then(
-      function(permalinks) {
+    return ajax("/admin/permalinks.json", { data: { filter: filter } })
+      .then(function(permalinks) {
         return permalinks.map(p => Permalink.create(p));
-      }
-    );
+      });
   }
 });
 

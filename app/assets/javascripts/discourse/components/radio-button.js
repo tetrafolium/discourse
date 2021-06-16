@@ -2,17 +2,11 @@ import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 
 export default Component.extend({
-  tagName: "input",
-  type: "radio",
-  attributeBindings: [
-    "name",
-    "type",
-    "value",
-    "checked:checked",
-    "disabled:disabled"
-  ],
+  tagName: "input", type: "radio",
+    attributeBindings:
+      ["name", "type", "value", "checked:checked", "disabled:disabled"],
 
-  click() {
+    click() {
     const value = $(this.element).val();
 
     if (this.onChange) {
@@ -23,10 +17,10 @@ export default Component.extend({
       }
       this.set("selection", value);
     }
-  },
+  }
+  ,
 
-  @discourseComputed("value", "selection")
-  checked(value, selection) {
+    @discourseComputed("value", "selection") checked(value, selection) {
     return value === selection;
   }
 });

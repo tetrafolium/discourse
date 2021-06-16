@@ -1,4 +1,4 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
 import Category from "discourse/models/category";
 
@@ -13,18 +13,12 @@ export default DiscourseRoute.extend({
       } else if (transition.to.queryParams.category) {
         const splitCategory = transition.to.queryParams.category.split("/");
 
-        category = this._getCategory(
-          splitCategory[0],
-          splitCategory[1],
-          "nameLower"
-        );
+        category =
+          this._getCategory(splitCategory[0], splitCategory[1], "nameLower");
 
         if (!category) {
-          category = this._getCategory(
-            splitCategory[0],
-            splitCategory[1],
-            "slug"
-          );
+          category =
+            this._getCategory(splitCategory[0], splitCategory[1], "slug");
         }
 
         if (category) {
@@ -65,13 +59,9 @@ export default DiscourseRoute.extend({
 
   _sendTransition(event, transition, categoryId) {
     next(() => {
-      event.send(
-        "createNewTopicViaParams",
-        transition.to.queryParams.title,
-        transition.to.queryParams.body,
-        categoryId,
-        transition.to.queryParams.tags
-      );
+      event.send("createNewTopicViaParams", transition.to.queryParams.title,
+                 transition.to.queryParams.body, categoryId,
+                 transition.to.queryParams.tags);
     });
   },
 
@@ -84,11 +74,8 @@ export default DiscourseRoute.extend({
       const main = categories.findBy(type, mainCategory.toLowerCase());
       if (main) {
         category = categories.find(item => {
-          return (
-            item &&
-            item[type] === subCategory.toLowerCase() &&
-            item.parent_category_id === main.id
-          );
+          return (item && item[type] === subCategory.toLowerCase() &&
+                  item.parent_category_id === main.id);
         });
       }
     }

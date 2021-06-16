@@ -1,25 +1,24 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { alias, sort } from "@ember/object/computed";
-import { next } from "@ember/runloop";
-import Controller, { inject as controller } from "@ember/controller";
+import {alias, sort} from "@ember/object/computed";
+import {next} from "@ember/runloop";
+import Controller, {inject as controller} from "@ember/controller";
 import GrantBadgeController from "discourse/mixins/grant-badge-controller";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default Controller.extend(GrantBadgeController, {
-  adminUser: controller(),
-  user: alias("adminUser.model"),
-  userBadges: alias("model"),
-  allBadges: alias("badges"),
-  sortedBadges: sort("model", "badgeSortOrder"),
+  adminUser: controller(), user: alias("adminUser.model"),
+    userBadges: alias("model"), allBadges: alias("badges"),
+    sortedBadges: sort("model", "badgeSortOrder"),
 
-  init() {
+    init() {
     this._super(...arguments);
 
     this.badgeSortOrder = ["granted_at:desc"];
-  },
+  }
+  ,
 
-  @discourseComputed("model", "model.[]", "model.expandedBadges.[]")
-  groupedBadges() {
+    @discourseComputed("model", "model.[]",
+                       "model.expandedBadges.[]") groupedBadges() {
     const allBadges = this.model;
 
     var grouped = _.groupBy(allBadges, badge => badge.badge_id);
@@ -51,54 +50,48 @@ export default Controller.extend(GrantBadgeController, {
       expanded.push(result);
     });
 
-    return _(expanded)
-      .sortBy(group => group.granted_at)
-      .reverse()
-      .value();
-  },
-
-  actions: {
-    expandGroup: function(userBadge) {
-      const model = this.model;
-      model.set("expandedBadges", model.get("expandedBadges") || []);
-      model.get("expandedBadges").pushObject(userBadge.badge.id);
-    },
-
-    grantBadge() {
-      this.grantBadge(
-        this.selectedBadgeId,
-        this.get("user.username"),
-        this.badgeReason
-      ).then(
-        () => {
-          this.set("badgeReason", "");
-          next(() => {
-            // Update the selected badge ID after the combobox has re-rendered.
-            const newSelectedBadge = this.grantableBadges[0];
-            if (newSelectedBadge) {
-              this.set("selectedBadgeId", newSelectedBadge.get("id"));
-            }
-          });
-        },
-        function(error) {
-          popupAjaxError(error);
-        }
-      );
-    },
-
-    revokeBadge(userBadge) {
-      return bootbox.confirm(
-        I18n.t("admin.badges.revoke_confirm"),
-        I18n.t("no_value"),
-        I18n.t("yes_value"),
-        result => {
-          if (result) {
-            userBadge.revoke().then(() => {
-              this.model.removeObject(userBadge);
-            });
-          }
-        }
-      );
-    }
+    return _(expanded).sortBy(group => group.granted_at).reverse().value();
   }
+  ,
+
+    actions: {
+      expandGroup:
+        function(userBadge) {
+          const model = this.model;
+          model.set("expandedBadges", model.get("expandedBadges") || []);
+          model.get("expandedBadges").pushObject(userBadge.badge.id);
+        },
+
+      grantBadge() {
+        this
+          .grantBadge(this.selectedBadgeId, this.get("user.username"),
+                      this.badgeReason)
+          .then(
+            () => {
+              this.set("badgeReason", "");
+              next(() => {
+                // Update the selected badge ID after the combobox has re-rendered.
+                const newSelectedBadge = this.grantableBadges[0];
+                if (newSelectedBadge) {
+                  this.set("selectedBadgeId", newSelectedBadge.get("id"));
+                }
+              });
+            },
+            function(error) {
+              popupAjaxError(error);
+            });
+      },
+
+      revokeBadge(userBadge) {
+        return bootbox.confirm(I18n.t("admin.badges.revoke_confirm"),
+                               I18n.t("no_value"), I18n.t("yes_value"),
+                               result => {
+                                 if (result) {
+                                   userBadge.revoke().then(() => {
+                                     this.model.removeObject(userBadge);
+                                   });
+                                 }
+                               });
+      }
+    }
 });

@@ -7,7 +7,7 @@ export default {
 
   initialize(container) {
     const banner = EmberObject.create(PreloadStore.get("banner") || {}),
-      site = container.lookup("site:main");
+          site = container.lookup("site:main");
 
     site.set("banner", banner);
 

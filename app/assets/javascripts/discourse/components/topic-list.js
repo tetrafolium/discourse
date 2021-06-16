@@ -1,84 +1,87 @@
-import { alias, reads } from "@ember/object/computed";
-import { schedule } from "@ember/runloop";
+import {alias, reads} from "@ember/object/computed";
+import {schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
 import LoadMore from "discourse/mixins/load-more";
-import { on } from "@ember/object/evented";
+import {on} from "@ember/object/evented";
 
 export default Component.extend(LoadMore, {
-  tagName: "table",
-  classNames: ["topic-list"],
-  showTopicPostBadges: true,
-  listTitle: "topic.title",
+  tagName: "table", classNames: ["topic-list"], showTopicPostBadges: true,
+    listTitle: "topic.title",
 
-  // Overwrite this to perform client side filtering of topics, if desired
-  filteredTopics: alias("topics"),
+    // Overwrite this to perform client side filtering of topics, if desired
+    filteredTopics: alias("topics"),
 
-  _init: on("init", function() {
-    this.addObserver("hideCategory", this.rerender);
-    this.addObserver("order", this.rerender);
-    this.addObserver("ascending", this.rerender);
-    this.refreshLastVisited();
-  }),
+    _init: on("init",
+              function() {
+                this.addObserver("hideCategory", this.rerender);
+                this.addObserver("order", this.rerender);
+                this.addObserver("ascending", this.rerender);
+                this.refreshLastVisited();
+              }),
 
-  @discourseComputed("bulkSelectEnabled")
-  toggleInTitle(bulkSelectEnabled) {
+    @discourseComputed("bulkSelectEnabled") toggleInTitle(bulkSelectEnabled) {
     return !bulkSelectEnabled && this.canBulkSelect;
-  },
+  }
+  ,
 
-  @discourseComputed
-  sortable() {
+    @discourseComputed sortable() {
     return !!this.changeSort;
-  },
+  }
+  ,
 
-  skipHeader: reads("site.mobileView"),
+    skipHeader: reads("site.mobileView"),
 
-  @discourseComputed("order")
-  showLikes(order) {
+    @discourseComputed("order") showLikes(order) {
     return order === "likes";
-  },
+  }
+  ,
 
-  @discourseComputed("order")
-  showOpLikes(order) {
+    @discourseComputed("order") showOpLikes(order) {
     return order === "op_likes";
-  },
+  }
+  ,
 
-  @observes("topics.[]")
-  topicsAdded() {
+    @observes("topics.[]") topicsAdded() {
     // special case so we don't keep scanning huge lists
     if (!this.lastVisitedTopic) {
       this.refreshLastVisited();
     }
-  },
+  }
+  ,
 
-  @observes("topics", "order", "ascending", "category", "top")
-  lastVisitedTopicChanged() {
+    @observes("topics", "order", "ascending", "category",
+              "top") lastVisitedTopicChanged() {
     this.refreshLastVisited();
-  },
+  }
+  ,
 
-  scrolled() {
+    scrolled() {
     this._super(...arguments);
     let onScroll = this.onScroll;
     if (!onScroll) return;
 
     onScroll.call(this);
-  },
+  }
+  ,
 
-  scrollToLastPosition() {
+    scrollToLastPosition() {
     if (!this.scrollOnLoad) return;
 
     let scrollTo = this.session.get("topicListScrollPosition");
     if (scrollTo && scrollTo >= 0) {
       schedule("afterRender", () => $(window).scrollTop(scrollTo + 1));
     }
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
     this.scrollToLastPosition();
-  },
+  }
+  ,
 
-  _updateLastVisitedTopic(topics, order, ascending, top) {
+    _updateLastVisitedTopic(topics, order, ascending, top) {
     this.set("lastVisitedTopic", null);
 
     if (!this.highlightLastVisited) {
@@ -136,18 +139,16 @@ export default Component.extend(LoadMore, {
     }
 
     this.set("lastVisitedTopic", lastVisitedTopic);
-  },
+  }
+  ,
 
-  refreshLastVisited() {
-    this._updateLastVisitedTopic(
-      this.topics,
-      this.order,
-      this.ascending,
-      this.top
-    );
-  },
+    refreshLastVisited() {
+    this._updateLastVisitedTopic(this.topics, this.order, this.ascending,
+                                 this.top);
+  }
+  ,
 
-  click(e) {
+    click(e) {
     var self = this;
     var onClick = function(sel, callback) {
       var target = $(e.target).closest(sel);

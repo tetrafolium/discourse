@@ -6,10 +6,9 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
   beforeModel() {
-    this.replaceWith(
-      "adminSiteSettingsCategory",
-      this.controllerFor("adminSiteSettings").get("visibleSiteSettings")[0]
-        .nameKey
-    );
+    this.replaceWith("adminSiteSettingsCategory",
+                     this.controllerFor("adminSiteSettings")
+                       .get("visibleSiteSettings")[0]
+                       .nameKey);
   }
 });

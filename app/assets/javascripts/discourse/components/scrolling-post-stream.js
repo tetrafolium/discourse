@@ -1,8 +1,8 @@
-import { debounce, next, scheduleOnce } from "@ember/runloop";
+import {debounce, next, scheduleOnce} from "@ember/runloop";
 import DiscourseURL from "discourse/lib/url";
 import MountWidget from "discourse/components/mount-widget";
-import { cloak, uncloak } from "discourse/widgets/post-stream";
-import { isWorkaroundActive } from "discourse/lib/safari-hacks";
+import {cloak, uncloak} from "discourse/widgets/post-stream";
+import {isWorkaroundActive} from "discourse/lib/safari-hacks";
 import offsetCalculator from "discourse/lib/offset-calculator";
 
 function findTopView($posts, viewportTop, postsWrapperTop, min, max) {
@@ -34,16 +34,9 @@ export default MountWidget.extend({
   _currentPercent: null,
 
   buildArgs() {
-    return this.getProperties(
-      "posts",
-      "canCreatePost",
-      "multiSelect",
-      "gaps",
-      "selectedQuery",
-      "selectedPostsCount",
-      "searchService",
-      "showReadIndicator"
-    );
+    return this.getProperties("posts", "canCreatePost", "multiSelect", "gaps",
+                              "selectedQuery", "selectedPostsCount",
+                              "searchService", "showReadIndicator");
   },
 
   beforePatch() {
@@ -75,10 +68,8 @@ export default MountWidget.extend({
     // We use this because watching videos fullscreen in Chrome was super buggy
     // otherwise. Thanks to arrendek from q23 for the technique.
     const topLeftCornerElement = document.elementFromPoint(0, 0);
-    if (
-      topLeftCornerElement &&
-      topLeftCornerElement.tagName.toUpperCase() === "IFRAME"
-    ) {
+    if (topLeftCornerElement &&
+        topLeftCornerElement.tagName.toUpperCase() === "IFRAME") {
       return;
     }
 
@@ -91,17 +82,11 @@ export default MountWidget.extend({
     const windowTop = $w.scrollTop();
 
     const postsWrapperTop = $(".posts-wrapper").offset().top;
-    const $posts = $(
-      this.element.querySelectorAll(".onscreen-post, .cloaked-post")
-    );
+    const $posts =
+      $(this.element.querySelectorAll(".onscreen-post, .cloaked-post"));
     const viewportTop = windowTop - slack;
-    const topView = findTopView(
-      $posts,
-      viewportTop,
-      postsWrapperTop,
-      0,
-      $posts.length - 1
-    );
+    const topView =
+      findTopView($posts, viewportTop, postsWrapperTop, 0, $posts.length - 1);
 
     let windowBottom = windowTop + windowHeight;
     let viewportBottom = windowBottom + slack;
@@ -155,11 +140,9 @@ export default MountWidget.extend({
         onscreen.push(bottomView);
       }
 
-      if (
-        currentPost === null &&
-        ((viewTop <= topCheck && viewBottom >= topCheck) ||
-          (lastBottom <= topCheck && viewTop >= topCheck))
-      ) {
+      if (currentPost === null &&
+          ((viewTop <= topCheck && viewBottom >= topCheck) ||
+           (lastBottom <= topCheck && viewTop >= topCheck))) {
         percent = (topCheck - viewTop) / postHeight;
         currentPost = bottomView;
       }
@@ -209,10 +192,7 @@ export default MountWidget.extend({
             }
           });
         };
-        this.topVisibleChanged({
-          post: first,
-          refresh: topRefresh
-        });
+        this.topVisibleChanged({ post: first, refresh: topRefresh });
       }
 
       const last = posts.objectAt(onscreen[onscreen.length - 1]);
@@ -289,15 +269,13 @@ export default MountWidget.extend({
         this.dirtyKeys.keyDirty(`post-${args.id}`);
 
         if (args.refreshLikes) {
-          this.dirtyKeys.keyDirty(`post-menu-${args.id}`, {
-            onRefresh: "refreshLikes"
-          });
+          this.dirtyKeys.keyDirty(`post-menu-${args.id}`,
+                                  { onRefresh: "refreshLikes" });
         }
 
         if (args.refreshReaders) {
-          this.dirtyKeys.keyDirty(`post-menu-${args.id}`, {
-            onRefresh: "refreshReaders"
-          });
+          this.dirtyKeys.keyDirty(`post-menu-${args.id}`,
+                                  { onRefresh: "refreshReaders" });
         }
       } else if (args.force) {
         this.dirtyKeys.forceAll();

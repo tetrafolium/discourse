@@ -1,33 +1,31 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { cancel, later } from "@ember/runloop";
+import {cancel, later} from "@ember/runloop";
 import Component from "@ember/component";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {iconHTML} from "discourse-common/lib/icon-library";
 import Category from "discourse/models/category";
-import { REMINDER_TYPE } from "discourse/controllers/edit-topic-timer";
+import {REMINDER_TYPE} from "discourse/controllers/edit-topic-timer";
 import ENV from "discourse-common/config/environment";
 
 export default Component.extend({
-  classNames: ["topic-status-info"],
-  _delayedRerender: null,
-  clockIcon: `${iconHTML("far-clock")}`.htmlSafe(),
-  trashCanIcon: `${iconHTML("trash-alt")}`.htmlSafe(),
-  trashCanTitle: I18n.t("post.controls.remove_timer"),
-  title: null,
-  notice: null,
-  showTopicTimer: null,
+  classNames: ["topic-status-info"], _delayedRerender: null,
+    clockIcon: `${iconHTML("far-clock")}`.htmlSafe(),
+    trashCanIcon: `${iconHTML("trash-alt")}`.htmlSafe(),
+    trashCanTitle: I18n.t("post.controls.remove_timer"), title: null,
+    notice: null, showTopicTimer: null,
 
-  @discourseComputed("statusType")
-  canRemoveTimer(type) {
+    @discourseComputed("statusType") canRemoveTimer(type) {
     if (type === REMINDER_TYPE) return true;
     return this.currentUser && this.currentUser.get("canManageTopic");
-  },
+  }
+  ,
 
-  @discourseComputed("canRemoveTimer", "removeTopicTimer")
-  showTrashCan(canRemoveTimer, removeTopicTimer) {
+    @discourseComputed("canRemoveTimer", "removeTopicTimer")
+    showTrashCan(canRemoveTimer, removeTopicTimer) {
     return canRemoveTimer && removeTopicTimer;
-  },
+  }
+  ,
 
-  renderTopicTimer() {
+    renderTopicTimer() {
     if (!this.executeAt || this.executeAt < moment()) {
       this.set("showTopicTimer", null);
       return;
@@ -62,13 +60,11 @@ export default Component.extend({
       if (categoryId) {
         const category = Category.findById(categoryId);
 
-        options = Object.assign(
-          {
-            categoryName: category.get("slug"),
-            categoryUrl: category.get("url")
-          },
-          options
-        );
+        options = Object.assign({
+          categoryName: category.get("slug"),
+          categoryUrl: category.get("url")
+        },
+                                options);
       }
 
       this.setProperties({
@@ -86,34 +82,35 @@ export default Component.extend({
     } else {
       this.set("showTopicTimer", null);
     }
-  },
+  }
+  ,
 
-  didReceiveAttrs() {
+    didReceiveAttrs() {
     this._super(...arguments);
     this.renderTopicTimer();
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     if (this.removeTopicTimer) {
-      $(this.element).on(
-        "click.topic-timer-remove",
-        "button",
-        this.removeTopicTimer
-      );
+      $(this.element)
+        .on("click.topic-timer-remove", "button", this.removeTopicTimer);
     }
-  },
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     $(this.element).off("click.topic-timer-remove", this.removeTopicTimer);
 
     if (this._delayedRerender) {
       cancel(this._delayedRerender);
     }
-  },
+  }
+  ,
 
-  _noticeKey() {
+    _noticeKey() {
     const statusType = this.statusType;
 
     if (this.basedOnLastPost) {

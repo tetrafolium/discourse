@@ -7,11 +7,8 @@ export default Component.extend({
   newDotText: null,
   init() {
     this._super(...arguments);
-    this.set(
-      "newDotText",
-      this.currentUser && this.currentUser.trust_level > 0
-        ? " "
-        : I18n.t("filters.new.lower_title")
-    );
+    this.set("newDotText", this.currentUser && this.currentUser.trust_level > 0
+                             ? " "
+                             : I18n.t("filters.new.lower_title"));
   }
 });

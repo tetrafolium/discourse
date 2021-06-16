@@ -1,6 +1,6 @@
 import EmberRouter from "@ember/routing/router";
-import { defaultHomepage } from "discourse/lib/utilities";
-import { rewritePath } from "discourse/lib/url";
+import {defaultHomepage} from "discourse/lib/utilities";
+import {rewritePath} from "discourse/lib/url";
 import ENV from "discourse-common/config/environment";
 import Site from "discourse/models/site";
 
@@ -78,12 +78,9 @@ class RouteNode {
     if (this.name === "root") {
       children.forEach(c => c.mapRoutes(router));
     } else {
-      const builder =
-        children.length === 0
-          ? undefined
-          : function() {
-              children.forEach(c => c.mapRoutes(this));
-            };
+      const builder = children.length === 0 ? undefined : function() {
+        children.forEach(c => c.mapRoutes(this));
+      };
       router.route(this.name, this.opts, builder);
     }
   }

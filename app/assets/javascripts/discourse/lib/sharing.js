@@ -65,9 +65,8 @@ export default {
         width: 600,
         height: source.popupHeight || 315
       };
-      const stringOptions = Object.keys(options)
-        .map(k => `${k}=${options[k]}`)
-        .join(",");
+      const stringOptions =
+        Object.keys(options).map(k => `${k}=${options[k]}`).join(",");
 
       if (source.shouldOpenInPopup) {
         window.open(url, "", stringOptions);
@@ -78,8 +77,7 @@ export default {
   },
 
   activeSources(linksSetting = "") {
-    return linksSetting
-      .split("|")
+    return linksSetting.split("|")
       .concat(_customSharingIds)
       .map(s => _sources[s])
       .compact();

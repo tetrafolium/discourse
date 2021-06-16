@@ -8,10 +8,7 @@ export default RestrictedUserRoute.extend({
     const user = this.modelFor("user");
     if (this.siteSettings.enable_badges) {
       return UserBadge.findByUsername(user.get("username")).then(userBadges => {
-        user.set(
-          "badges",
-          userBadges.map(ub => ub.badge)
-        );
+        user.set("badges", userBadges.map(ub => ub.badge));
         return user;
       });
     } else {

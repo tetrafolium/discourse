@@ -1,4 +1,4 @@
-import { alias, equal } from "@ember/object/computed";
+import {alias, equal} from "@ember/object/computed";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import {
@@ -9,7 +9,7 @@ import {
   EDIT,
   EDIT_SHARED_DRAFT
 } from "discourse/models/composer";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {iconHTML} from "discourse-common/lib/icon-library";
 
 const TITLES = {
   [PRIVATE_MESSAGE]: "topic.private_message",
@@ -19,37 +19,31 @@ const TITLES = {
 };
 
 export default Component.extend({
-  classNames: ["composer-action-title"],
-  options: alias("model.replyOptions"),
-  action: alias("model.action"),
-  isEditing: equal("action", EDIT),
+  classNames: ["composer-action-title"], options: alias("model.replyOptions"),
+    action: alias("model.action"), isEditing: equal("action", EDIT),
 
-  @discourseComputed("options", "action")
-  actionTitle(opts, action) {
+    @discourseComputed("options", "action") actionTitle(opts, action) {
     if (TITLES[action]) {
       return I18n.t(TITLES[action]);
     }
 
     switch (action) {
-      case REPLY:
-        if (opts.userAvatar && opts.userLink) {
-          return this._formatReplyToUserPost(opts.userAvatar, opts.userLink);
-        } else if (opts.topicLink) {
-          return this._formatReplyToTopic(opts.topicLink);
-        }
-      case EDIT:
-        if (opts.userAvatar && opts.userLink && opts.postLink) {
-          return this._formatEditUserPost(
-            opts.userAvatar,
-            opts.userLink,
-            opts.postLink,
-            opts.originalUser
-          );
-        }
+    case REPLY:
+      if (opts.userAvatar && opts.userLink) {
+        return this._formatReplyToUserPost(opts.userAvatar, opts.userLink);
+      } else if (opts.topicLink) {
+        return this._formatReplyToTopic(opts.topicLink);
+      }
+    case EDIT:
+      if (opts.userAvatar && opts.userLink && opts.postLink) {
+        return this._formatEditUserPost(opts.userAvatar, opts.userLink,
+                                        opts.postLink, opts.originalUser);
+      }
     }
-  },
+  }
+  ,
 
-  _formatEditUserPost(userAvatar, userLink, postLink, originalUser) {
+    _formatEditUserPost(userAvatar, userLink, postLink, originalUser) {
     let editTitle = `
       <a class="post-link" href="${postLink.href}">${postLink.anchor}</a>
       ${userAvatar}
@@ -58,23 +52,28 @@ export default Component.extend({
 
     if (originalUser) {
       editTitle += `
-        ${iconHTML("share", { class: "reply-to-glyph" })}
+        ${iconHTML("share", {
+        class: "reply-to-glyph"
+      })}
         ${originalUser.avatar}
         <span class="original-username">${originalUser.username}</span>
       `;
     }
 
     return editTitle.htmlSafe();
-  },
+  }
+  ,
 
-  _formatReplyToTopic(link) {
-    return `<a class="topic-link" href="${link.href}" data-topic-id="${this.get(
-      "model.topic.id"
-    )}">${link.anchor}</a>`.htmlSafe();
-  },
+    _formatReplyToTopic(link) {
+    return `<a class="topic-link" href="${link.href}" data-topic-id="${
+             this.get("model.topic.id")}">${link.anchor}</a>`
+      .htmlSafe();
+  }
+  ,
 
-  _formatReplyToUserPost(avatar, link) {
-    const htmlLink = `<a class="user-link" href="${link.href}">${link.anchor}</a>`;
+    _formatReplyToUserPost(avatar, link) {
+    const htmlLink =
+      `<a class="user-link" href="${link.href}">${link.anchor}</a>`;
     return `${avatar}${htmlLink}`.htmlSafe();
   }
 });

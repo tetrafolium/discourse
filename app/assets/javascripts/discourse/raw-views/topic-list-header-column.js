@@ -9,21 +9,21 @@ export default EmberObject.extend({
     }
 
     return this.name ? I18n.t(this.name) : "";
-  },
+  }
+  ,
 
-  @discourseComputed
-  sortIcon() {
+    @discourseComputed sortIcon() {
     const asc = this.parent.ascending ? "up" : "down";
     return `chevron-${asc}`;
-  },
+  }
+  ,
 
-  @discourseComputed
-  isSorting() {
+    @discourseComputed isSorting() {
     return this.sortable && this.parent.order === this.order;
-  },
+  }
+  ,
 
-  @discourseComputed
-  className() {
+    @discourseComputed className() {
     const name = [];
 
     if (this.order) {

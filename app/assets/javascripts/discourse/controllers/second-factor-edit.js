@@ -5,12 +5,8 @@ export default Controller.extend(ModalFunctionality, {
   actions: {
     disableSecondFactor() {
       this.user
-        .updateSecondFactor(
-          this.model.id,
-          this.model.name,
-          true,
-          this.model.method
-        )
+        .updateSecondFactor(this.model.id, this.model.name, true,
+                            this.model.method)
         .then(response => {
           if (response.error) {
             return;
@@ -29,12 +25,8 @@ export default Controller.extend(ModalFunctionality, {
 
     editSecondFactor() {
       this.user
-        .updateSecondFactor(
-          this.model.id,
-          this.model.name,
-          false,
-          this.model.method
-        )
+        .updateSecondFactor(this.model.id, this.model.name, false,
+                            this.model.method)
         .then(response => {
           if (response.error) {
             return;

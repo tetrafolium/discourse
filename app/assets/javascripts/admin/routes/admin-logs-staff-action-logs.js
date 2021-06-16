@@ -4,9 +4,8 @@ import showModal from "discourse/lib/show-modal";
 export default DiscourseRoute.extend({
   // TODO: make this automatic using an `{{outlet}}`
   renderTemplate: function() {
-    this.render("admin/templates/logs/staff-action-logs", {
-      into: "adminLogs"
-    });
+    this.render("admin/templates/logs/staff-action-logs",
+                { into: "adminLogs" });
   },
 
   actions: {

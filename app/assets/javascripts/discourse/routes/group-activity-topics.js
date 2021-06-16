@@ -8,8 +8,8 @@ export default DiscourseRoute.extend({
   },
 
   model() {
-    return this.store.findFiltered("topicList", {
-      filter: `topics/groups/${this.modelFor("group").get("name")}`
-    });
+    return this.store.findFiltered(
+      "topicList",
+      { filter: `topics/groups/${this.modelFor("group").get("name")}` });
   }
 });

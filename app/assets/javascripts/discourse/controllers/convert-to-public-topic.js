@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 
 export default Controller.extend(ModalFunctionality, {
@@ -13,8 +13,7 @@ export default Controller.extend(ModalFunctionality, {
   actions: {
     makePublic() {
       let topic = this.model;
-      topic
-        .convertTopic("public", { categoryId: this.publicCategoryId })
+      topic.convertTopic("public", { categoryId: this.publicCategoryId })
         .then(() => {
           topic.set("archetype", "regular");
           topic.set("category_id", this.publicCategoryId);

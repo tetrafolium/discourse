@@ -1,11 +1,11 @@
-import EmberObject, { set } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
+import EmberObject, {set} from "@ember/object";
+import {ajax} from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 import ResultSet from "discourse/models/result-set";
-import { getRegister } from "discourse-common/lib/get-owner";
-import { underscore } from "@ember/string";
+import {getRegister} from "discourse-common/lib/get-owner";
+import {underscore} from "@ember/string";
 import Category from "discourse/models/category";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 let _identityMap;
 
@@ -136,18 +136,15 @@ export default EmberObject.extend({
       return hydrated;
     }
 
-    hydrated.set(
-      "content",
-      hydrated.get("content").map(item => {
-        var staleItem = stale.content.findBy("id", item.get("id"));
-        if (staleItem) {
-          staleItem.setProperties(item);
-        } else {
-          staleItem = item;
-        }
-        return staleItem;
-      })
-    );
+    hydrated.set("content", hydrated.get("content").map(item => {
+      var staleItem = stale.content.findBy("id", item.get("id"));
+      if (staleItem) {
+        staleItem.setProperties(item);
+      } else {
+        staleItem = item;
+      }
+      return staleItem;
+    }));
     return hydrated;
   },
 
@@ -155,9 +152,8 @@ export default EmberObject.extend({
     const adapter = this.adapterFor(type);
     return ajax(url).then(result => {
       const typeName = underscore(this.pluralize(adapter.apiNameFor(type)));
-      const content = result[typeName].map(obj =>
-        this._hydrate(type, obj, result)
-      );
+      const content =
+        result[typeName].map(obj => this._hydrate(type, obj, result));
       resultSet.set("content", content);
     });
   },
@@ -171,9 +167,8 @@ export default EmberObject.extend({
       let totalRows =
         pageTarget["total_rows_" + typeName] || resultSet.get("totalRows");
       let loadMoreUrl = pageTarget["load_more_" + typeName];
-      let content = result[typeName].map(obj =>
-        this._hydrate(type, obj, result)
-      );
+      let content =
+        result[typeName].map(obj => this._hydrate(type, obj, result));
 
       resultSet.setProperties({ totalRows, loadMoreUrl });
       resultSet.get("content").pushObjects(content);
@@ -186,15 +181,14 @@ export default EmberObject.extend({
   },
 
   update(type, id, attrs) {
-    return this.adapterFor(type).update(this, type, id, attrs, function(
-      result
-    ) {
-      if (result && result[type] && result[type].id) {
-        const oldRecord = findAndRemoveMap(type, id);
-        storeMap(type, result[type].id, oldRecord);
-      }
-      return result;
-    });
+    return this.adapterFor(type).update(
+      this, type, id, attrs, function(result) {
+        if (result && result[type] && result[type].id) {
+          const oldRecord = findAndRemoveMap(type, id);
+          storeMap(type, result[type].id, oldRecord);
+        }
+        return result;
+      });
   },
 
   createRecord(type, attrs) {
@@ -227,9 +221,8 @@ export default EmberObject.extend({
       return;
     }
 
-    const content = result[typeName].map(obj =>
-      this._hydrate(type, obj, result)
-    );
+    const content =
+      result[typeName].map(obj => this._hydrate(type, obj, result));
 
     let pageTarget = result.meta || result;
 
@@ -269,10 +262,8 @@ export default EmberObject.extend({
   },
 
   adapterFor(type) {
-    return (
-      this.register.lookup("adapter:" + type) ||
-      this.register.lookup("adapter:rest")
-    );
+    return (this.register.lookup("adapter:" + type) ||
+            this.register.lookup("adapter:rest"));
   },
 
   _lookupSubType(subType, type, id, root) {
@@ -317,9 +308,8 @@ export default EmberObject.extend({
         const subType = m[1];
 
         if (m[2]) {
-          const hydrated = obj[k].map(id =>
-            this._lookupSubType(subType, type, id, root)
-          );
+          const hydrated =
+            obj[k].map(id => this._lookupSubType(subType, type, id, root));
           obj[this.pluralize(subType)] = hydrated || [];
           delete obj[k];
         } else {
@@ -377,4 +367,4 @@ export default EmberObject.extend({
   }
 });
 
-export { flushMap };
+export {flushMap};

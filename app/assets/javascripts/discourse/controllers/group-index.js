@@ -1,34 +1,30 @@
-import Controller, { inject as controller } from "@ember/controller";
-import { alias } from "@ember/object/computed";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import Controller, {inject as controller} from "@ember/controller";
+import {alias} from "@ember/object/computed";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import discourseDebounce from "discourse/lib/debounce";
 
 export default Controller.extend({
   application: controller(),
 
-  queryParams: ["order", "desc", "filter"],
+    queryParams: ["order", "desc", "filter"],
 
-  order: "",
-  desc: null,
-  filter: null,
-  filterInput: null,
+    order: "", desc: null, filter: null, filterInput: null,
 
-  loading: false,
-  isOwner: alias("model.is_group_owner"),
-  showActions: false,
+    loading: false, isOwner: alias("model.is_group_owner"), showActions: false,
 
-  @observes("filterInput")
-  _setFilter: discourseDebounce(function() {
-    this.set("filter", this.filterInput);
-  }, 500),
+    @observes("filterInput") _setFilter: discourseDebounce(
+      function() {
+        this.set("filter", this.filterInput);
+      },
+      500),
 
-  @observes("order", "desc", "filter")
-  _filtersChanged() {
+    @observes("order", "desc", "filter") _filtersChanged() {
     this.findMembers(true);
-  },
+  }
+  ,
 
-  findMembers(refresh) {
+    findMembers(refresh) {
     if (this.loading) {
       return;
     }
@@ -45,49 +41,49 @@ export default Controller.extend({
 
     this.set("loading", true);
     model.findMembers(this.memberParams, refresh).finally(() => {
-      this.set(
-        "application.showFooter",
-        model.members.length >= model.user_count
-      );
+      this.set("application.showFooter",
+               model.members.length >= model.user_count);
       this.set("loading", false);
     });
-  },
+  }
+  ,
 
-  @discourseComputed("order", "desc", "filter")
-  memberParams(order, desc, filter) {
+    @discourseComputed("order", "desc", "filter") memberParams(order, desc,
+                                                               filter) {
     return { order, desc, filter };
-  },
+  }
+  ,
 
-  @discourseComputed("model.members.[]")
-  hasMembers(members) {
+    @discourseComputed("model.members.[]") hasMembers(members) {
     return members && members.length > 0;
-  },
+  }
+  ,
 
-  @discourseComputed("model")
-  canManageGroup(model) {
+    @discourseComputed("model") canManageGroup(model) {
     return this.currentUser && this.currentUser.canManageGroup(model);
-  },
+  }
+  ,
 
-  @discourseComputed
-  filterPlaceholder() {
+    @discourseComputed filterPlaceholder() {
     if (this.currentUser && this.currentUser.admin) {
       return "groups.members.filter_placeholder_admin";
     } else {
       return "groups.members.filter_placeholder";
     }
-  },
+  }
+  ,
 
-  actions: {
-    loadMore() {
-      this.findMembers();
-    },
+    actions: {
+      loadMore() {
+        this.findMembers();
+      },
 
-    toggleActions() {
-      this.toggleProperty("showActions");
-    },
+      toggleActions() {
+        this.toggleProperty("showActions");
+      },
 
-    actOnGroup(member, actionId) {
-      switch (actionId) {
+      actOnGroup(member, actionId) {
+        switch (actionId) {
         case "removeMember":
           this.send("removeMember", member);
           break;
@@ -97,29 +93,28 @@ export default Controller.extend({
         case "removeOwner":
           this.send("removeOwner", member);
           break;
-      }
-    },
+        }
+      },
 
-    removeMember(user) {
-      this.model.removeMember(user, this.memberParams);
-    },
+      removeMember(user) {
+        this.model.removeMember(user, this.memberParams);
+      },
 
-    makeOwner(username) {
-      this.model.addOwners(username);
-    },
+      makeOwner(username) {
+        this.model.addOwners(username);
+      },
 
-    removeOwner(user) {
-      this.model.removeOwner(user);
-    },
+      removeOwner(user) {
+        this.model.removeOwner(user);
+      },
 
-    addMembers() {
-      const usernames = this.usernames;
-      if (usernames && usernames.length > 0) {
-        this.model
-          .addMembers(usernames)
-          .then(() => this.set("usernames", []))
-          .catch(popupAjaxError);
+      addMembers() {
+        const usernames = this.usernames;
+        if (usernames && usernames.length > 0) {
+          this.model.addMembers(usernames)
+            .then(() => this.set("usernames", []))
+            .catch(popupAjaxError);
+        }
       }
     }
-  }
 });

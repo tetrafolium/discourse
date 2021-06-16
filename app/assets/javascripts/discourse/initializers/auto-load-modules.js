@@ -1,6 +1,6 @@
-import { registerHelpers } from "discourse-common/lib/helpers";
+import {registerHelpers} from "discourse-common/lib/helpers";
 import RawHandlebars from "discourse-common/lib/raw-handlebars";
-import { registerRawHelpers } from "discourse-common/lib/raw-handlebars-helpers";
+import {registerRawHelpers} from "discourse-common/lib/raw-handlebars-helpers";
 
 export function autoLoadModules(container, registry) {
   Object.keys(requirejs.entries).forEach(entry => {
@@ -15,7 +15,4 @@ export function autoLoadModules(container, registry) {
   registerRawHelpers(RawHandlebars, Handlebars);
 }
 
-export default {
-  name: "auto-load-modules",
-  initialize: autoLoadModules
-};
+export default {name: "auto-load-modules", initialize: autoLoadModules};

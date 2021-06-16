@@ -1,4 +1,4 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 let _started = false;
 let cache = {};
 let transitionCount = 0;
@@ -64,10 +64,7 @@ export function addGTMPageChangedCallback(callback) {
 export function googleTagManagerPageChanged(data) {
   let gtmData = {
     event: "virtualPageView",
-    page: {
-      title: data.title,
-      url: data.url
-    }
+    page: { title: data.title, url: data.url }
   };
 
   _gtmPageChangedCallbacks.forEach(callback => callback(gtmData));

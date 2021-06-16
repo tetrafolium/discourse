@@ -1,11 +1,11 @@
-import { cancel, scheduleOnce } from "@ember/runloop";
+import {cancel, scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
-import { diff, patch } from "virtual-dom";
-import { WidgetClickHook } from "discourse/widgets/hooks";
-import { queryRegistry } from "discourse/widgets/widget";
-import { getRegister } from "discourse-common/lib/get-owner";
+import {diff, patch} from "virtual-dom";
+import {WidgetClickHook} from "discourse/widgets/hooks";
+import {queryRegistry} from "discourse/widgets/widget";
+import {getRegister} from "discourse-common/lib/get-owner";
 import DirtyKeys from "discourse/lib/dirty-keys";
-import { camelize } from "@ember/string";
+import {camelize} from "@ember/string";
 
 let _cleanCallbacks = {};
 export function addWidgetCleanCallback(widgetName, fn) {
@@ -114,10 +114,7 @@ export default Component.extend({
 
       const t0 = new Date().getTime();
       const args = this.args || this.buildArgs();
-      const opts = {
-        model: this.model,
-        dirtyKeys: this.dirtyKeys
-      };
+      const opts = { model: this.model, dirtyKeys: this.dirtyKeys };
       const newTree = new this._widgetClass(args, this.register, opts);
 
       newTree._rerenderable = this;

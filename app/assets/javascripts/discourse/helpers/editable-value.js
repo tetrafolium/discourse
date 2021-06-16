@@ -1,4 +1,4 @@
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 import Helper from "@ember/component/helper";
 
 export function formatCurrency([reviewable, fieldId]) {

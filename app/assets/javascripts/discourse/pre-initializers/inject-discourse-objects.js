@@ -4,9 +4,8 @@ import Store from "discourse/models/store";
 import DiscourseLocation from "discourse/lib/discourse-location";
 import Discourse from "discourse";
 import SearchService from "discourse/services/search";
-import TopicTrackingState, {
-  startTracking
-} from "discourse/models/topic-tracking-state";
+import TopicTrackingState,
+{startTracking} from "discourse/models/topic-tracking-state";
 import ScreenTrack from "discourse/lib/screen-track";
 import Site from "discourse/models/site";
 import User from "discourse/models/user";
@@ -35,47 +34,36 @@ export default {
     app.register("current-user:main", currentUser, { instantiate: false });
     Discourse.currentUser = currentUser;
 
-    const topicTrackingState = TopicTrackingState.create({
-      messageBus,
-      currentUser
-    });
-    app.register("topic-tracking-state:main", topicTrackingState, {
-      instantiate: false
-    });
-    ALL_TARGETS.forEach(t =>
-      app.inject(t, "topicTrackingState", "topic-tracking-state:main")
-    );
+    const topicTrackingState =
+      TopicTrackingState.create({ messageBus, currentUser });
+    app.register("topic-tracking-state:main", topicTrackingState,
+                 { instantiate: false });
+    ALL_TARGETS.forEach(
+      t => app.inject(t, "topicTrackingState", "topic-tracking-state:main"));
 
     const siteSettings = Discourse.SiteSettings;
     app.register("site-settings:main", siteSettings, { instantiate: false });
     ALL_TARGETS.forEach(t =>
-      app.inject(t, "siteSettings", "site-settings:main")
-    );
+                          app.inject(t, "siteSettings", "site-settings:main"));
 
     const site = Site.current();
     app.register("site:main", site, { instantiate: false });
     ALL_TARGETS.forEach(t => app.inject(t, "site", "site:main"));
 
     app.register("search-service:main", SearchService);
-    ALL_TARGETS.forEach(t =>
-      app.inject(t, "searchService", "search-service:main")
-    );
+    ALL_TARGETS.forEach(
+      t => app.inject(t, "searchService", "search-service:main"));
 
     const session = Session.current();
     app.register("session:main", session, { instantiate: false });
     ALL_TARGETS.forEach(t => app.inject(t, "session", "session:main"));
 
-    const screenTrack = new ScreenTrack(
-      topicTrackingState,
-      siteSettings,
-      session,
-      currentUser
-    );
+    const screenTrack =
+      new ScreenTrack(topicTrackingState, siteSettings, session, currentUser);
 
     app.register("screen-track:main", screenTrack, { instantiate: false });
-    ["component", "route"].forEach(t =>
-      app.inject(t, "screenTrack", "screen-track:main")
-    );
+    ["component", "route"].forEach(
+      t => app.inject(t, "screenTrack", "screen-track:main"));
 
     if (currentUser) {
       ["component", "route", "controller"].forEach(t => {
@@ -87,9 +75,8 @@ export default {
 
     const keyValueStore = new KeyValueStore("discourse_");
     app.register("key-value-store:main", keyValueStore, { instantiate: false });
-    ALL_TARGETS.forEach(t =>
-      app.inject(t, "keyValueStore", "key-value-store:main")
-    );
+    ALL_TARGETS.forEach(
+      t => app.inject(t, "keyValueStore", "key-value-store:main"));
 
     startTracking(topicTrackingState);
   }

@@ -1,6 +1,6 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import Component from "@ember/component";
-import { on, observes } from "discourse-common/utils/decorators";
+import {on, observes} from "discourse-common/utils/decorators";
 
 export default Component.extend({
   @on("init")
@@ -12,41 +12,41 @@ export default Component.extend({
         this.set("classNames", classes);
       }
     }
-  },
+  }
+  ,
 
-  tagName: "ul",
-  selectedHtml: null,
+    tagName: "ul", selectedHtml: null,
 
-  classNames: ["mobile-nav"],
+    classNames: ["mobile-nav"],
 
-  @observes("currentPath")
-  currentPathChanged() {
+    @observes("currentPath") currentPathChanged() {
     this.set("expanded", false);
     next(() => this._updateSelectedHtml());
-  },
+  }
+  ,
 
-  _updateSelectedHtml() {
+    _updateSelectedHtml() {
     const active = this.element.querySelector(".active");
     if (active && active.innerHTML) {
       this.set("selectedHtml", active.innerHTML);
     }
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     this._updateSelectedHtml();
-  },
+  }
+  ,
 
-  actions: {
-    toggleExpanded() {
-      this.toggleProperty("expanded");
+    actions: {
+      toggleExpanded() {
+        this.toggleProperty("expanded");
 
-      next(() => {
-        if (this.expanded) {
-          $(window)
-            .off("click.mobile-nav")
-            .on("click.mobile-nav", e => {
+        next(() => {
+          if (this.expanded) {
+            $(window).off("click.mobile-nav").on("click.mobile-nav", e => {
               if (!this.element || this.isDestroying || this.isDestroyed) {
                 return;
               }
@@ -57,8 +57,8 @@ export default Component.extend({
                 $(window).off("click.mobile-nav");
               }
             });
-        }
-      });
+          }
+        });
+      }
     }
-  }
 });

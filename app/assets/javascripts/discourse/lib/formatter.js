@@ -8,9 +8,8 @@ function shortDateNoYear(date) {
 
 // Suppress year if it's this year
 export function smartShortDate(date, withYear = tinyDateYear) {
-  return date.getFullYear() === new Date().getFullYear()
-    ? shortDateNoYear(date)
-    : withYear(date);
+  return date.getFullYear() === new Date().getFullYear() ? shortDateNoYear(date)
+                                                         : withYear(date);
 }
 
 export function tinyDateYear(date) {
@@ -46,11 +45,8 @@ export function updateRelativeAge(elems) {
   elems.each(function() {
     const $this = $(this);
     $this.html(
-      relativeAge(new Date($this.data("time")), {
-        format: $this.data("format"),
-        wrapInSpan: false
-      })
-    );
+      relativeAge(new Date($this.data("time")),
+                  { format: $this.data("format"), wrapInSpan: false }));
   });
 }
 
@@ -80,17 +76,9 @@ export function autoUpdatingRelativeAge(date, options) {
     append += "' title='" + longDate(date);
   }
 
-  return (
-    "<span class='relative-date" +
-    append +
-    "' data-time='" +
-    date.getTime() +
-    "' data-format='" +
-    format +
-    "'>" +
-    relAge +
-    "</span>"
-  );
+  return ("<span class='relative-date" + append + "' data-time='" +
+          date.getTime() + "' data-format='" + format + "'>" + relAge +
+          "</span>");
 }
 
 function wrapAgo(dateStr) {
@@ -113,45 +101,41 @@ export function durationTiny(distance, ageOpts) {
   let formatted;
 
   switch (true) {
-    case distance <= 59:
-      formatted = t("less_than_x_minutes", { count: 1 });
-      break;
-    case distanceInMinutes >= 0 && distanceInMinutes <= 44:
-      formatted = t("x_minutes", { count: distanceInMinutes });
-      break;
-    case distanceInMinutes >= 45 && distanceInMinutes <= 89:
-      formatted = t("about_x_hours", { count: 1 });
-      break;
-    case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
-      formatted = t("about_x_hours", {
-        count: Math.round(distanceInMinutes / 60.0)
-      });
-      break;
-    case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
-      formatted = t("x_days", { count: 1 });
-      break;
-    case distanceInMinutes >= 2520 && distanceInMinutes <= 129599:
-      formatted = t("x_days", {
-        count: Math.round(distanceInMinutes / 1440.0)
-      });
-      break;
-    case distanceInMinutes >= 129600 && distanceInMinutes <= 525599:
-      formatted = t("x_months", {
-        count: Math.round(distanceInMinutes / 43200.0)
-      });
-      break;
-    default:
-      const numYears = distanceInMinutes / 525600.0;
-      const remainder = numYears % 1;
-      if (remainder < 0.25) {
-        formatted = t("about_x_years", { count: Math.floor(numYears) });
-      } else if (remainder < 0.75) {
-        formatted = t("over_x_years", { count: Math.floor(numYears) });
-      } else {
-        formatted = t("almost_x_years", { count: Math.floor(numYears) + 1 });
-      }
+  case distance <= 59:
+    formatted = t("less_than_x_minutes", { count: 1 });
+    break;
+  case distanceInMinutes >= 0 && distanceInMinutes <= 44:
+    formatted = t("x_minutes", { count: distanceInMinutes });
+    break;
+  case distanceInMinutes >= 45 && distanceInMinutes <= 89:
+    formatted = t("about_x_hours", { count: 1 });
+    break;
+  case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
+    formatted =
+      t("about_x_hours", { count: Math.round(distanceInMinutes / 60.0) });
+    break;
+  case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
+    formatted = t("x_days", { count: 1 });
+    break;
+  case distanceInMinutes >= 2520 && distanceInMinutes <= 129599:
+    formatted = t("x_days", { count: Math.round(distanceInMinutes / 1440.0) });
+    break;
+  case distanceInMinutes >= 129600 && distanceInMinutes <= 525599:
+    formatted =
+      t("x_months", { count: Math.round(distanceInMinutes / 43200.0) });
+    break;
+  default:
+    const numYears = distanceInMinutes / 525600.0;
+    const remainder = numYears % 1;
+    if (remainder < 0.25) {
+      formatted = t("about_x_years", { count: Math.floor(numYears) });
+    } else if (remainder < 0.75) {
+      formatted = t("over_x_years", { count: Math.floor(numYears) });
+    } else {
+      formatted = t("almost_x_years", { count: Math.floor(numYears) + 1 });
+    }
 
-      break;
+    break;
   }
 
   return formatted;
@@ -170,34 +154,31 @@ function relativeAgeTiny(date, ageOpts) {
   };
 
   switch (true) {
-    case distanceInMinutes >= 0 && distanceInMinutes <= 44:
-      formatted = t("x_minutes", { count: distanceInMinutes });
-      break;
-    case distanceInMinutes >= 45 && distanceInMinutes <= 89:
-      formatted = t("about_x_hours", { count: 1 });
-      break;
-    case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
-      formatted = t("about_x_hours", {
-        count: Math.round(distanceInMinutes / 60.0)
-      });
-      break;
-    case Discourse.SiteSettings.relative_date_duration === 0 &&
-      distanceInMinutes <= 525599:
-      formatted = shortDateNoYear(date);
-      break;
-    case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
-      formatted = t("x_days", { count: 1 });
-      break;
-    case distanceInMinutes >= 2520 &&
-      distanceInMinutes <=
-        (Discourse.SiteSettings.relative_date_duration || 14) * 1440:
-      formatted = t("x_days", {
-        count: Math.round(distanceInMinutes / 1440.0)
-      });
-      break;
-    default:
-      formatted = (ageOpts.defaultFormat || smartShortDate)(date);
-      break;
+  case distanceInMinutes >= 0 && distanceInMinutes <= 44:
+    formatted = t("x_minutes", { count: distanceInMinutes });
+    break;
+  case distanceInMinutes >= 45 && distanceInMinutes <= 89:
+    formatted = t("about_x_hours", { count: 1 });
+    break;
+  case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
+    formatted =
+      t("about_x_hours", { count: Math.round(distanceInMinutes / 60.0) });
+    break;
+  case Discourse.SiteSettings.relative_date_duration === 0 &&
+    distanceInMinutes <= 525599:
+    formatted = shortDateNoYear(date);
+    break;
+  case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
+    formatted = t("x_days", { count: 1 });
+    break;
+  case distanceInMinutes >= 2520 &&
+    distanceInMinutes <=
+      (Discourse.SiteSettings.relative_date_duration || 14) * 1440:
+    formatted = t("x_days", { count: Math.round(distanceInMinutes / 1440.0) });
+    break;
+  default:
+    formatted = (ageOpts.defaultFormat || smartShortDate)(date);
+    break;
   }
 
   return formatted;
@@ -216,40 +197,35 @@ export function relativeAgeMediumSpan(distance, leaveAgo) {
   const distanceInMinutes = Math.round(distance / 60.0);
 
   const t = function(key, opts) {
-    return I18n.t(
-      "dates.medium" + (leaveAgo ? "_with_ago" : "") + "." + key,
-      opts
-    );
+    return I18n.t("dates.medium" + (leaveAgo ? "_with_ago" : "") + "." + key,
+                  opts);
   };
 
   switch (true) {
-    case distanceInMinutes >= 1 && distanceInMinutes <= 55:
-      formatted = t("x_minutes", { count: distanceInMinutes });
-      break;
-    case distanceInMinutes >= 56 && distanceInMinutes <= 89:
-      formatted = t("x_hours", { count: 1 });
-      break;
-    case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
-      formatted = t("x_hours", { count: Math.round(distanceInMinutes / 60.0) });
-      break;
-    case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
-      formatted = t("x_days", { count: 1 });
-      break;
-    case distanceInMinutes >= 2520 && distanceInMinutes <= 129599:
-      formatted = t("x_days", {
-        count: Math.round((distanceInMinutes - 720.0) / 1440.0)
-      });
-      break;
-    case distanceInMinutes >= 129600 && distanceInMinutes <= 525599:
-      formatted = t("x_months", {
-        count: Math.round(distanceInMinutes / 43200.0)
-      });
-      break;
-    default:
-      formatted = t("x_years", {
-        count: Math.round(distanceInMinutes / 525600.0)
-      });
-      break;
+  case distanceInMinutes >= 1 && distanceInMinutes <= 55:
+    formatted = t("x_minutes", { count: distanceInMinutes });
+    break;
+  case distanceInMinutes >= 56 && distanceInMinutes <= 89:
+    formatted = t("x_hours", { count: 1 });
+    break;
+  case distanceInMinutes >= 90 && distanceInMinutes <= 1409:
+    formatted = t("x_hours", { count: Math.round(distanceInMinutes / 60.0) });
+    break;
+  case distanceInMinutes >= 1410 && distanceInMinutes <= 2519:
+    formatted = t("x_days", { count: 1 });
+    break;
+  case distanceInMinutes >= 2520 && distanceInMinutes <= 129599:
+    formatted =
+      t("x_days", { count: Math.round((distanceInMinutes - 720.0) / 1440.0) });
+    break;
+  case distanceInMinutes >= 129600 && distanceInMinutes <= 525599:
+    formatted =
+      t("x_months", { count: Math.round(distanceInMinutes / 43200.0) });
+    break;
+  default:
+    formatted =
+      t("x_years", { count: Math.round(distanceInMinutes / 525600.0) });
+    break;
   }
   return formatted || "&mdash;";
 }
@@ -276,13 +252,8 @@ function relativeAgeMedium(date, options) {
     displayDate = relativeAgeMediumSpan(distance, leaveAgo);
   }
   if (wrapInSpan) {
-    return (
-      "<span class='date' title='" +
-      fullReadable +
-      "'>" +
-      displayDate +
-      "</span>"
-    );
+    return ("<span class='date' title='" + fullReadable + "'>" + displayDate +
+            "</span>");
   } else {
     return displayDate;
   }
@@ -299,9 +270,7 @@ export function relativeAge(date, options) {
     return relativeAgeMedium(date, options);
   } else if (format === "medium-with-ago") {
     return relativeAgeMedium(
-      date,
-      _.extend(options, { format: "medium", leaveAgo: true })
-    );
+      date, _.extend(options, { format: "medium", leaveAgo: true }));
   }
 
   return "UNKNOWN FORMAT";

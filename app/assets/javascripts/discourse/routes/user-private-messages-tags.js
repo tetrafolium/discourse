@@ -1,7 +1,7 @@
 import EmberObject from "@ember/object";
 import DiscourseRoute from "discourse/routes/discourse";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {ajax} from "discourse/lib/ajax";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default DiscourseRoute.extend({
   model() {
@@ -21,13 +21,11 @@ export default DiscourseRoute.extend({
     this.controllerFor("user-private-messages-tags").setProperties({
       model,
       sortProperties: this.siteSettings.tags_sort_alphabetically
-        ? ["id"]
-        : ["count:desc", "id"],
+                        ? ["id"]
+                        : ["count:desc", "id"],
       tagsForUser: this.modelFor("user").get("username_lower")
     });
-    this.controllerFor("user-private-messages").setProperties({
-      showToggleBulkSelect: false,
-      pmView: "tags"
-    });
+    this.controllerFor("user-private-messages")
+      .setProperties({ showToggleBulkSelect: false, pmView: "tags" });
   }
 });

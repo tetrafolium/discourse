@@ -15,9 +15,8 @@ export function defaultRenderTag(tag, params) {
   let path;
   if (tagName === "a" && !params.noHref) {
     if ((params.isPrivateMessage || params.pmOnly) && User.current()) {
-      const username = params.tagsForUser
-        ? params.tagsForUser
-        : User.current().username;
+      const username =
+        params.tagsForUser ? params.tagsForUser : User.current().username;
       path = `/u/${username}/messages/tags/${tag}`;
     } else {
       path = `/tag/${tag}`;
@@ -32,19 +31,8 @@ export function defaultRenderTag(tag, params) {
     classes.push(params.size);
   }
 
-  let val =
-    "<" +
-    tagName +
-    href +
-    " data-tag-name=" +
-    tag +
-    " class='" +
-    classes.join(" ") +
-    "'>" +
-    visibleName +
-    "</" +
-    tagName +
-    ">";
+  let val = "<" + tagName + href + " data-tag-name=" + tag + " class='" +
+            classes.join(" ") + "'>" + visibleName + "</" + tagName + ">";
 
   if (params.count) {
     val += " <span class='discourse-tag-count'>x" + params.count + "</span>";

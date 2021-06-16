@@ -1,53 +1,56 @@
-import { later, run } from "@ember/runloop";
+import {later, run} from "@ember/runloop";
 import DiscourseURL from "discourse/lib/url";
 import Composer from "discourse/models/composer";
-import { minimumOffset } from "discourse/lib/offset-calculator";
-import { ajax } from "discourse/lib/ajax";
-import { throttle } from "@ember/runloop";
-import { INPUT_DELAY } from "discourse-common/config/environment";
+import {minimumOffset} from "discourse/lib/offset-calculator";
+import {ajax} from "discourse/lib/ajax";
+import {throttle} from "@ember/runloop";
+import {INPUT_DELAY} from "discourse-common/config/environment";
 
 export let bindings = {
-  "!": { postAction: "showFlags" },
-  "#": { handler: "goToPost", anonymous: true },
-  "/": { handler: "toggleSearch", anonymous: true },
-  "ctrl+alt+f": { handler: "toggleSearch", anonymous: true, global: true },
-  "=": { handler: "toggleHamburgerMenu", anonymous: true },
-  "?": { handler: "showHelpModal", anonymous: true },
-  ".": { click: ".alert.alert-info.clickable", anonymous: true }, // show incoming/updated topics
-  b: { handler: "toggleBookmark" },
-  c: { handler: "createTopic" },
-  C: { handler: "focusComposer" },
-  "ctrl+f": { handler: "showPageSearch", anonymous: true },
-  "command+f": { handler: "showPageSearch", anonymous: true },
-  "mod+p": { handler: "printTopic", anonymous: true },
-  d: { postAction: "deletePost" },
-  e: { postAction: "editPost" },
-  end: { handler: "goToLastPost", anonymous: true },
-  "command+down": { handler: "goToLastPost", anonymous: true },
-  f: { handler: "toggleBookmarkTopic" },
-  "g h": { path: "/", anonymous: true },
-  "g l": { path: "/latest", anonymous: true },
-  "g n": { path: "/new" },
-  "g u": { path: "/unread" },
-  "g c": { path: "/categories", anonymous: true },
-  "g t": { path: "/top", anonymous: true },
-  "g b": { path: "/bookmarks" },
-  "g p": { path: "/my/activity" },
-  "g m": { path: "/my/messages" },
-  "g d": { path: "/my/activity/drafts" },
-  "g s": { handler: "goToFirstSuggestedTopic", anonymous: true },
-  home: { handler: "goToFirstPost", anonymous: true },
-  "command+up": { handler: "goToFirstPost", anonymous: true },
-  j: { handler: "selectDown", anonymous: true },
-  k: { handler: "selectUp", anonymous: true },
+  "!": {postAction: "showFlags"},
+  "#": {handler: "goToPost", anonymous: true},
+  "/": {handler: "toggleSearch", anonymous: true},
+  "ctrl+alt+f": {handler: "toggleSearch", anonymous: true, global: true},
+  "=": {handler: "toggleHamburgerMenu", anonymous: true},
+  "?": {handler: "showHelpModal", anonymous: true},
+  ".": {
+    click: ".alert.alert-info.clickable",
+    anonymous: true
+  }, // show incoming/updated topics
+  b: {handler: "toggleBookmark"},
+  c: {handler: "createTopic"},
+  C: {handler: "focusComposer"},
+  "ctrl+f": {handler: "showPageSearch", anonymous: true},
+  "command+f": {handler: "showPageSearch", anonymous: true},
+  "mod+p": {handler: "printTopic", anonymous: true},
+  d: {postAction: "deletePost"},
+  e: {postAction: "editPost"},
+  end: {handler: "goToLastPost", anonymous: true},
+  "command+down": {handler: "goToLastPost", anonymous: true},
+  f: {handler: "toggleBookmarkTopic"},
+  "g h": {path: "/", anonymous: true},
+  "g l": {path: "/latest", anonymous: true},
+  "g n": {path: "/new"},
+  "g u": {path: "/unread"},
+  "g c": {path: "/categories", anonymous: true},
+  "g t": {path: "/top", anonymous: true},
+  "g b": {path: "/bookmarks"},
+  "g p": {path: "/my/activity"},
+  "g m": {path: "/my/messages"},
+  "g d": {path: "/my/activity/drafts"},
+  "g s": {handler: "goToFirstSuggestedTopic", anonymous: true},
+  home: {handler: "goToFirstPost", anonymous: true},
+  "command+up": {handler: "goToFirstPost", anonymous: true},
+  j: {handler: "selectDown", anonymous: true},
+  k: {handler: "selectUp", anonymous: true},
   // we use this odd routing here vs a postAction: cause like
   // has an animation so the widget handles that
   // TODO: teach controller how to trigger the widget animation
-  l: { click: ".topic-post.selected button.toggle-like" },
-  "m m": { handler: "setTrackingToMuted" }, // mark topic as muted
-  "m r": { handler: "setTrackingToRegular" }, // mark topic as regular
-  "m t": { handler: "setTrackingToTracking" }, // mark topic as tracking
-  "m w": { handler: "setTrackingToWatching" }, // mark topic as watching
+  l: {click: ".topic-post.selected button.toggle-like"},
+  "m m": {handler: "setTrackingToMuted"},    // mark topic as muted
+  "m r": {handler: "setTrackingToRegular"},  // mark topic as regular
+  "m t": {handler: "setTrackingToTracking"}, // mark topic as tracking
+  "m w": {handler: "setTrackingToWatching"}, // mark topic as watching
   "o,enter": {
     click: [
       ".topic-list tr.selected a.title",
@@ -57,27 +60,30 @@ export let bindings = {
     ].join(", "),
     anonymous: true
   }, // open selected topic on latest or categories page
-  tab: { handler: "switchFocusCategoriesPage", anonymous: true },
-  p: { handler: "showCurrentUser" },
-  q: { handler: "quoteReply" },
-  r: { postAction: "replyToPost" },
-  s: { click: ".topic-post.selected a.post-date", anonymous: true }, // share post
-  "shift+j": { handler: "nextSection", anonymous: true },
-  "shift+k": { handler: "prevSection", anonymous: true },
-  "shift+p": { handler: "pinUnpinTopic" },
-  "shift+r": { handler: "replyToTopic" },
-  "shift+s": { click: "#topic-footer-buttons button.share", anonymous: true }, // share topic
-  "shift+l": { handler: "goToUnreadPost" },
-  "shift+z shift+z": { handler: "logout" },
-  "shift+f11": { handler: "fullscreenComposer", global: true },
-  "shift+u": { handler: "deferTopic" },
-  "shift+a": { handler: "toggleAdminActions" },
-  t: { postAction: "replyAsNewTopic" },
-  u: { handler: "goBack", anonymous: true },
+  tab: {handler: "switchFocusCategoriesPage", anonymous: true},
+  p: {handler: "showCurrentUser"},
+  q: {handler: "quoteReply"},
+  r: {postAction: "replyToPost"},
+  s: {click: ".topic-post.selected a.post-date", anonymous: true}, // share post
+  "shift+j": {handler: "nextSection", anonymous: true},
+  "shift+k": {handler: "prevSection", anonymous: true},
+  "shift+p": {handler: "pinUnpinTopic"},
+  "shift+r": {handler: "replyToTopic"},
+  "shift+s": {
+    click: "#topic-footer-buttons button.share",
+    anonymous: true
+  }, // share topic
+  "shift+l": {handler: "goToUnreadPost"},
+  "shift+z shift+z": {handler: "logout"},
+  "shift+f11": {handler: "fullscreenComposer", global: true},
+  "shift+u": {handler: "deferTopic"},
+  "shift+a": {handler: "toggleAdminActions"},
+  t: {postAction: "replyAsNewTopic"},
+  u: {handler: "goBack", anonymous: true},
   "x r": {
     click: "#dismiss-new,#dismiss-new-top,#dismiss-posts,#dismiss-posts-top"
-  }, // dismiss new/posts
-  "x t": { click: "#dismiss-topics,#dismiss-topics-top" } // dismiss topics
+  },                                                    // dismiss new/posts
+  "x t": {click: "#dismiss-topics,#dismiss-topics-top"} // dismiss topics
 };
 
 const animationDuration = 100;
@@ -158,10 +164,8 @@ export default {
       const url = `/t/${controller.get("model.id")}/last.json`;
       ajax(url).then(result => {
         if (result.suggested_topics && result.suggested_topics.length > 0) {
-          const topic = controller.store.createRecord(
-            "topic",
-            result.suggested_topics[0]
-          );
+          const topic =
+            controller.store.createRecord("topic", result.suggested_topics[0]);
           DiscourseURL.routeTo(topic.get("url"));
         }
       });
@@ -214,17 +218,16 @@ export default {
 
   showPageSearch(event) {
     run(() => {
-      this.appEvents.trigger("header:keyboard-trigger", {
-        type: "page-search",
-        event
-      });
+      this.appEvents.trigger("header:keyboard-trigger",
+                             { type: "page-search", event });
     });
   },
 
   printTopic(event) {
     run(() => {
       if ($(".container.posts").length) {
-        event.preventDefault(); // We need to stop printing the current page in Firefox
+        event
+          .preventDefault(); // We need to stop printing the current page in Firefox
         this.container.lookup("controller:topic").print();
       }
     });
@@ -273,19 +276,15 @@ export default {
   },
 
   toggleSearch(event) {
-    this.appEvents.trigger("header:keyboard-trigger", {
-      type: "search",
-      event
-    });
+    this.appEvents.trigger("header:keyboard-trigger",
+                           { type: "search", event });
 
     return false;
   },
 
   toggleHamburgerMenu(event) {
-    this.appEvents.trigger("header:keyboard-trigger", {
-      type: "hamburger",
-      event
-    });
+    this.appEvents.trigger("header:keyboard-trigger",
+                           { type: "hamburger", event });
   },
 
   showCurrentUser(event) {
@@ -293,8 +292,7 @@ export default {
   },
 
   showHelpModal() {
-    this.container
-      .lookup("controller:application")
+    this.container.lookup("controller:application")
       .send("showKeyboardShortcutsHelp");
   },
 
@@ -315,11 +313,9 @@ export default {
   },
 
   _setTracking(params) {
-    this.appEvents.trigger("topic-notifications-button:changed", {
-      type: "notification",
-      id: params.id,
-      event: params.event
-    });
+    this.appEvents.trigger(
+      "topic-notifications-button:changed",
+      { type: "notification", id: params.id, event: params.event });
   },
 
   sendToTopicListItemView(action) {
@@ -346,15 +342,12 @@ export default {
   sendToSelectedPost(action) {
     const container = this.container;
     // TODO: We should keep track of the post without a CSS class
-    let selectedPostId = parseInt(
-      $(".topic-post.selected article.boxed").data("post-id"),
-      10
-    );
+    let selectedPostId =
+      parseInt($(".topic-post.selected article.boxed").data("post-id"), 10);
     if (selectedPostId) {
       const topicController = container.lookup("controller:topic");
-      const post = topicController
-        .get("model.postStream.posts")
-        .findBy("id", selectedPostId);
+      const post = topicController.get("model.postStream.posts")
+                     .findBy("id", selectedPostId);
       if (post) {
         // TODO: Use ember closure actions
 
@@ -379,9 +372,8 @@ export default {
   },
 
   _bindToPath(path, key) {
-    this.keyTrapper.bind(key, () =>
-      DiscourseURL.routeTo(Discourse.BaseUri + path)
-    );
+    this.keyTrapper.bind(key,
+                         () => DiscourseURL.routeTo(Discourse.BaseUri + path));
   },
 
   _bindToClick(selector, binding) {
@@ -453,9 +445,8 @@ export default {
     // visible and cancel move operation.
     if (!$selected || $selected.length === 0) {
       const offset = minimumOffset();
-      $selected = $articles
-        .toArray()
-        .find(article => article.getBoundingClientRect().top > offset);
+      $selected = $articles.toArray().find(
+        article => article.getBoundingClientRect().top > offset);
       if (!$selected) {
         $selected = $articles[$articles.length - 1];
       }
@@ -479,19 +470,15 @@ export default {
       const endScreen = beginScreen + window.innerHeight;
 
       if (direction < 0 && beginScreen > beginArticle) {
-        return this._scrollTo(
-          Math.max(
-            beginScreen - window.innerHeight + 3 * minimumOffset(), // page up
-            beginArticle - minimumOffset() // beginning of article
-          )
-        );
+        return this._scrollTo(Math.max(
+          beginScreen - window.innerHeight + 3 * minimumOffset(), // page up
+          beginArticle - minimumOffset() // beginning of article
+          ));
       } else if (direction > 0 && endScreen < endArticle - minimumOffset()) {
-        return this._scrollTo(
-          Math.min(
-            endScreen - 3 * minimumOffset(), // page down
-            endArticle - window.innerHeight // end of article
-          )
-        );
+        return this._scrollTo(Math.min(
+          endScreen - 3 * minimumOffset(), // page down
+          endArticle - window.innerHeight  // end of article
+          ));
       }
     }
 
@@ -510,16 +497,13 @@ export default {
       if (!fast && direction < 0 && articleRect.height > window.innerHeight) {
         // Scrolling to the last "page" of the previous post if post has multiple
         // "pages" (if its height does not fit in the screen).
-        return this._scrollTo(
-          $article.offset().top + articleRect.height - window.innerHeight
-        );
+        return this._scrollTo($article.offset().top + articleRect.height -
+                              window.innerHeight);
       } else if ($article.is(".topic-post")) {
-        return this._scrollTo(
-          $article.find("#post_1").length > 0
-            ? 0
-            : $article.offset().top - minimumOffset(),
-          () => $("a.tabLoc", $article).focus()
-        );
+        return this._scrollTo($article.find("#post_1").length > 0
+                                ? 0
+                                : $article.offset().top - minimumOffset(),
+                              () => $("a.tabLoc", $article).focus());
       }
 
       // Otherwise scroll through the suggested topic list.
@@ -528,9 +512,10 @@ export default {
   },
 
   _scrollTo(scrollTop, complete) {
-    $("html, body")
-      .stop(true, true)
-      .animate({ scrollTop }, { duration: animationDuration, complete });
+    $("html, body").stop(true, true).animate({ scrollTop }, {
+      duration: animationDuration,
+      complete
+    });
   },
 
   _scrollList($article) {
@@ -542,10 +527,8 @@ export default {
     const windowHeight = $(window).height();
 
     // skip if completely on screen
-    if (
-      pos.top - headerHeight > scrollTop &&
-      pos.top + height < scrollTop + windowHeight
-    ) {
+    if (pos.top - headerHeight > scrollTop &&
+        pos.top + height < scrollTop + windowHeight) {
       return;
     }
 
@@ -560,24 +543,23 @@ export default {
     if (this._scrollAnimation) {
       this._scrollAnimation.stop();
     }
-    this._scrollAnimation = $("html, body").animate(
-      { scrollTop: scrollPos + "px" },
-      animationDuration
-    );
+    this._scrollAnimation =
+      $("html, body")
+        .animate({ scrollTop: scrollPos + "px" }, animationDuration);
   },
 
   categoriesTopicsList() {
-    const setting = this.container.lookup("site-settings:main")
-      .desktop_category_page_style;
+    const setting =
+      this.container.lookup("site-settings:main").desktop_category_page_style;
     switch (setting) {
-      case "categories_with_featured_topics":
-        return $(".latest .featured-topic");
-      case "categories_and_latest_topics":
-        return $(".latest-topic-list .latest-topic-list-item");
-      case "categories_and_top_topics":
-        return $(".top-topic-list .latest-topic-list-item");
-      default:
-        return $();
+    case "categories_with_featured_topics":
+      return $(".latest .featured-topic");
+    case "categories_and_latest_topics":
+      return $(".latest-topic-list .latest-topic-list-item");
+    case "categories_and_top_topics":
+      return $(".top-topic-list .latest-topic-list-item");
+    default:
+      return $();
     }
   },
 
@@ -597,30 +579,21 @@ export default {
 
   _changeSection(direction) {
     const $sections = $(".nav.nav-pills li"),
-      active = $(".nav.nav-pills li.active"),
-      index = $sections.index(active) + direction;
+          active = $(".nav.nav-pills li.active"),
+          index = $sections.index(active) + direction;
 
     if (index >= 0 && index < $sections.length) {
-      $sections
-        .eq(index)
-        .find("a")
-        .click();
+      $sections.eq(index).find("a").click();
     }
   },
 
   _stopCallback() {
     const oldStopCallback = this.keyTrapper.prototype.stopCallback;
 
-    this.keyTrapper.prototype.stopCallback = function(
-      e,
-      element,
-      combo,
-      sequence
-    ) {
-      if (
-        (combo === "ctrl+f" || combo === "command+f") &&
-        element.id === "search-term"
-      ) {
+    this.keyTrapper.prototype.stopCallback = function(e, element, combo,
+                                                      sequence) {
+      if ((combo === "ctrl+f" || combo === "command+f") &&
+          element.id === "search-term") {
         return false;
       }
       return oldStopCallback.call(this, e, element, combo, sequence);

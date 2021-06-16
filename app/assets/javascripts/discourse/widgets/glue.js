@@ -1,6 +1,6 @@
-import { cancel, scheduleOnce } from "@ember/runloop";
-import { diff, patch } from "virtual-dom";
-import { queryRegistry } from "discourse/widgets/widget";
+import {cancel, scheduleOnce} from "@ember/runloop";
+import {diff, patch} from "virtual-dom";
+import {queryRegistry} from "discourse/widgets/widget";
 import DirtyKeys from "discourse/lib/dirty-keys";
 import ENV from "discourse-common/config/environment";
 
@@ -42,9 +42,8 @@ export default class WidgetGlue {
       }
     }
 
-    const newTree = new this._widgetClass(this.attrs, this.register, {
-      dirtyKeys: this.dirtyKeys
-    });
+    const newTree = new this._widgetClass(this.attrs, this.register,
+                                          { dirtyKeys: this.dirtyKeys });
     const patches = diff(this._tree || this._rootNode, newTree);
 
     newTree._rerenderable = this;

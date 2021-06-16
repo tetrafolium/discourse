@@ -1,5 +1,5 @@
-import { categoryLinkHTML } from "discourse/helpers/category-link";
-import { registerUnbound } from "discourse-common/lib/helpers";
+import {categoryLinkHTML} from "discourse/helpers/category-link";
+import {registerUnbound} from "discourse-common/lib/helpers";
 
 registerUnbound("category-badge", function(cat, options) {
   return categoryLinkHTML(cat, {

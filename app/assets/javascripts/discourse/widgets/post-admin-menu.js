@@ -1,11 +1,9 @@
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { ButtonClass } from "discourse/widgets/button";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {ButtonClass} from "discourse/widgets/button";
 
-createWidget(
-  "post-admin-menu-button",
-  jQuery.extend(ButtonClass, { tagName: "li.btn" })
-);
+createWidget("post-admin-menu-button",
+             jQuery.extend(ButtonClass, { tagName: "li.btn" }));
 
 export function buildManageButtons(attrs, currentUser, siteSettings) {
   if (!currentUser) {
@@ -139,12 +137,11 @@ export default createWidget("post-admin-menu", {
     const contents = [];
     contents.push(h("h3", I18n.t("admin_title")));
 
-    buildManageButtons(this.attrs, this.currentUser, this.siteSettings).forEach(
-      b => {
+    buildManageButtons(this.attrs, this.currentUser, this.siteSettings)
+      .forEach(b => {
         b.secondaryAction = "closeAdminMenu";
         contents.push(this.attach("post-admin-menu-button", b));
-      }
-    );
+      });
 
     return contents;
   },

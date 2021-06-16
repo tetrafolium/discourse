@@ -1,4 +1,4 @@
-import { notEmpty, empty, equal } from "@ember/object/computed";
+import {notEmpty, empty, equal} from "@ember/object/computed";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import DiscourseURL from "discourse/lib/url";
@@ -7,59 +7,55 @@ export default Component.extend({
   // subclasses need this
   layoutName: "components/d-button",
 
-  form: null,
+    form: null,
 
-  type: "button",
+    type: "button",
 
-  tagName: "button",
-  classNameBindings: ["btnLink::btn", "btnLink", "noText", "btnType"],
-  attributeBindings: [
-    "form",
-    "disabled",
-    "translatedTitle:title",
-    "translatedLabel:aria-label",
-    "tabindex",
-    "type"
-  ],
+    tagName: "button",
+    classNameBindings: ["btnLink::btn", "btnLink", "noText", "btnType"],
+    attributeBindings:
+      [
+        "form", "disabled", "translatedTitle:title",
+        "translatedLabel:aria-label", "tabindex", "type"
+      ],
 
-  btnIcon: notEmpty("icon"),
+    btnIcon: notEmpty("icon"),
 
-  btnLink: equal("display", "link"),
+    btnLink: equal("display", "link"),
 
-  @discourseComputed("icon", "translatedLabel")
-  btnType(icon, translatedLabel) {
+    @discourseComputed("icon", "translatedLabel") btnType(icon,
+                                                          translatedLabel) {
     if (icon) {
       return translatedLabel ? "btn-icon-text" : "btn-icon";
     } else if (translatedLabel) {
       return "btn-text";
     }
-  },
+  }
+  ,
 
-  noText: empty("translatedLabel"),
+    noText: empty("translatedLabel"),
 
-  @discourseComputed("title")
-  translatedTitle: {
-    get() {
-      if (this._translatedTitle) return this._translatedTitle;
-      if (this.title) return I18n.t(this.title);
+    @discourseComputed("title") translatedTitle: {
+      get() {
+        if (this._translatedTitle) return this._translatedTitle;
+        if (this.title) return I18n.t(this.title);
+      },
+      set(value) {
+        return (this._translatedTitle = value);
+      }
     },
-    set(value) {
-      return (this._translatedTitle = value);
-    }
-  },
 
-  @discourseComputed("label")
-  translatedLabel: {
-    get() {
-      if (this._translatedLabel) return this._translatedLabel;
-      if (this.label) return I18n.t(this.label);
+    @discourseComputed("label") translatedLabel: {
+      get() {
+        if (this._translatedLabel) return this._translatedLabel;
+        if (this.label) return I18n.t(this.label);
+      },
+      set(value) {
+        return (this._translatedLabel = value);
+      }
     },
-    set(value) {
-      return (this._translatedLabel = value);
-    }
-  },
 
-  click() {
+    click() {
     let { action } = this;
 
     if (action) {

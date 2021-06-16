@@ -1,12 +1,12 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { alias, not, gt, empty, notEmpty, equal } from "@ember/object/computed";
-import { inject as controller } from "@ember/controller";
+import {alias, not, gt, empty, notEmpty, equal} from "@ember/object/computed";
+import {inject as controller} from "@ember/controller";
 import DiscoveryController from "discourse/controllers/discovery";
-import { queryParams } from "discourse/controllers/discovery-sortable";
+import {queryParams} from "discourse/controllers/discovery-sortable";
 import BulkTopicSelection from "discourse/mixins/bulk-topic-selection";
-import { endWith } from "discourse/lib/computed";
+import {endWith} from "discourse/lib/computed";
 import showModal from "discourse/lib/show-modal";
-import { userPath } from "discourse/lib/url";
+import {userPath} from "discourse/lib/url";
 import TopicList from "discourse/models/topic-list";
 import Topic from "discourse/models/topic";
 
@@ -83,9 +83,8 @@ const controllerOpts = {
     },
 
     resetNew() {
-      Topic.resetNew(this.category, !this.noSubcategories).then(() =>
-        this.send("refresh")
-      );
+      Topic.resetNew(this.category, !this.noSubcategories)
+        .then(() => this.send("refresh"));
     },
 
     dismissReadPosts() {
@@ -105,18 +104,16 @@ const controllerOpts = {
     return this.isFilterPage(filter, "unread") && topicsLength > 0;
   },
 
-  @discourseComputed("model.filter", "model.topics.length")
-  showResetNew(filter, topicsLength) {
+  @discourseComputed("model.filter",
+                     "model.topics.length") showResetNew(filter, topicsLength) {
     return this.isFilterPage(filter, "new") && topicsLength > 0;
   },
 
   @discourseComputed("model.filter", "model.topics.length")
   showDismissAtTop(filter, topicsLength) {
-    return (
-      (this.isFilterPage(filter, "new") ||
-        this.isFilterPage(filter, "unread")) &&
-      topicsLength >= 15
-    );
+    return ((this.isFilterPage(filter, "new") ||
+             this.isFilterPage(filter, "unread")) &&
+            topicsLength >= 15);
   },
 
   hasTopics: gt("model.topics.length", 0),
@@ -136,19 +133,14 @@ const controllerOpts = {
 
     const category = this.category;
     if (category) {
-      return I18n.t("topics.bottom.category", {
-        category: category.get("name")
-      });
+      return I18n.t("topics.bottom.category",
+                    { category: category.get("name") });
     } else {
       const split = (this.get("model.filter") || "").split("/");
       if (topicsLength === 0) {
-        return I18n.t("topics.none." + split[0], {
-          category: split[1]
-        });
+        return I18n.t("topics.none." + split[0], { category: split[1] });
       } else {
-        return I18n.t("topics.bottom." + split[0], {
-          category: split[1]
-        });
+        return I18n.t("topics.bottom." + split[0], { category: split[1] });
       }
     }
   },
@@ -167,9 +159,8 @@ const controllerOpts = {
     }
 
     return I18n.t("topics.none.educate." + tab, {
-      userPrefsUrl: userPath(
-        `${this.currentUser.get("username_lower")}/preferences`
-      )
+      userPrefsUrl:
+        userPath(`${this.currentUser.get("username_lower")}/preferences`)
     });
   }
 };

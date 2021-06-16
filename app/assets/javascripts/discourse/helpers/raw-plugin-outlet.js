@@ -1,4 +1,4 @@
-import { rawConnectorsFor } from "discourse/lib/plugin-connectors";
+import {rawConnectorsFor} from "discourse/lib/plugin-connectors";
 import RawHandlebars from "discourse-common/lib/raw-handlebars";
 
 RawHandlebars.registerHelper("raw-plugin-outlet", function(args) {

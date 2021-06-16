@@ -1,5 +1,5 @@
-import { isEmpty } from "@ember/utils";
-import { findAll } from "discourse/models/login-method";
+import {isEmpty} from "@ember/utils";
+import {findAll} from "discourse/models/login-method";
 
 export default function logout(siteSettings, keyValueStore) {
   if (!siteSettings || !keyValueStore) {

@@ -1,4 +1,4 @@
-import { minimumOffset } from "discourse/lib/offset-calculator";
+import {minimumOffset} from "discourse/lib/offset-calculator";
 
 // Dear traveller, you are entering a zone where we are at war with the browser.
 // The browser is insisting on positioning scrollTop per the location it was in
@@ -78,12 +78,10 @@ export default class LockOn {
       }
     }, 50);
 
-    $("body, html")
-      .off(SCROLL_EVENTS)
-      .on(SCROLL_EVENTS, e => {
-        if (e.which > 0 || SCROLL_TYPES.includes(e.type)) {
-          this.clearLock(interval);
-        }
-      });
+    $("body, html").off(SCROLL_EVENTS).on(SCROLL_EVENTS, e => {
+      if (e.which > 0 || SCROLL_TYPES.includes(e.type)) {
+        this.clearLock(interval);
+      }
+    });
   }
 }

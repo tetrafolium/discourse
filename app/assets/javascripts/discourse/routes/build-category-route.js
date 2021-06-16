@@ -3,12 +3,12 @@ import {
   filterQueryParams,
   findTopicList
 } from "discourse/routes/build-topic-route";
-import { queryParams } from "discourse/controllers/discovery-sortable";
+import {queryParams} from "discourse/controllers/discovery-sortable";
 import TopicList from "discourse/models/topic-list";
 import PermissionType from "discourse/models/permission-type";
 import CategoryList from "discourse/models/category-list";
 import Category from "discourse/models/category";
-import { Promise, all } from "rsvp";
+import {Promise, all} from "rsvp";
 
 // A helper function to create a category route with parameters
 export default (filterArg, params) => {
@@ -18,25 +18,16 @@ export default (filterArg, params) => {
     serialize(modelParams) {
       if (!modelParams.category_slug_path_with_id) {
         if (modelParams.id === "none") {
-          const category_slug_path_with_id = [
-            modelParams.parentSlug,
-            modelParams.slug
-          ].join("/");
-          const category = Category.findBySlugPathWithID(
-            category_slug_path_with_id
-          );
-          this.replaceWith("discovery.categoryNone", {
-            category,
-            category_slug_path_with_id
-          });
+          const category_slug_path_with_id =
+            [modelParams.parentSlug, modelParams.slug].join("/");
+          const category =
+            Category.findBySlugPathWithID(category_slug_path_with_id);
+          this.replaceWith("discovery.categoryNone",
+                           { category, category_slug_path_with_id });
         } else {
           modelParams.category_slug_path_with_id = [
-            modelParams.parentSlug,
-            modelParams.slug,
-            modelParams.id
-          ]
-            .filter(x => x)
-            .join("/");
+            modelParams.parentSlug, modelParams.slug, modelParams.id
+          ].filter(x => x).join("/");
         }
       }
 
@@ -46,9 +37,8 @@ export default (filterArg, params) => {
     model(modelParams) {
       modelParams = this.serialize(modelParams);
 
-      const category = Category.findBySlugPathWithID(
-        modelParams.category_slug_path_with_id
-      );
+      const category =
+        Category.findBySlugPathWithID(modelParams.category_slug_path_with_id);
 
       if (!category) {
         const parts = modelParams.category_slug_path_with_id.split("/");
@@ -83,29 +73,24 @@ export default (filterArg, params) => {
     },
 
     filter(category) {
-      return filterArg === "default"
-        ? category.get("default_view") || "latest"
-        : filterArg;
+      return filterArg === "default" ? category.get("default_view") || "latest"
+                                     : filterArg;
     },
 
     _setupNavigation(category) {
       const noSubcategories = params && !!params.no_subcategories,
-        filterType = this.filter(category).split("/")[0];
+            filterType = this.filter(category).split("/")[0];
 
-      this.controllerFor("navigation/category").setProperties({
-        category,
-        filterType,
-        noSubcategories
-      });
+      this.controllerFor("navigation/category")
+        .setProperties({ category, filterType, noSubcategories });
     },
 
     _createSubcategoryList(category) {
       this._categoryList = null;
 
       if (category.isParent && category.show_subcategory_list) {
-        return CategoryList.listForParent(this.store, category).then(
-          list => (this._categoryList = list)
-        );
+        return CategoryList.listForParent(this.store, category)
+          .then(list => (this._categoryList = list));
       }
 
       // If we're not loading a subcategory list just resolve
@@ -113,31 +98,25 @@ export default (filterArg, params) => {
     },
 
     _retrieveTopicList(category, transition) {
-      const listFilter = `c/${Category.slugFor(category)}/${
-          category.id
-        }/l/${this.filter(category)}`,
-        findOpts = filterQueryParams(transition.to.queryParams, params),
-        extras = { cached: this.isPoppedState(transition) };
+      const listFilter = `c/${Category.slugFor(category)}/${category.id}/l/${
+        this.filter(category)}`,
+            findOpts = filterQueryParams(transition.to.queryParams, params),
+            extras = { cached: this.isPoppedState(transition) };
 
-      return findTopicList(
-        this.store,
-        this.topicTrackingState,
-        listFilter,
-        findOpts,
-        extras
-      ).then(list => {
-        TopicList.hideUniformCategory(list, category);
-        this.set("topics", list);
-        return list;
-      });
+      return findTopicList(this.store, this.topicTrackingState, listFilter,
+                           findOpts, extras)
+        .then(list => {
+          TopicList.hideUniformCategory(list, category);
+          this.set("topics", list);
+          return list;
+        });
     },
 
     titleToken() {
       const category = this.currentModel.category;
 
-      const filterText = I18n.t(
-        "filters." + this.filter(category).replace("/", ".") + ".title"
-      );
+      const filterText =
+        I18n.t("filters." + this.filter(category).replace("/", ".") + ".title");
 
       let categoryName = category.name;
       if (category.parent_category_id) {
@@ -146,19 +125,16 @@ export default (filterArg, params) => {
         categoryName = `${parentCategory.name}/${categoryName}`;
       }
 
-      return I18n.t("filters.with_category", {
-        filter: filterText,
-        category: categoryName
-      });
+      return I18n.t("filters.with_category",
+                    { filter: filterText, category: categoryName });
     },
 
     setupController(controller, model) {
-      const topics = this.topics,
-        category = model.category,
-        canCreateTopic = topics.get("can_create_topic"),
-        canCreateTopicOnCategory =
-          category.get("permission") === PermissionType.FULL,
-        filter = this.filter(category);
+      const topics = this.topics, category = model.category,
+            canCreateTopic = topics.get("can_create_topic"),
+            canCreateTopicOnCategory =
+              category.get("permission") === PermissionType.FULL,
+            filter = this.filter(category);
 
       this.controllerFor("navigation/category").setProperties({
         canCreateTopicOnCategory: canCreateTopicOnCategory,
@@ -169,9 +145,8 @@ export default (filterArg, params) => {
       var topicOpts = {
         model: topics,
         category,
-        period:
-          topics.get("for_period") ||
-          (filter.indexOf("/") > 0 ? filter.split("/")[1] : ""),
+        period: topics.get("for_period") ||
+                  (filter.indexOf("/") > 0 ? filter.split("/")[1] : ""),
         selected: [],
         noSubcategories: params && !!params.no_subcategories,
         expandAllPinned: true,
@@ -198,15 +173,12 @@ export default (filterArg, params) => {
       this.render("navigation/category", { outlet: "navigation-bar" });
 
       if (this._categoryList) {
-        this.render("discovery/categories", {
-          outlet: "header-list-container",
-          model: this._categoryList
-        });
+        this.render(
+          "discovery/categories",
+          { outlet: "header-list-container", model: this._categoryList });
       }
-      this.render("discovery/topics", {
-        controller: "discovery/topics",
-        outlet: "list-container"
-      });
+      this.render("discovery/topics",
+                  { controller: "discovery/topics", outlet: "list-container" });
     },
 
     resetController(controller, isExiting) {
@@ -224,10 +196,8 @@ export default (filterArg, params) => {
       error(err) {
         const json = err.jqXHR.responseJSON;
         if (json && json.extras && json.extras.html) {
-          this.controllerFor("discovery").set(
-            "errorHtml",
-            err.jqXHR.responseJSON.extras.html
-          );
+          this.controllerFor("discovery")
+            .set("errorHtml", err.jqXHR.responseJSON.extras.html);
         } else {
           this.replaceWith("exception");
         }

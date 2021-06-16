@@ -1,7 +1,7 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { empty } from "@ember/object/computed";
+import {empty} from "@ember/object/computed";
 import UserBadge from "discourse/models/user-badge";
-import { convertIconClass } from "discourse-common/lib/icon-library";
+import {convertIconClass} from "discourse-common/lib/icon-library";
 import Mixin from "@ember/object/mixin";
 
 export default Mixin.create({
@@ -14,11 +14,8 @@ export default Mixin.create({
 
     return allBadges
       .filter(badge => {
-        return (
-          badge.get("enabled") &&
-          badge.get("manually_grantable") &&
-          (!granted[badge.get("id")] || badge.get("multiple_grant"))
-        );
+        return (badge.get("enabled") && badge.get("manually_grantable") &&
+                (!granted[badge.get("id")] || badge.get("multiple_grant")));
       })
       .map(badge => {
         if (badge.get("icon")) {
@@ -27,27 +24,27 @@ export default Mixin.create({
         return badge;
       })
       .sort((a, b) => a.get("name").localeCompare(b.get("name")));
-  },
+  }
+  ,
 
-  noGrantableBadges: empty("grantableBadges"),
+    noGrantableBadges: empty("grantableBadges"),
 
-  @discourseComputed("selectedBadgeId", "grantableBadges")
-  selectedBadgeGrantable(selectedBadgeId, grantableBadges) {
-    return (
-      grantableBadges &&
-      grantableBadges.find(badge => badge.get("id") === selectedBadgeId)
-    );
-  },
+    @discourseComputed("selectedBadgeId", "grantableBadges")
+    selectedBadgeGrantable(selectedBadgeId, grantableBadges) {
+    return (grantableBadges &&
+            grantableBadges.find(badge => badge.get("id") === selectedBadgeId));
+  }
+  ,
 
-  grantBadge(selectedBadgeId, username, badgeReason) {
-    return UserBadge.grant(selectedBadgeId, username, badgeReason).then(
-      newBadge => {
-        this.userBadges.pushObject(newBadge);
-        return newBadge;
-      },
-      error => {
-        throw error;
-      }
-    );
+    grantBadge(selectedBadgeId, username, badgeReason) {
+    return UserBadge.grant(selectedBadgeId, username, badgeReason)
+      .then(
+        newBadge => {
+          this.userBadges.pushObject(newBadge);
+          return newBadge;
+        },
+        error => {
+          throw error;
+        });
   }
 });

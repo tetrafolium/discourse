@@ -1,5 +1,5 @@
-import { h } from "virtual-dom";
-import { renderIcon } from "discourse-common/lib/icon-library";
+import {h} from "virtual-dom";
+import {renderIcon} from "discourse-common/lib/icon-library";
 import User from "discourse/models/user";
 
 const _decorators = [];
@@ -34,10 +34,8 @@ export default function renderTopicFeaturedLink(topic) {
   const meta = extractLinkMeta(topic);
   if (meta) {
     return `<a class="topic-featured-link" rel="${meta.rel}" target="${
-      meta.target
-    }" href="${meta.href}">${renderIcon("string", "external-link-alt")} ${
-      meta.domain
-    }</a>`;
+      meta.target}" href="${meta.href}">${
+      renderIcon("string", "external-link-alt")} ${meta.domain}</a>`;
   } else {
     return "";
   }
@@ -47,10 +45,7 @@ export function topicFeaturedLinkNode(topic) {
   if (meta) {
     return h(
       "a.topic-featured-link",
-      {
-        attributes: { href: meta.href, rel: meta.rel, target: meta.target }
-      },
-      [renderIcon("node", "external-link-alt"), meta.domain]
-    );
+      { attributes: { href: meta.href, rel: meta.rel, target: meta.target } },
+      [renderIcon("node", "external-link-alt"), meta.domain]);
   }
 }

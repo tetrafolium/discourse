@@ -1,26 +1,22 @@
-import EmberObject, { get } from "@ember/object";
-import { isEmpty } from "@ember/utils";
-import { NotificationLevels } from "discourse/lib/notification-levels";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import EmberObject, {get} from "@ember/object";
+import {isEmpty} from "@ember/utils";
+import {NotificationLevels} from "discourse/lib/notification-levels";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 import PreloadStore from "preload-store";
 import Category from "discourse/models/category";
 import User from "discourse/models/user";
 
 function isNew(topic) {
-  return (
-    topic.last_read_post_number === null &&
-    ((topic.notification_level !== 0 && !topic.notification_level) ||
-      topic.notification_level >= NotificationLevels.TRACKING) &&
-    isUnseen(topic)
-  );
+  return (topic.last_read_post_number === null &&
+          ((topic.notification_level !== 0 && !topic.notification_level) ||
+           topic.notification_level >= NotificationLevels.TRACKING) &&
+          isUnseen(topic));
 }
 
 function isUnread(topic) {
-  return (
-    topic.last_read_post_number !== null &&
-    topic.last_read_post_number < topic.highest_post_number &&
-    topic.notification_level >= NotificationLevels.TRACKING
-  );
+  return (topic.last_read_post_number !== null &&
+          topic.last_read_post_number < topic.highest_post_number &&
+          topic.notification_level >= NotificationLevels.TRACKING);
 }
 
 function isUnseen(topic) {
@@ -33,23 +29,22 @@ function hasMutedTags(topicTagIds, mutedTagIds) {
   }
   return (
     (Discourse.SiteSettings.remove_muted_tags_from_latest === "always" &&
-      topicTagIds.any(tagId => mutedTagIds.includes(tagId))) ||
+     topicTagIds.any(tagId => mutedTagIds.includes(tagId))) ||
     (Discourse.SiteSettings.remove_muted_tags_from_latest === "only_muted" &&
-      topicTagIds.every(tagId => mutedTagIds.includes(tagId)))
-  );
+     topicTagIds.every(tagId => mutedTagIds.includes(tagId))));
 }
 
 const TopicTrackingState = EmberObject.extend({
   messageCount: 0,
 
-  @on("init")
-  _setup() {
+    @on("init") _setup() {
     this.unreadSequence = [];
     this.newSequence = [];
     this.states = {};
-  },
+  }
+  ,
 
-  establishChannels() {
+    establishChannels() {
     const tracker = this;
 
     const process = data => {
@@ -60,10 +55,8 @@ const TopicTrackingState = EmberObject.extend({
 
       if (["new_topic", "latest"].includes(data.message_type)) {
         const muted_category_ids = User.currentProp("muted_category_ids");
-        if (
-          muted_category_ids &&
-          muted_category_ids.includes(data.payload.category_id)
-        ) {
+        if (muted_category_ids &&
+            muted_category_ids.includes(data.payload.category_id)) {
           return;
         }
       }
@@ -82,13 +75,9 @@ const TopicTrackingState = EmberObject.extend({
       if (data.message_type === "dismiss_new") {
         Object.keys(tracker.states).forEach(k => {
           const topic = tracker.states[k];
-          if (
-            !data.payload.category_id ||
-            topic.category_id === parseInt(data.payload.category_id, 0)
-          ) {
-            tracker.states[k] = Object.assign({}, topic, {
-              is_seen: true
-            });
+          if (!data.payload.category_id ||
+              topic.category_id === parseInt(data.payload.category_id, 0)) {
+            tracker.states[k] = Object.assign({}, topic, { is_seen: true });
           }
         });
         tracker.notifyPropertyChange("states");
@@ -109,10 +98,8 @@ const TopicTrackingState = EmberObject.extend({
     this.messageBus.subscribe("/new", process);
     this.messageBus.subscribe("/latest", process);
     if (this.currentUser) {
-      this.messageBus.subscribe(
-        "/unread/" + this.currentUser.get("id"),
-        process
-      );
+      this.messageBus.subscribe("/unread/" + this.currentUser.get("id"),
+                                process);
     }
 
     this.messageBus.subscribe("/delete", msg => {
@@ -130,24 +117,23 @@ const TopicTrackingState = EmberObject.extend({
       }
       tracker.incrementMessageCount();
     });
-  },
+  }
+  ,
 
-  updateSeen(topicId, highestSeen) {
+    updateSeen(topicId, highestSeen) {
     if (!topicId || !highestSeen) {
       return;
     }
     const state = this.states["t" + topicId];
-    if (
-      state &&
-      (!state.last_read_post_number ||
-        state.last_read_post_number < highestSeen)
-    ) {
+    if (state && (!state.last_read_post_number ||
+                  state.last_read_post_number < highestSeen)) {
       state.last_read_post_number = highestSeen;
       this.incrementMessageCount();
     }
-  },
+  }
+  ,
 
-  notify(data) {
+    notify(data) {
     if (!this.newIncoming) {
       return;
     }
@@ -161,18 +147,14 @@ const TopicTrackingState = EmberObject.extend({
 
     if (filterCategory && filterCategory.get("id") !== categoryId) {
       const category = categoryId && Category.findById(categoryId);
-      if (
-        !category ||
-        category.get("parentCategory.id") !== filterCategory.get("id")
-      ) {
+      if (!category ||
+          category.get("parentCategory.id") !== filterCategory.get("id")) {
         return;
       }
     }
 
-    if (
-      ["all", "latest", "new"].includes(filter) &&
-      data.message_type === "new_topic"
-    ) {
+    if (["all", "latest", "new"].includes(filter) &&
+        data.message_type === "new_topic") {
       this.addIncoming(data.topic_id);
     }
 
@@ -188,30 +170,32 @@ const TopicTrackingState = EmberObject.extend({
     }
 
     this.set("incomingCount", this.newIncoming.length);
-  },
+  }
+  ,
 
-  addIncoming(topicId) {
+    addIncoming(topicId) {
     if (this.newIncoming.indexOf(topicId) === -1) {
       this.newIncoming.push(topicId);
     }
-  },
+  }
+  ,
 
-  resetTracking() {
+    resetTracking() {
     this.newIncoming = [];
     this.set("incomingCount", 0);
-  },
+  }
+  ,
 
-  // track how many new topics came for this filter
-  trackIncoming(filter) {
+    // track how many new topics came for this filter
+    trackIncoming(filter) {
     this.newIncoming = [];
     const split = filter.split("/");
 
     if (split.length >= 4) {
       filter = split[split.length - 1];
       // c/cat/subcat/6/l/latest
-      var category = Category.findSingleBySlug(
-        split.splice(1, split.length - 4).join("/")
-      );
+      var category =
+        Category.findSingleBySlug(split.splice(1, split.length - 4).join("/"));
       this.set("filterCategory", category);
     } else {
       this.set("filterCategory", null);
@@ -219,19 +203,21 @@ const TopicTrackingState = EmberObject.extend({
 
     this.set("filter", filter);
     this.set("incomingCount", 0);
-  },
+  }
+  ,
 
-  @discourseComputed("incomingCount")
-  hasIncoming(incomingCount) {
+    @discourseComputed("incomingCount") hasIncoming(incomingCount) {
     return incomingCount && incomingCount > 0;
-  },
+  }
+  ,
 
-  removeTopic(topic_id) {
+    removeTopic(topic_id) {
     delete this.states["t" + topic_id];
-  },
+  }
+  ,
 
-  // If we have a cached topic list, we can update it from our tracking information.
-  updateTopics(topics) {
+    // If we have a cached topic list, we can update it from our tracking information.
+    updateTopics(topics) {
     if (isEmpty(topics)) {
       return;
     }
@@ -243,13 +229,11 @@ const TopicTrackingState = EmberObject.extend({
       if (state) {
         const lastRead = t.get("last_read_post_number");
         const isSeen = t.get("is_seen");
-        if (
-          lastRead !== state.last_read_post_number ||
-          isSeen !== state.is_seen
-        ) {
+        if (lastRead !== state.last_read_post_number ||
+            isSeen !== state.is_seen) {
           const postsCount = t.get("posts_count");
           let newPosts = postsCount - state.highest_post_number,
-            unread = postsCount - state.last_read_post_number;
+              unread = postsCount - state.last_read_post_number;
 
           if (newPosts < 0) {
             newPosts = 0;
@@ -272,11 +256,11 @@ const TopicTrackingState = EmberObject.extend({
         }
       }
     });
-  },
+  }
+  ,
 
-  sync(list, filter) {
-    const tracker = this,
-      states = tracker.states;
+    sync(list, filter) {
+    const tracker = this, states = tracker.states;
 
     if (!list || !list.topics) {
       return;
@@ -348,13 +332,15 @@ const TopicTrackingState = EmberObject.extend({
     }
 
     this.incrementMessageCount();
-  },
+  }
+  ,
 
-  incrementMessageCount() {
+    incrementMessageCount() {
     this.incrementProperty("messageCount");
-  },
+  }
+  ,
 
-  getSubCategoryIds(categoryId) {
+    getSubCategoryIds(categoryId) {
     const result = [categoryId];
     const categories = Category.list();
 
@@ -367,53 +353,51 @@ const TopicTrackingState = EmberObject.extend({
     }
 
     return new Set(result);
-  },
+  }
+  ,
 
-  countNew(categoryId) {
+    countNew(categoryId) {
     const subcategoryIds = this.getSubCategoryIds(categoryId);
     return _.chain(this.states)
       .filter(isNew)
-      .filter(
-        topic =>
-          topic.archetype !== "private_message" &&
-          !topic.deleted &&
-          (!categoryId || subcategoryIds.has(topic.category_id))
-      )
-      .value().length;
-  },
+      .filter(topic => topic.archetype !== "private_message" &&
+                       !topic.deleted &&
+                       (!categoryId || subcategoryIds.has(topic.category_id)))
+      .value()
+      .length;
+  }
+  ,
 
-  countUnread(categoryId) {
+    countUnread(categoryId) {
     const subcategoryIds = this.getSubCategoryIds(categoryId);
     return _.chain(this.states)
       .filter(isUnread)
-      .filter(
-        topic =>
-          topic.archetype !== "private_message" &&
-          !topic.deleted &&
-          (!categoryId || subcategoryIds.has(topic.category_id))
-      )
-      .value().length;
-  },
+      .filter(topic => topic.archetype !== "private_message" &&
+                       !topic.deleted &&
+                       (!categoryId || subcategoryIds.has(topic.category_id)))
+      .value()
+      .length;
+  }
+  ,
 
-  countCategory(category_id) {
+    countCategory(category_id) {
     let sum = 0;
     Object.values(this.states).forEach(topic => {
       if (topic.category_id === category_id && !topic.deleted) {
-        sum +=
-          topic.last_read_post_number === null ||
-          topic.last_read_post_number < topic.highest_post_number
-            ? 1
-            : 0;
+        sum += topic.last_read_post_number === null ||
+                   topic.last_read_post_number < topic.highest_post_number
+                 ? 1
+                 : 0;
       }
     });
     return sum;
-  },
+  }
+  ,
 
-  lookupCount(name, category) {
+    lookupCount(name, category) {
     if (name === "latest") {
-      return (
-        this.lookupCount("new", category) + this.lookupCount("unread", category)
-      );
+      return (this.lookupCount("new", category) +
+              this.lookupCount("unread", category));
     }
 
     let categoryId = category ? get(category, "id") : null;
@@ -429,9 +413,10 @@ const TopicTrackingState = EmberObject.extend({
         return this.countCategory(categoryId);
       }
     }
-  },
+  }
+  ,
 
-  loadStates(data) {
+    loadStates(data) {
     const states = this.states;
 
     // I am taking some shortcuts here to avoid 500 gets for a large list

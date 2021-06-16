@@ -1,6 +1,6 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import buildStaticRoute from "discourse/routes/build-static-route";
-import { defaultHomepage } from "discourse/lib/utilities";
+import {defaultHomepage} from "discourse/lib/utilities";
 
 const LoginRoute = buildStaticRoute("login");
 

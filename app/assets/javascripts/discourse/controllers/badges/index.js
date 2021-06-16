@@ -13,16 +13,13 @@ export default Controller.extend({
     });
 
     var grouped = [];
-    var group = [],
-      groupId;
+    var group = [], groupId;
 
     sorted.forEach(function(badge) {
       if (groupId !== badge.badge_grouping_id) {
         if (group && group.length > 0) {
-          grouped.push({
-            badges: group,
-            badgeGrouping: group[0].badge_grouping
-          });
+          grouped.push(
+            { badges: group, badgeGrouping: group[0].badge_grouping });
         }
         group = [];
         groupId = badge.badge_grouping_id;

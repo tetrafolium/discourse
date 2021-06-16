@@ -8,10 +8,11 @@ export default Component.extend({
     $div.append(bannerHtml);
     $div.find("[id^='heading--']").removeAttr("id");
     return $div.html();
-  },
+  }
+  ,
 
-  @discourseComputed("user.dismissed_banner_key", "banner.key", "hide")
-  visible(dismissedBannerKey, bannerKey, hide) {
+    @discourseComputed("user.dismissed_banner_key", "banner.key",
+                       "hide") visible(dismissedBannerKey, bannerKey, hide) {
     dismissedBannerKey =
       dismissedBannerKey || this.keyValueStore.get("dismissed_banner_key");
 
@@ -23,19 +24,18 @@ export default Component.extend({
     }
 
     return !hide && bannerKey && dismissedBannerKey !== bannerKey;
-  },
+  }
+  ,
 
-  actions: {
-    dismiss() {
-      if (this.user) {
-        this.user.dismissBanner(this.get("banner.key"));
-      } else {
-        this.set("visible", false);
-        this.keyValueStore.set({
-          key: "dismissed_banner_key",
-          value: this.get("banner.key")
-        });
+    actions: {
+      dismiss() {
+        if (this.user) {
+          this.user.dismissBanner(this.get("banner.key"));
+        } else {
+          this.set("visible", false);
+          this.keyValueStore.set(
+            { key: "dismissed_banner_key", value: this.get("banner.key") });
+        }
       }
     }
-  }
 });

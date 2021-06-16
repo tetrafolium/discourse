@@ -1,35 +1,30 @@
-import { isEmpty } from "@ember/utils";
+import {isEmpty} from "@ember/utils";
 import Component from "@ember/component";
-import discourseComputed, {
-  on,
-  observes
-} from "discourse-common/utils/decorators";
-import { findRawTemplate } from "discourse/lib/raw-templates";
+import discourseComputed,
+{on, observes} from "discourse-common/utils/decorators";
+import {findRawTemplate} from "discourse/lib/raw-templates";
 
 export default Component.extend({
   @discourseComputed("placeholderKey")
   placeholder(placeholderKey) {
     return placeholderKey ? I18n.t(placeholderKey) : "";
-  },
+  }
+  ,
 
-  @observes("groupNames")
-  _update() {
+    @observes("groupNames") _update() {
     if (this.canReceiveUpdates === "true")
       this._initializeAutocomplete({ updateData: true });
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  _initializeAutocomplete(opts) {
+    @on("didInsertElement") _initializeAutocomplete(opts) {
     let selectedGroups;
     let groupNames = this.groupNames;
 
     $(this.element.querySelector("input")).autocomplete({
       allowAny: false,
-      items: _.isArray(groupNames)
-        ? groupNames
-        : isEmpty(groupNames)
-        ? []
-        : [groupNames],
+      items: _.isArray(groupNames) ? groupNames
+                                   : isEmpty(groupNames) ? [] : [groupNames],
       single: this.single,
       fullWidthWrap: this.fullWidthWrap,
       updateData: opts && opts.updateData ? opts.updateData : false,

@@ -1,15 +1,15 @@
-import { get } from "@ember/object";
-import { schedule } from "@ember/runloop";
-import { createWidget } from "discourse/widgets/widget";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { avatarImg } from "discourse/widgets/post";
+import {get} from "@ember/object";
+import {schedule} from "@ember/runloop";
+import {createWidget} from "discourse/widgets/widget";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {avatarImg} from "discourse/widgets/post";
 import DiscourseURL from "discourse/lib/url";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
-import { applySearchAutocomplete } from "discourse/lib/search";
-import { ajax } from "discourse/lib/ajax";
-import { addExtraUserClasses } from "discourse/helpers/user-avatar";
-import { scrollTop } from "discourse/mixins/scroll-top";
-import { h } from "virtual-dom";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
+import {applySearchAutocomplete} from "discourse/lib/search";
+import {ajax} from "discourse/lib/ajax";
+import {addExtraUserClasses} from "discourse/helpers/user-avatar";
+import {scrollTop} from "discourse/mixins/scroll-top";
+import {h} from "virtual-dom";
 
 const dropdown = {
   buildClasses(attrs) {
@@ -30,9 +30,7 @@ const dropdown = {
 };
 
 createWidget("header-notifications", {
-  settings: {
-    avatarSize: "medium"
-  },
+  settings: { avatarSize: "medium" },
 
   html(attrs) {
     const { user } = attrs;
@@ -46,125 +44,88 @@ createWidget("header-notifications", {
       avatarAttrs.name = user.get("name");
     }
 
-    const contents = [
-      avatarImg(
-        this.settings.avatarSize,
-        addExtraUserClasses(user, avatarAttrs)
-      )
-    ];
+    const contents = [avatarImg(this.settings.avatarSize,
+                                addExtraUserClasses(user, avatarAttrs))];
 
     const unreadNotifications = user.get("unread_notifications");
     if (!!unreadNotifications) {
-      contents.push(
-        this.attach("link", {
-          action: attrs.action,
-          className: "badge-notification unread-notifications",
-          rawLabel: unreadNotifications,
-          omitSpan: true,
-          title: "notifications.tooltip.regular",
-          titleOptions: { count: unreadNotifications }
-        })
-      );
+      contents.push(this.attach("link", {
+        action: attrs.action,
+        className: "badge-notification unread-notifications",
+        rawLabel: unreadNotifications,
+        omitSpan: true,
+        title: "notifications.tooltip.regular",
+        titleOptions: { count: unreadNotifications }
+      }));
     }
 
     const unreadPMs = user.get("unread_private_messages");
     if (!!unreadPMs) {
-      if (
-        !user.get("read_first_notification") &&
-        !user.get("enforcedSecondFactor")
-      ) {
+      if (!user.get("read_first_notification") &&
+          !user.get("enforcedSecondFactor")) {
         contents.push(h("span.ring"));
         if (!attrs.active && attrs.ringBackdrop) {
           contents.push(h("span.ring-backdrop-spotlight"));
-          contents.push(
-            h(
-              "span.ring-backdrop",
-              {},
-              h(
-                "h1.ring-first-notification",
-                {},
-                I18n.t("user.first_notification")
-              )
-            )
-          );
+          contents.push(h("span.ring-backdrop", {},
+                          h("h1.ring-first-notification", {},
+                            I18n.t("user.first_notification"))));
         }
       }
 
-      contents.push(
-        this.attach("link", {
-          action: attrs.action,
-          className: "badge-notification unread-private-messages",
-          rawLabel: unreadPMs,
-          omitSpan: true,
-          title: "notifications.tooltip.message",
-          titleOptions: { count: unreadPMs }
-        })
-      );
+      contents.push(this.attach("link", {
+        action: attrs.action,
+        className: "badge-notification unread-private-messages",
+        rawLabel: unreadPMs,
+        omitSpan: true,
+        title: "notifications.tooltip.message",
+        titleOptions: { count: unreadPMs }
+      }));
     }
 
     return contents;
   }
 });
 
-createWidget(
-  "user-dropdown",
-  jQuery.extend(
-    {
-      tagName: "li.header-dropdown-toggle.current-user",
+createWidget("user-dropdown", jQuery.extend({
+  tagName: "li.header-dropdown-toggle.current-user",
 
-      buildId() {
-        return "current-user";
-      },
+  buildId() {
+    return "current-user";
+  },
 
-      html(attrs) {
-        return h(
-          "a.icon",
-          {
-            attributes: {
-              href: attrs.user.get("path"),
-              "data-auto-route": true
-            }
-          },
-          this.attach("header-notifications", attrs)
-        );
+  html(attrs) {
+    return h(
+      "a.icon",
+      { attributes: { href: attrs.user.get("path"), "data-auto-route": true } },
+      this.attach("header-notifications", attrs));
+  }
+},
+                                            dropdown));
+
+createWidget("header-dropdown", jQuery.extend({
+  tagName: "li.header-dropdown-toggle",
+
+  html(attrs) {
+    const title = I18n.t(attrs.title);
+
+    const body = [iconNode(attrs.icon)];
+    if (attrs.contents) {
+      body.push(attrs.contents.call(this));
+    }
+
+    return h("a.icon.btn-flat", {
+      attributes: {
+        href: attrs.href,
+        "data-auto-route": true,
+        title,
+        "aria-label": title,
+        id: attrs.iconId
       }
     },
-    dropdown
-  )
-);
-
-createWidget(
-  "header-dropdown",
-  jQuery.extend(
-    {
-      tagName: "li.header-dropdown-toggle",
-
-      html(attrs) {
-        const title = I18n.t(attrs.title);
-
-        const body = [iconNode(attrs.icon)];
-        if (attrs.contents) {
-          body.push(attrs.contents.call(this));
-        }
-
-        return h(
-          "a.icon.btn-flat",
-          {
-            attributes: {
-              href: attrs.href,
-              "data-auto-route": true,
-              title,
-              "aria-label": title,
-              id: attrs.iconId
-            }
-          },
-          body
-        );
-      }
-    },
-    dropdown
-  )
-);
+             body);
+  }
+},
+                                              dropdown));
 
 createWidget("header-icons", {
   tagName: "ul.icons.d-header-icons",
@@ -190,13 +151,8 @@ createWidget("header-icons", {
         if (currentUser && currentUser.reviewable_count) {
           return h(
             "div.badge-notification.reviewables",
-            {
-              attributes: {
-                title: I18n.t("notifications.reviewable_items")
-              }
-            },
-            this.currentUser.reviewable_count
-          );
+            { attributes: { title: I18n.t("notifications.reviewable_items") } },
+            this.currentUser.reviewable_count);
         }
       }
     });
@@ -212,14 +168,12 @@ createWidget("header-icons", {
 
     const icons = [search, hamburger];
     if (attrs.user) {
-      icons.push(
-        this.attach("user-dropdown", {
-          active: attrs.userVisible,
-          action: "toggleUserMenu",
-          ringBackdrop: attrs.ringBackdrop,
-          user: attrs.user
-        })
-      );
+      icons.push(this.attach("user-dropdown", {
+        active: attrs.userVisible,
+        action: "toggleUserMenu",
+        ringBackdrop: attrs.ringBackdrop,
+        user: attrs.user
+      }));
     }
 
     return icons;
@@ -237,23 +191,19 @@ createWidget("header-buttons", {
     const buttons = [];
 
     if (attrs.canSignUp && !attrs.topic) {
-      buttons.push(
-        this.attach("button", {
-          label: "sign_up",
-          className: "btn-primary btn-small sign-up-button",
-          action: "showCreateAccount"
-        })
-      );
+      buttons.push(this.attach("button", {
+        label: "sign_up",
+        className: "btn-primary btn-small sign-up-button",
+        action: "showCreateAccount"
+      }));
     }
 
-    buttons.push(
-      this.attach("button", {
-        label: "log_in",
-        className: "btn-primary btn-small login-button",
-        action: "showLogin",
-        icon: "user"
-      })
-    );
+    buttons.push(this.attach("button", {
+      label: "log_in",
+      className: "btn-primary btn-small login-button",
+      action: "showLogin",
+      icon: "user"
+    }));
     return buttons;
   }
 });
@@ -296,8 +246,7 @@ export default createWidget("header", {
   html(attrs, state) {
     let contents = () => {
       const panels = [
-        this.attach("header-buttons", attrs),
-        this.attach("header-icons", {
+        this.attach("header-buttons", attrs), this.attach("header-icons", {
           hamburgerVisible: state.hamburgerVisible,
           userVisible: state.userVisible,
           searchVisible: state.searchVisible,
@@ -322,8 +271,7 @@ export default createWidget("header", {
         }
 
         panels.push(
-          this.attach("search-menu", { contextEnabled: state.contextEnabled })
-        );
+          this.attach("search-menu", { contextEnabled: state.contextEnabled }));
       } else if (state.hamburgerVisible) {
         panels.push(this.attach("hamburger-menu"));
       } else if (state.userVisible) {
@@ -332,12 +280,8 @@ export default createWidget("header", {
 
       additionalPanels.map(panel => {
         if (this.state[panel.toggle]) {
-          panels.push(
-            this.attach(
-              panel.name,
-              panel.transformAttrs.call(this, attrs, state)
-            )
-          );
+          panels.push(this.attach(
+            panel.name, panel.transformAttrs.call(this, attrs, state)));
         }
       });
 
@@ -349,10 +293,8 @@ export default createWidget("header", {
     };
 
     let contentsAttrs = { contents, minimized: !!attrs.topic };
-    return h(
-      "div.wrap",
-      this.attach("header-contents", $.extend({}, attrs, contentsAttrs))
-    );
+    return h("div.wrap", this.attach("header-contents",
+                                     $.extend({}, attrs, contentsAttrs)));
   },
 
   updateHighlight() {
@@ -401,12 +343,12 @@ export default createWidget("header", {
       var params = "";
 
       if (context) {
-        params = `?context=${context.type}&context_id=${context.id}&skip_context=${this.state.skipSearchContext}`;
+        params = `?context=${context.type}&context_id=${
+          context.id}&skip_context=${this.state.skipSearchContext}`;
       }
 
-      const currentPath = this.register
-        .lookup("service:router")
-        .get("_router.currentPath");
+      const currentPath =
+        this.register.lookup("service:router").get("_router.currentPath");
 
       if (currentPath === "full-page-search") {
         scrollTop();
@@ -425,14 +367,8 @@ export default createWidget("header", {
         const $searchInput = $("#search-term");
         $searchInput.focus().select();
 
-        applySearchAutocomplete(
-          $searchInput,
-          this.siteSettings,
-          this.appEvents,
-          {
-            appendSelector: ".menu-panel"
-          }
-        );
+        applySearchAutocomplete($searchInput, this.siteSettings, this.appEvents,
+                                { appendSelector: ".menu-panel" });
       });
     }
   },
@@ -454,23 +390,19 @@ export default createWidget("header", {
   toggleBodyScrolling(bool) {
     if (!this.site.mobileView) return;
     if (bool) {
-      document.body.addEventListener("touchmove", this.preventDefault, {
-        passive: false
-      });
+      document.body.addEventListener("touchmove", this.preventDefault,
+                                     { passive: false });
     } else {
-      document.body.removeEventListener("touchmove", this.preventDefault, {
-        passive: false
-      });
+      document.body.removeEventListener("touchmove", this.preventDefault,
+                                        { passive: false });
     }
   },
 
   preventDefault(e) {
     // prevent all scrollin on menu panels, except on overflow
     const height = window.innerHeight ? window.innerHeight : $(window).height();
-    if (
-      !$(e.target).parents(".menu-panel").length ||
-      $(".menu-panel .panel-body-contents").height() <= height
-    ) {
+    if (!$(e.target).parents(".menu-panel").length ||
+        $(".menu-panel .panel-body-contents").height() <= height) {
       e.preventDefault();
     }
   },
@@ -480,9 +412,8 @@ export default createWidget("header", {
 
     state.contextEnabled = false;
 
-    const currentPath = this.register
-      .lookup("service:router")
-      .get("_router.currentPath");
+    const currentPath =
+      this.register.lookup("service:router").get("_router.currentPath");
     const blacklist = [/^discovery\.categories/];
     const whitelist = [/^topic\./];
     const check = function(regex) {
@@ -516,9 +447,8 @@ export default createWidget("header", {
   },
 
   searchMenuContextChanged(value) {
-    this.state.contextType = this.register
-      .lookup("search-service:main")
-      .get("contextType");
+    this.state.contextType =
+      this.register.lookup("search-service:main").get("contextType");
     this.state.contextEnabled = value;
   },
 
@@ -532,25 +462,25 @@ export default createWidget("header", {
 
   headerKeyboardTrigger(msg) {
     switch (msg.type) {
-      case "search":
-        this.toggleSearchMenu();
-        break;
-      case "user":
-        this.toggleUserMenu();
-        break;
-      case "hamburger":
-        this.toggleHamburger();
-        break;
-      case "page-search":
-        let contextType = this.searchContextType();
-        if (contextType === "topic") {
-          this.state.searchContextType = contextType;
-        }
-        if (!this.togglePageSearch()) {
-          msg.event.preventDefault();
-          msg.event.stopPropagation();
-        }
-        break;
+    case "search":
+      this.toggleSearchMenu();
+      break;
+    case "user":
+      this.toggleUserMenu();
+      break;
+    case "hamburger":
+      this.toggleHamburger();
+      break;
+    case "page-search":
+      let contextType = this.searchContextType();
+      if (contextType === "topic") {
+        this.state.searchContextType = contextType;
+      }
+      if (!this.togglePageSearch()) {
+        msg.event.preventDefault();
+        msg.event.stopPropagation();
+      }
+      break;
     }
   },
 

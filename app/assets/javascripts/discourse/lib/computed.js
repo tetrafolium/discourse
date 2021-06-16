@@ -1,6 +1,6 @@
-import { computed } from "@ember/object";
+import {computed} from "@ember/object";
 import addonFmt from "ember-addons/fmt";
-import { htmlSafe as htmlSafeTemplateHelper } from "@ember/template";
+import {htmlSafe as htmlSafeTemplateHelper} from "@ember/template";
 
 /**
   Returns whether two properties are equal to each other.
@@ -117,13 +117,11 @@ export function endWith() {
   const args = Array.prototype.slice.call(arguments, 0);
   const substring = args.pop();
   return computed(...args, function() {
-    return args
-      .map(a => this.get(a))
-      .every(s => {
-        const position = s.length - substring.length,
-          lastIndex = s.lastIndexOf(substring);
-        return lastIndex !== -1 && lastIndex === position;
-      });
+    return args.map(a => this.get(a)).every(s => {
+      const position = s.length - substring.length,
+            lastIndex = s.lastIndexOf(substring);
+      return lastIndex !== -1 && lastIndex === position;
+    });
   });
 }
 

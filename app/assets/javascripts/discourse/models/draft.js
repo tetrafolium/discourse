@@ -1,21 +1,16 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import EmberObject from "@ember/object";
 
 const Draft = EmberObject.extend();
 
 Draft.reopenClass({
   clear(key, sequence) {
-    return ajax("/draft.json", {
-      type: "DELETE",
-      data: { draft_key: key, sequence }
-    });
+    return ajax("/draft.json",
+                { type: "DELETE", data: { draft_key: key, sequence } });
   },
 
   get(key) {
-    return ajax("/draft.json", {
-      data: { draft_key: key },
-      dataType: "json"
-    });
+    return ajax("/draft.json", { data: { draft_key: key }, dataType: "json" });
   },
 
   getLocal(key, current) {

@@ -1,4 +1,4 @@
-import { createWidget } from "discourse/widgets/widget";
+import {createWidget} from "discourse/widgets/widget";
 
 export default createWidget("post-gap", {
   tagName: "div.gap",
@@ -9,9 +9,8 @@ export default createWidget("post-gap", {
   },
 
   html(attrs, state) {
-    return state.loading
-      ? I18n.t("loading")
-      : I18n.t("post.gap", { count: attrs.gap.length });
+    return state.loading ? I18n.t("loading")
+                         : I18n.t("post.gap", { count: attrs.gap.length });
   },
 
   click() {
@@ -24,8 +23,6 @@ export default createWidget("post-gap", {
 
     const args = { gap: attrs.gap, post: this.model };
     return this.sendWidgetAction(
-      attrs.pos === "before" ? "fillGapBefore" : "fillGapAfter",
-      args
-    );
+      attrs.pos === "before" ? "fillGapBefore" : "fillGapAfter", args);
   }
 });

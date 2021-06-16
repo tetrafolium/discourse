@@ -1,17 +1,15 @@
-import { debounce, later, next, schedule, scheduleOnce } from "@ember/runloop";
-import { inject as service } from "@ember/service";
+import {debounce, later, next, schedule, scheduleOnce} from "@ember/runloop";
+import {inject as service} from "@ember/service";
 import Component from "@ember/component";
 /*global Mousetrap:true */
-import discourseComputed, {
-  on,
-  observes
-} from "discourse-common/utils/decorators";
-import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
-import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
-import { cookAsync } from "discourse/lib/text";
-import { getRegister } from "discourse-common/lib/get-owner";
-import { findRawTemplate } from "discourse/lib/raw-templates";
-import { siteDir } from "discourse/lib/text-direction";
+import discourseComputed,
+{on, observes} from "discourse-common/utils/decorators";
+import {categoryHashtagTriggerRule} from "discourse/lib/category-hashtags";
+import {search as searchCategoryTag} from "discourse/lib/category-tag-search";
+import {cookAsync} from "discourse/lib/text";
+import {getRegister} from "discourse-common/lib/get-owner";
+import {findRawTemplate} from "discourse/lib/raw-templates";
+import {siteDir} from "discourse/lib/text-direction";
 import {
   determinePostReplaceSelection,
   clipboardData,
@@ -21,12 +19,12 @@ import {
 } from "discourse/lib/utilities";
 import toMarkdown from "discourse/lib/to-markdown";
 import deprecated from "discourse-common/lib/deprecated";
-import { wantsNewWindow } from "discourse/lib/intercept-click";
-import { translations } from "pretty-text/emoji/data";
-import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
-import { emojiUrlFor } from "discourse/lib/text";
+import {wantsNewWindow} from "discourse/lib/intercept-click";
+import {translations} from "pretty-text/emoji/data";
+import {emojiSearch, isSkinTonableEmoji} from "pretty-text/emoji";
+import {emojiUrlFor} from "discourse/lib/text";
 import showModal from "discourse/lib/show-modal";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import ENV from "discourse-common/config/environment";
 
 // Our head can be a static string or a function that returns a string
@@ -67,8 +65,7 @@ class Toolbar {
 
     this.groups = [
       { group: "fontStyles", buttons: [] },
-      { group: "insertions", buttons: [] },
-      { group: "extras", buttons: [] }
+      { group: "insertions", buttons: [] }, { group: "extras", buttons: [] }
     ];
 
     this.addButton({
@@ -106,11 +103,8 @@ class Toolbar {
       group: "insertions",
       icon: "quote-right",
       shortcut: "Shift+9",
-      perform: e =>
-        e.applyList("> ", "blockquote_text", {
-          applyEmptyLines: true,
-          multiline: true
-        })
+      perform: e => e.applyList("> ", "blockquote_text",
+                                { applyEmptyLines: true, multiline: true })
     });
 
     this.addButton({
@@ -182,16 +176,15 @@ class Toolbar {
 
       // Mac users are used to glyphs for shortcut keys
       if (mac) {
-        shortcutTitle = shortcutTitle
-          .replace("Shift", "\u21E7")
-          .replace("Meta", "\u2318")
-          .replace("Alt", "\u2325")
-          .replace(/\+/g, "");
+        shortcutTitle = shortcutTitle.replace("Shift", "\u21E7")
+                          .replace("Meta", "\u2318")
+                          .replace("Alt", "\u2325")
+                          .replace(/\+/g, "");
       } else {
-        shortcutTitle = shortcutTitle
-          .replace("Shift", I18n.t("shortcut_modifier_key.shift"))
-          .replace("Ctrl", I18n.t("shortcut_modifier_key.ctrl"))
-          .replace("Alt", I18n.t("shortcut_modifier_key.alt"));
+        shortcutTitle =
+          shortcutTitle.replace("Shift", I18n.t("shortcut_modifier_key.shift"))
+            .replace("Ctrl", I18n.t("shortcut_modifier_key.ctrl"))
+            .replace("Alt", I18n.t("shortcut_modifier_key.alt"));
       }
 
       createdButton.title = `${title} (${shortcutTitle})`;
@@ -219,35 +212,33 @@ export function onToolbarCreate(func) {
 }
 
 export default Component.extend({
-  classNames: ["d-editor"],
-  ready: false,
-  lastSel: null,
-  _mouseTrap: null,
-  showLink: true,
-  emojiPickerIsActive: false,
-  emojiStore: service("emoji-store"),
+  classNames: ["d-editor"], ready: false, lastSel: null, _mouseTrap: null,
+    showLink: true, emojiPickerIsActive: false,
+    emojiStore: service("emoji-store"),
 
-  @discourseComputed("placeholder")
-  placeholderTranslated(placeholder) {
+    @discourseComputed("placeholder") placeholderTranslated(placeholder) {
     if (placeholder) return I18n.t(placeholder);
     return null;
-  },
+  }
+  ,
 
-  _readyNow() {
+    _readyNow() {
     this.set("ready", true);
 
     if (this.autofocus) {
       this.element.querySelector("textarea").focus();
     }
-  },
+  }
+  ,
 
-  init() {
+    init() {
     this._super(...arguments);
 
     this.register = getRegister(this);
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     const $editorInput = $(this.element.querySelector(".d-editor-input"));
@@ -268,31 +259,25 @@ export default Component.extend({
     });
 
     // disable clicking on links in the preview
-    $(this.element.querySelector(".d-editor-preview")).on(
-      "click.preview",
-      e => {
+    $(this.element.querySelector(".d-editor-preview"))
+      .on("click.preview", e => {
         if (wantsNewWindow(e)) {
           return;
         }
         const $target = $(e.target);
         if ($target.is("a.mention")) {
-          this.appEvents.trigger(
-            "click.discourse-preview-user-card-mention",
-            $target
-          );
+          this.appEvents.trigger("click.discourse-preview-user-card-mention",
+                                 $target);
         }
         if ($target.is("a.mention-group")) {
           this.appEvents.trigger(
-            "click.discourse-preview-group-card-mention-group",
-            $target
-          );
+            "click.discourse-preview-group-card-mention-group", $target);
         }
         if ($target.is("a")) {
           e.preventDefault();
           return false;
         }
-      }
-    );
+      });
 
     if (this.composerEvents) {
       this.appEvents.on("composer:insert-block", this, "_insertBlock");
@@ -300,18 +285,20 @@ export default Component.extend({
       this.appEvents.on("composer:replace-text", this, "_replaceText");
     }
     this._mouseTrap = mouseTrap;
-  },
+  }
+  ,
 
-  _insertBlock(text) {
+    _insertBlock(text) {
     this._addBlock(this._getSelected(), text);
-  },
+  }
+  ,
 
-  _insertText(text, options) {
+    _insertText(text, options) {
     this._addText(this._getSelected(), text, options);
-  },
+  }
+  ,
 
-  @on("willDestroyElement")
-  _shutDown() {
+    @on("willDestroyElement") _shutDown() {
     if (this.composerEvents) {
       this.appEvents.off("composer:insert-block", this, "_insertBlock");
       this.appEvents.off("composer:insert-text", this, "_insertText");
@@ -319,17 +306,15 @@ export default Component.extend({
     }
 
     const mouseTrap = this._mouseTrap;
-    Object.keys(this.get("toolbar.shortcuts")).forEach(sc =>
-      mouseTrap.unbind(sc)
-    );
+    Object.keys(this.get("toolbar.shortcuts"))
+      .forEach(sc => mouseTrap.unbind(sc));
     $(this.element.querySelector(".d-editor-preview")).off("click.preview");
-  },
+  }
+  ,
 
-  @discourseComputed
-  toolbar() {
-    const toolbar = new Toolbar(
-      this.getProperties("site", "siteSettings", "showLink")
-    );
+    @discourseComputed toolbar() {
+    const toolbar =
+      new Toolbar(this.getProperties("site", "siteSettings", "showLink"));
     toolbar.context = this;
 
     _createCallbacks.forEach(cb => cb(toolbar));
@@ -338,9 +323,10 @@ export default Component.extend({
       this.extraButtons(toolbar);
     }
     return toolbar;
-  },
+  }
+  ,
 
-  _updatePreview() {
+    _updatePreview() {
     if (this._state !== "inDOM") {
       return;
     }
@@ -365,10 +351,10 @@ export default Component.extend({
         }
       });
     });
-  },
+  }
+  ,
 
-  @observes("ready", "value")
-  _watchForChanges() {
+    @observes("ready", "value") _watchForChanges() {
     if (!this.ready) {
       return;
     }
@@ -379,9 +365,10 @@ export default Component.extend({
     } else {
       debounce(this, this._updatePreview, 30);
     }
-  },
+  }
+  ,
 
-  _applyCategoryHashtagAutocomplete() {
+    _applyCategoryHashtagAutocomplete() {
     const siteSettings = this.siteSettings;
 
     $(this.element.querySelector(".d-editor-input")).autocomplete({
@@ -401,9 +388,10 @@ export default Component.extend({
         return categoryHashtagTriggerRule(textarea, opts);
       }
     });
-  },
+  }
+  ,
 
-  _applyEmojiAutocomplete($editorInput) {
+    _applyEmojiAutocomplete($editorInput) {
     if (!this.siteSettings.enable_emoji) {
       return;
     }
@@ -421,9 +409,9 @@ export default Component.extend({
           return false;
         }
 
-        const matches = /(?:^|[^a-z])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-          text.substring(0, cp)
-        );
+        const matches =
+          /(?:^|[^a-z])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+            text.substring(0, cp));
 
         if (matches && matches[1]) {
           return [matches[1]];
@@ -442,9 +430,8 @@ export default Component.extend({
           });
 
           schedule("afterRender", () => {
-            const filterInput = document.querySelector(
-              ".emoji-picker input[name='filter']"
-            );
+            const filterInput =
+              document.querySelector(".emoji-picker input[name='filter']");
             if (filterInput) {
               filterInput.value = v.term;
 
@@ -458,54 +445,49 @@ export default Component.extend({
 
       dataSource: term => {
         return new Promise(resolve => {
-          const full = `:${term}`;
-          term = term.toLowerCase();
+                 const full = `:${term}`;
+                 term = term.toLowerCase();
 
-          if (term.length < this.siteSettings.emoji_autocomplete_min_chars) {
-            return resolve([]);
-          }
+                 if (term.length <
+                     this.siteSettings.emoji_autocomplete_min_chars) {
+                   return resolve([]);
+                 }
 
-          if (term === "") {
-            if (this.emojiStore.favorites.length) {
-              return resolve(this.emojiStore.favorites.slice(0, 5));
-            } else {
-              return resolve([
-                "slight_smile",
-                "smile",
-                "wink",
-                "sunny",
-                "blush"
-              ]);
-            }
-          }
+                 if (term === "") {
+                   if (this.emojiStore.favorites.length) {
+                     return resolve(this.emojiStore.favorites.slice(0, 5));
+                   } else {
+                     return resolve(
+                       ["slight_smile", "smile", "wink", "sunny", "blush"]);
+                   }
+                 }
 
-          if (translations[full]) {
-            return resolve([translations[full]]);
-          }
+                 if (translations[full]) {
+                   return resolve([translations[full]]);
+                 }
 
-          const match = term.match(/^:?(.*?):t([2-6])?$/);
-          if (match) {
-            const name = match[1];
-            const scale = match[2];
+                 const match = term.match(/^:?(.*?):t([2-6])?$/);
+                 if (match) {
+                   const name = match[1];
+                   const scale = match[2];
 
-            if (isSkinTonableEmoji(name)) {
-              if (scale) {
-                return resolve([`${name}:t${scale}`]);
-              } else {
-                return resolve([2, 3, 4, 5, 6].map(x => `${name}:t${x}`));
-              }
-            }
-          }
+                   if (isSkinTonableEmoji(name)) {
+                     if (scale) {
+                       return resolve([`${name}:t${scale}`]);
+                     } else {
+                       return resolve(
+                         [2, 3, 4, 5, 6].map(x => `${name}:t${x}`));
+                     }
+                   }
+                 }
 
-          const options = emojiSearch(term, { maxResults: 5 });
+                 const options = emojiSearch(term, { maxResults: 5 });
 
-          return resolve(options);
-        })
-          .then(list =>
-            list.map(code => {
-              return { code, src: emojiUrlFor(code) };
-            })
-          )
+                 return resolve(options);
+               })
+          .then(list => list.map(code => {
+            return { code, src: emojiUrlFor(code) };
+          }))
           .then(list => {
             if (list.length) {
               list.push({ label: I18n.t("composer.more_emoji"), term });
@@ -517,9 +499,10 @@ export default Component.extend({
       triggerRule: textarea =>
         !inCodeBlock(textarea.value, caretPosition(textarea))
     });
-  },
+  }
+  ,
 
-  _getSelected(trimLeading, opts) {
+    _getSelected(trimLeading, opts) {
     if (!this.ready) {
       return;
     }
@@ -546,16 +529,16 @@ export default Component.extend({
     const post = value.slice(end);
 
     if (opts && opts.lineVal) {
-      const lineVal = value.split("\n")[
-        value.substr(0, textarea.selectionStart).split("\n").length - 1
-      ];
+      const lineVal = value.split(
+        "\n")[value.substr(0, textarea.selectionStart).split("\n").length - 1];
       return { start, end, value: selVal, pre, post, lineVal };
     } else {
       return { start, end, value: selVal, pre, post };
     }
-  },
+  }
+  ,
 
-  _selectText(from, length) {
+    _selectText(from, length) {
     scheduleOnce("afterRender", () => {
       const textarea = this.element.querySelector("textarea.d-editor-input");
       const $textarea = $(textarea);
@@ -568,10 +551,11 @@ export default Component.extend({
       next(() => $textarea.trigger("change"));
       $textarea.scrollTop(oldScrollPos);
     });
-  },
+  }
+  ,
 
-  // perform the same operation over many lines of text
-  _getMultilineContents(lines, head, hval, hlen, tail, tlen, opts) {
+    // perform the same operation over many lines of text
+    _getMultilineContents(lines, head, hval, hlen, tail, tlen, opts) {
     let operation = OP.NONE;
 
     const applyEmptyLines = opts && opts.applyEmptyLines;
@@ -582,11 +566,9 @@ export default Component.extend({
           return l;
         }
 
-        if (
-          operation !== OP.ADDED &&
-          ((l.slice(0, hlen) === hval && tlen === 0) ||
-            (tail.length && l.slice(-tlen) === tail))
-        ) {
+        if (operation !== OP.ADDED &&
+            ((l.slice(0, hlen) === hval && tlen === 0) ||
+             (tail.length && l.slice(-tlen) === tail))) {
           operation = OP.REMOVED;
           if (tlen === 0) {
             const result = l.slice(hlen);
@@ -608,9 +590,10 @@ export default Component.extend({
         return result;
       })
       .join("\n");
-  },
+  }
+  ,
 
-  _applySurround(sel, head, tail, exampleKey, opts) {
+    _applySurround(sel, head, tail, exampleKey, opts) {
     const pre = sel.pre;
     const post = sel.post;
 
@@ -636,8 +619,7 @@ export default Component.extend({
       if (pre.slice(-hlen) === hval && post.slice(0, tail.length) === tail) {
         this.set(
           "value",
-          `${pre.slice(0, -hlen)}${sel.value}${post.slice(tail.length)}`
-        );
+          `${pre.slice(0, -hlen)}${sel.value}${post.slice(tail.length)}`);
         this._selectText(sel.start - hlen, sel.value.length);
       } else {
         this.set("value", `${pre}${hval}${sel.value}${tail}${post}`);
@@ -647,26 +629,14 @@ export default Component.extend({
       const lines = sel.value.split("\n");
 
       let [hval, hlen] = getHead(head);
-      if (
-        lines.length === 1 &&
-        pre.slice(-tlen) === tail &&
-        post.slice(0, hlen) === hval
-      ) {
-        this.set(
-          "value",
-          `${pre.slice(0, -hlen)}${sel.value}${post.slice(tlen)}`
-        );
+      if (lines.length === 1 && pre.slice(-tlen) === tail &&
+          post.slice(0, hlen) === hval) {
+        this.set("value",
+                 `${pre.slice(0, -hlen)}${sel.value}${post.slice(tlen)}`);
         this._selectText(sel.start - hlen, sel.value.length);
       } else {
-        const contents = this._getMultilineContents(
-          lines,
-          head,
-          hval,
-          hlen,
-          tail,
-          tlen,
-          opts
-        );
+        const contents =
+          this._getMultilineContents(lines, head, hval, hlen, tail, tlen, opts);
 
         this.set("value", `${pre}${contents}${post}`);
         if (lines.length === 1 && tlen > 0) {
@@ -676,9 +646,10 @@ export default Component.extend({
         }
       }
     }
-  },
+  }
+  ,
 
-  _applyList(sel, head, exampleKey, opts) {
+    _applyList(sel, head, exampleKey, opts) {
     if (sel.value.indexOf("\n") !== -1) {
       this._applySurround(sel, head, "", exampleKey, opts);
     } else {
@@ -688,10 +659,8 @@ export default Component.extend({
       }
 
       const trimmedPre = sel.pre.trim();
-      const number =
-        sel.value.indexOf(hval) === 0
-          ? sel.value.slice(hlen)
-          : `${hval}${sel.value}`;
+      const number = sel.value.indexOf(hval) === 0 ? sel.value.slice(hlen)
+                                                   : `${hval}${sel.value}`;
       const preLines = trimmedPre.length ? `${trimmedPre}\n\n` : "";
 
       const trimmedPost = sel.post.trim();
@@ -700,9 +669,10 @@ export default Component.extend({
       this.set("value", `${preLines}${number}${post}`);
       this._selectText(preLines.length, number.length);
     }
-  },
+  }
+  ,
 
-  _replaceText(oldVal, newVal, opts = {}) {
+    _replaceText(oldVal, newVal, opts = {}) {
     const val = this.value;
     const needleStart = val.indexOf(oldVal);
 
@@ -734,14 +704,13 @@ export default Component.extend({
 
     if (opts.forceFocus || $("textarea.d-editor-input").is(":focus")) {
       // Restore cursor.
-      this._selectText(
-        newSelection.start,
-        newSelection.end - newSelection.start
-      );
+      this._selectText(newSelection.start,
+                       newSelection.end - newSelection.start);
     }
-  },
+  }
+  ,
 
-  _addBlock(sel, text) {
+    _addBlock(sel, text) {
     text = (text || "").trim();
     if (text.length === 0) {
       return;
@@ -770,9 +739,10 @@ export default Component.extend({
     $textarea.prop("selectionEnd", (pre + text).length + 2);
 
     this._focusTextArea();
-  },
+  }
+  ,
 
-  _addText(sel, text, options) {
+    _addText(sel, text, options) {
     const $textarea = $(this.element.querySelector("textarea.d-editor-input"));
 
     if (options && options.ensureSpace) {
@@ -796,9 +766,10 @@ export default Component.extend({
     $textarea.prop("selectionEnd", insert.length);
     next(() => $textarea.trigger("change"));
     this._focusTextArea();
-  },
+  }
+  ,
 
-  _extractTable(text) {
+    _extractTable(text) {
     if (text.endsWith("\n")) {
       text = text.substring(0, text.length - 1);
     }
@@ -809,29 +780,31 @@ export default Component.extend({
       const columns = rows.map(r => r.split("\t").length);
       const isTable =
         columns.reduce((a, b) => a && columns[0] === b && b > 1) &&
-        !(columns[0] === 2 && rows[0].split("\t")[0].match(/^•$|^\d+.$/)); // to skip tab delimited lists
+        !(columns[0] === 2 && rows[0].split("\t")[0].match(
+                                /^•$|^\d+.$/)); // to skip tab delimited lists
 
       if (isTable) {
         const splitterRow = [...Array(columns[0])].map(() => "---").join("\t");
         rows.splice(1, 0, splitterRow);
 
-        return (
-          "|" + rows.map(r => r.split("\t").join("|")).join("|\n|") + "|\n"
-        );
+        return ("|" + rows.map(r => r.split("\t").join("|")).join("|\n|") +
+                "|\n");
       }
     }
     return null;
-  },
+  }
+  ,
 
-  _toggleDirection() {
+    _toggleDirection() {
     const $textArea = $(".d-editor-input");
     let currentDir = $textArea.attr("dir") ? $textArea.attr("dir") : siteDir(),
-      newDir = currentDir === "ltr" ? "rtl" : "ltr";
+        newDir = currentDir === "ltr" ? "rtl" : "ltr";
 
     $textArea.attr("dir", newDir).focus();
-  },
+  }
+  ,
 
-  paste(e) {
+    paste(e) {
     if (!$(".d-editor-input").is(":focus")) {
       return;
     }
@@ -847,12 +820,8 @@ export default Component.extend({
     const isInlinePasting = pre.match(/[^\n]$/);
     const isCodeBlock = isInside(pre, /(^|\n)```/g);
 
-    if (
-      plainText &&
-      this.siteSettings.enable_rich_text_paste &&
-      !isInlinePasting &&
-      !isCodeBlock
-    ) {
+    if (plainText && this.siteSettings.enable_rich_text_paste &&
+        !isInlinePasting && !isCodeBlock) {
       plainText = plainText.trim().replace(/\r/g, "");
       const table = this._extractTable(plainText);
       if (table) {
@@ -863,11 +832,8 @@ export default Component.extend({
 
     if (canPasteHtml && plainText) {
       if (isInlinePasting) {
-        canPasteHtml = !(
-          lineVal.match(/^```/) ||
-          isInside(pre, /`/g) ||
-          lineVal.match(/^    /)
-        );
+        canPasteHtml = !(lineVal.match(/^```/) || isInside(pre, /`/g) ||
+                         lineVal.match(/^    /));
       } else {
         canPasteHtml = !isCodeBlock;
       }
@@ -890,134 +856,126 @@ export default Component.extend({
     if (handled || (canUpload && !plainText)) {
       e.preventDefault();
     }
-  },
+  }
+  ,
 
-  // ensures textarea scroll position is correct
-  _focusTextArea() {
+    // ensures textarea scroll position is correct
+    _focusTextArea() {
     const textarea = this.element.querySelector("textarea.d-editor-input");
     scheduleOnce("afterRender", () => {
       textarea.blur();
       textarea.focus();
     });
-  },
+  }
+  ,
 
-  actions: {
-    emoji() {
-      if (this.disabled) {
-        return;
-      }
-
-      this.set("isEditorFocused", $("textarea.d-editor-input").is(":focus"));
-      this.set("emojiPickerIsActive", !this.emojiPickerIsActive);
-    },
-
-    emojiSelected(code) {
-      let selected = this._getSelected();
-      const captures = selected.pre.match(/\B:(\w*)$/);
-
-      if (_.isEmpty(captures)) {
-        if (selected.pre.match(/\S$/)) {
-          this._addText(selected, ` :${code}:`);
-        } else {
-          this._addText(selected, `:${code}:`);
+    actions: {
+      emoji() {
+        if (this.disabled) {
+          return;
         }
-      } else {
-        let numOfRemovedChars = selected.pre.length - captures[1].length;
-        selected.pre = selected.pre.slice(
-          0,
-          selected.pre.length - captures[1].length
-        );
-        selected.start -= numOfRemovedChars;
-        selected.end -= numOfRemovedChars;
-        this._addText(selected, `${code}:`);
-      }
-    },
 
-    toolbarButton(button) {
-      if (this.disabled) {
-        return;
-      }
+        this.set("isEditorFocused", $("textarea.d-editor-input").is(":focus"));
+        this.set("emojiPickerIsActive", !this.emojiPickerIsActive);
+      },
 
-      const selected = this._getSelected(button.trimLeading);
-      const toolbarEvent = {
-        selected,
-        selectText: (from, length) => this._selectText(from, length),
-        applySurround: (head, tail, exampleKey, opts) =>
-          this._applySurround(selected, head, tail, exampleKey, opts),
-        applyList: (head, exampleKey, opts) =>
-          this._applyList(selected, head, exampleKey, opts),
-        addText: text => this._addText(selected, text),
-        replaceText: text => this._addText({ pre: "", post: "" }, text),
-        getText: () => this.value,
-        toggleDirection: () => this._toggleDirection()
-      };
+      emojiSelected(code) {
+        let selected = this._getSelected();
+        const captures = selected.pre.match(/\B:(\w*)$/);
 
-      if (button.sendAction) {
-        return button.sendAction(toolbarEvent);
-      } else {
-        button.perform(toolbarEvent);
-      }
-    },
-
-    showLinkModal(toolbarEvent) {
-      if (this.disabled) {
-        return;
-      }
-
-      let linkText = "";
-      this._lastSel = toolbarEvent.selected;
-
-      if (this._lastSel) {
-        linkText = this._lastSel.value;
-      }
-
-      showModal("insert-hyperlink").setProperties({
-        linkText,
-        toolbarEvent
-      });
-    },
-
-    formatCode() {
-      if (this.disabled) {
-        return;
-      }
-
-      const sel = this._getSelected("", { lineVal: true });
-      const selValue = sel.value;
-      const hasNewLine = selValue.indexOf("\n") !== -1;
-      const isBlankLine = sel.lineVal.trim().length === 0;
-      const isFourSpacesIndent =
-        this.siteSettings.code_formatting_style === FOUR_SPACES_INDENT;
-
-      if (!hasNewLine) {
-        if (selValue.length === 0 && isBlankLine) {
-          if (isFourSpacesIndent) {
-            const example = I18n.t(`composer.code_text`);
-            this.set("value", `${sel.pre}    ${example}${sel.post}`);
-            return this._selectText(sel.pre.length + 4, example.length);
+        if (_.isEmpty(captures)) {
+          if (selected.pre.match(/\S$/)) {
+            this._addText(selected, ` :${code}:`);
           } else {
-            return this._applySurround(
-              sel,
-              "```\n",
-              "\n```",
-              "paste_code_text"
-            );
+            this._addText(selected, `:${code}:`);
           }
         } else {
-          return this._applySurround(sel, "`", "`", "code_title");
+          let numOfRemovedChars = selected.pre.length - captures[1].length;
+          selected.pre =
+            selected.pre.slice(0, selected.pre.length - captures[1].length);
+          selected.start -= numOfRemovedChars;
+          selected.end -= numOfRemovedChars;
+          this._addText(selected, `${code}:`);
         }
-      } else {
-        if (isFourSpacesIndent) {
-          return this._applySurround(sel, "    ", "", "code_text");
+      },
+
+      toolbarButton(button) {
+        if (this.disabled) {
+          return;
+        }
+
+        const selected = this._getSelected(button.trimLeading);
+        const toolbarEvent = {
+          selected,
+          selectText: (from, length) => this._selectText(from, length),
+          applySurround: (head, tail, exampleKey, opts) =>
+            this._applySurround(selected, head, tail, exampleKey, opts),
+          applyList: (head, exampleKey, opts) =>
+            this._applyList(selected, head, exampleKey, opts),
+          addText: text => this._addText(selected, text),
+          replaceText: text => this._addText({ pre: "", post: "" }, text),
+          getText: () => this.value,
+          toggleDirection: () => this._toggleDirection()
+        };
+
+        if (button.sendAction) {
+          return button.sendAction(toolbarEvent);
         } else {
-          const preNewline = sel.pre[-1] !== "\n" && sel.pre !== "" ? "\n" : "";
-          const postNewline = sel.post[0] !== "\n" ? "\n" : "";
-          return this._addText(
-            sel,
-            `${preNewline}\`\`\`\n${sel.value}\n\`\`\`${postNewline}`
-          );
+          button.perform(toolbarEvent);
+        }
+      },
+
+      showLinkModal(toolbarEvent) {
+        if (this.disabled) {
+          return;
+        }
+
+        let linkText = "";
+        this._lastSel = toolbarEvent.selected;
+
+        if (this._lastSel) {
+          linkText = this._lastSel.value;
+        }
+
+        showModal("insert-hyperlink").setProperties({ linkText, toolbarEvent });
+      },
+
+      formatCode() {
+        if (this.disabled) {
+          return;
+        }
+
+        const sel = this._getSelected("", { lineVal: true });
+        const selValue = sel.value;
+        const hasNewLine = selValue.indexOf("\n") !== -1;
+        const isBlankLine = sel.lineVal.trim().length === 0;
+        const isFourSpacesIndent =
+          this.siteSettings.code_formatting_style === FOUR_SPACES_INDENT;
+
+        if (!hasNewLine) {
+          if (selValue.length === 0 && isBlankLine) {
+            if (isFourSpacesIndent) {
+              const example = I18n.t(`composer.code_text`);
+              this.set("value", `${sel.pre}    ${example}${sel.post}`);
+              return this._selectText(sel.pre.length + 4, example.length);
+            } else {
+              return this._applySurround(sel, "```\n", "\n```",
+                                         "paste_code_text");
+            }
+          } else {
+            return this._applySurround(sel, "`", "`", "code_title");
+          }
+        } else {
+          if (isFourSpacesIndent) {
+            return this._applySurround(sel, "    ", "", "code_text");
+          } else {
+            const preNewline =
+              sel.pre[-1] !== "\n" && sel.pre !== "" ? "\n" : "";
+            const postNewline = sel.post[0] !== "\n" ? "\n" : "";
+            return this._addText(
+              sel, `${preNewline}\`\`\`\n${sel.value}\n\`\`\`${postNewline}`);
+          }
         }
       }
     }
-  }
 });

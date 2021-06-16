@@ -1,4 +1,4 @@
-import { alias } from "@ember/object/computed";
+import {alias} from "@ember/object/computed";
 import Component from "@ember/component";
 import UploadMixin from "discourse/mixins/upload";
 

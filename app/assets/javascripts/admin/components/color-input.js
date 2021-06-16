@@ -1,8 +1,8 @@
-import { schedule } from "@ember/runloop";
+import {schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import { computed, action } from "@ember/object";
-import loadScript, { loadCSS } from "discourse/lib/load-script";
-import { observes } from "discourse-common/utils/decorators";
+import {computed, action} from "@ember/object";
+import loadScript, {loadCSS} from "discourse/lib/load-script";
+import {observes} from "discourse-common/utils/decorators";
 
 /**
   An input field for a color.
@@ -14,49 +14,46 @@ import { observes } from "discourse-common/utils/decorators";
 export default Component.extend({
   classNames: ["color-picker"],
 
-  onlyHex: true,
+    onlyHex: true,
 
-  styleSelection: true,
+    styleSelection: true,
 
-  maxlength: computed("onlyHex", function() {
-    return this.onlyHex ? 6 : null;
-  }),
+    maxlength: computed("onlyHex",
+                        function() {
+                          return this.onlyHex ? 6 : null;
+                        }),
 
-  @action
-  onHexInput(color) {
+    @action onHexInput(color) {
     this.attrs.onChangeColor &&
       this.attrs.onChangeColor((color || "").replace(/^#/, ""));
-  },
+  }
+  ,
 
-  @observes("hexValue", "brightnessValue", "valid")
-  hexValueChanged: function() {
-    const hex = this.hexValue;
-    let text = this.element.querySelector("input.hex-input");
+    @observes("hexValue", "brightnessValue", "valid") hexValueChanged:
+      function() {
+        const hex = this.hexValue;
+        let text = this.element.querySelector("input.hex-input");
 
-    this.attrs.onChangeColor && this.attrs.onChangeColor(hex);
+        this.attrs.onChangeColor && this.attrs.onChangeColor(hex);
 
-    if (this.valid) {
-      this.styleSelection &&
-        text.setAttribute(
-          "style",
-          "color: " +
-            (this.brightnessValue > 125 ? "black" : "white") +
-            "; background-color: #" +
-            hex +
-            ";"
-        );
+        if (this.valid) {
+          this.styleSelection &&
+            text.setAttribute(
+              "style",
+              "color: " + (this.brightnessValue > 125 ? "black" : "white") +
+                "; background-color: #" + hex + ";");
 
-      if (this.pickerLoaded) {
-        $(this.element.querySelector(".picker")).spectrum({
-          color: "#" + hex
-        });
-      }
-    } else {
-      this.styleSelection && text.setAttribute("style", "");
-    }
-  },
+          if (this.pickerLoaded) {
+            $(this.element.querySelector(".picker")).spectrum({
+              color: "#" + hex
+            });
+          }
+        } else {
+          this.styleSelection && text.setAttribute("style", "");
+        }
+      },
 
-  didInsertElement() {
+    didInsertElement() {
     loadScript("/javascripts/spectrum.js").then(() => {
       loadCSS("/javascripts/spectrum.css").then(() => {
         schedule("afterRender", () => {

@@ -1,4 +1,4 @@
-import { registerUnbound } from "discourse-common/lib/helpers";
+import {registerUnbound} from "discourse-common/lib/helpers";
 
 function daysSinceEpoch(dt) {
   // 1000 * 60 * 60 * 24 = days since epoch
@@ -16,7 +16,7 @@ registerUnbound("cold-age-class", function(dt, params) {
 
   // Show heat on age
   var nowDays = daysSinceEpoch(startDate),
-    epochDays = daysSinceEpoch(new Date(dt));
+      epochDays = daysSinceEpoch(new Date(dt));
 
   if (nowDays - epochDays > Discourse.SiteSettings.cold_age_days_high)
     return className + " coldmap-high";
@@ -28,4 +28,4 @@ registerUnbound("cold-age-class", function(dt, params) {
   return className;
 });
 
-export { daysSinceEpoch };
+export {daysSinceEpoch};

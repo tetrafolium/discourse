@@ -18,9 +18,7 @@ export default RestrictedUserRoute.extend({
   },
 
   setupController: function(controller, user) {
-    controller.setProperties({
-      model: user,
-      newUsername: user.get("username")
-    });
+    controller.setProperties(
+      { model: user, newUsername: user.get("username") });
   }
 });

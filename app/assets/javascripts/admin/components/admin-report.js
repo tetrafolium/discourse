@@ -1,14 +1,14 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { makeArray } from "discourse-common/lib/helpers";
-import { alias, or, and, reads, equal, notEmpty } from "@ember/object/computed";
+import {makeArray} from "discourse-common/lib/helpers";
+import {alias, or, and, reads, equal, notEmpty} from "@ember/object/computed";
 import EmberObject from "@ember/object";
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import Component from "@ember/component";
 import ReportLoader from "discourse/lib/reports-loader";
-import { exportEntity } from "discourse/lib/export-csv";
-import { outputExportResult } from "discourse/lib/export-result";
-import { isNumeric } from "discourse/lib/utilities";
-import Report, { SCHEMA_VERSION } from "admin/models/report";
+import {exportEntity} from "discourse/lib/export-csv";
+import {outputExportResult} from "discourse/lib/export-result";
+import {isNumeric} from "discourse/lib/utilities";
+import Report, {SCHEMA_VERSION} from "admin/models/report";
 import ENV from "discourse-common/config/environment";
 
 const TABLE_OPTIONS = {
@@ -42,38 +42,26 @@ function collapseWeekly(data, average) {
 
 export default Component.extend({
   classNameBindings: ["isEnabled", "isLoading", "dasherizedDataSourceName"],
-  classNames: ["admin-report"],
-  isEnabled: true,
-  disabledLabel: I18n.t("admin.dashboard.disabled"),
-  isLoading: false,
-  rateLimitationString: null,
-  dataSourceName: null,
-  report: null,
-  model: null,
-  reportOptions: null,
-  forcedModes: null,
-  showAllReportsLink: false,
-  filters: null,
-  startDate: null,
-  endDate: null,
-  showTrend: false,
-  showHeader: true,
-  showTitle: true,
-  showFilteringUI: false,
-  showDatesOptions: alias("model.dates_filtering"),
-  showRefresh: or("showDatesOptions", "model.available_filters.length"),
-  shouldDisplayTrend: and("showTrend", "model.prev_period"),
+    classNames: ["admin-report"], isEnabled: true,
+    disabledLabel: I18n.t("admin.dashboard.disabled"), isLoading: false,
+    rateLimitationString: null, dataSourceName: null, report: null, model: null,
+    reportOptions: null, forcedModes: null, showAllReportsLink: false,
+    filters: null, startDate: null, endDate: null, showTrend: false,
+    showHeader: true, showTitle: true, showFilteringUI: false,
+    showDatesOptions: alias("model.dates_filtering"),
+    showRefresh: or("showDatesOptions", "model.available_filters.length"),
+    shouldDisplayTrend: and("showTrend", "model.prev_period"),
 
-  init() {
+    init() {
     this._super(...arguments);
 
     this._reports = [];
-  },
+  }
+  ,
 
-  startDate: reads("filters.startDate"),
-  endDate: reads("filters.endDate"),
+    startDate: reads("filters.startDate"), endDate: reads("filters.endDate"),
 
-  didReceiveAttrs() {
+    didReceiveAttrs() {
     this._super(...arguments);
 
     if (this.report) {
@@ -81,177 +69,167 @@ export default Component.extend({
     } else if (this.dataSourceName) {
       this._fetchReport();
     }
-  },
+  }
+  ,
 
-  showError: or("showTimeoutError", "showExceptionError", "showNotFoundError"),
-  showNotFoundError: equal("model.error", "not_found"),
-  showTimeoutError: equal("model.error", "timeout"),
-  showExceptionError: equal("model.error", "exception"),
+    showError:
+      or("showTimeoutError", "showExceptionError", "showNotFoundError"),
+    showNotFoundError: equal("model.error", "not_found"),
+    showTimeoutError: equal("model.error", "timeout"),
+    showExceptionError: equal("model.error", "exception"),
 
-  hasData: notEmpty("model.data"),
+    hasData: notEmpty("model.data"),
 
-  @discourseComputed("dataSourceName", "model.type")
-  dasherizedDataSourceName(dataSourceName, type) {
+    @discourseComputed("dataSourceName", "model.type")
+    dasherizedDataSourceName(dataSourceName, type) {
     return (dataSourceName || type || "undefined").replace(/_/g, "-");
-  },
+  }
+  ,
 
-  @discourseComputed("dataSourceName", "model.type")
-  dataSource(dataSourceName, type) {
+    @discourseComputed("dataSourceName",
+                       "model.type") dataSource(dataSourceName, type) {
     dataSourceName = dataSourceName || type;
     return `/admin/reports/${dataSourceName}`;
-  },
+  }
+  ,
 
-  @discourseComputed("displayedModes.length")
-  showModes(displayedModesLength) {
+    @discourseComputed("displayedModes.length")
+    showModes(displayedModesLength) {
     return displayedModesLength > 1;
-  },
+  }
+  ,
 
-  @discourseComputed("currentMode", "model.modes", "forcedModes")
-  displayedModes(currentMode, reportModes, forcedModes) {
+    @discourseComputed("currentMode", "model.modes", "forcedModes")
+    displayedModes(currentMode, reportModes, forcedModes) {
     const modes = forcedModes ? forcedModes.split(",") : reportModes;
 
     return makeArray(modes).map(mode => {
       const base = `btn-default mode-btn ${mode}`;
       const cssClass = currentMode === mode ? `${base} is-current` : base;
 
-      return {
-        mode,
-        cssClass,
-        icon: mode === "table" ? "table" : "signal"
-      };
+      return { mode, cssClass, icon: mode === "table" ? "table" : "signal" };
     });
-  },
+  }
+  ,
 
-  @discourseComputed("currentMode")
-  modeComponent(currentMode) {
+    @discourseComputed("currentMode") modeComponent(currentMode) {
     return `admin-report-${currentMode.replace(/_/g, "-")}`;
-  },
+  }
+  ,
 
-  @discourseComputed("startDate")
-  normalizedStartDate(startDate) {
+    @discourseComputed("startDate") normalizedStartDate(startDate) {
     return startDate && typeof startDate.isValid === "function"
-      ? moment
-          .utc(startDate.toISOString())
-          .locale("en")
-          .format("YYYYMMDD")
-      : moment(startDate)
-          .locale("en")
-          .format("YYYYMMDD");
-  },
+             ? moment.utc(startDate.toISOString())
+                 .locale("en")
+                 .format("YYYYMMDD")
+             : moment(startDate).locale("en").format("YYYYMMDD");
+  }
+  ,
 
-  @discourseComputed("endDate")
-  normalizedEndDate(endDate) {
+    @discourseComputed("endDate") normalizedEndDate(endDate) {
     return endDate && typeof endDate.isValid === "function"
-      ? moment
-          .utc(endDate.toISOString())
-          .locale("en")
-          .format("YYYYMMDD")
-      : moment(endDate)
-          .locale("en")
-          .format("YYYYMMDD");
-  },
+             ? moment.utc(endDate.toISOString()).locale("en").format("YYYYMMDD")
+             : moment(endDate).locale("en").format("YYYYMMDD");
+  }
+  ,
 
-  @discourseComputed(
-    "dataSourceName",
-    "normalizedStartDate",
-    "normalizedEndDate",
-    "filters.customFilters"
-  )
-  reportKey(dataSourceName, startDate, endDate, customFilters) {
+    @discourseComputed("dataSourceName", "normalizedStartDate",
+                       "normalizedEndDate", "filters.customFilters")
+    reportKey(dataSourceName, startDate, endDate, customFilters) {
     if (!dataSourceName || !startDate || !endDate) return null;
 
     let reportKey = "reports:";
-    reportKey += [
-      dataSourceName,
-      ENV.environment === "test" ? "start" : startDate.replace(/-/g, ""),
-      ENV.environment === "test" ? "end" : endDate.replace(/-/g, ""),
-      "[:prev_period]",
-      this.get("reportOptions.table.limit"),
-      customFilters
-        ? JSON.stringify(customFilters, (key, value) =>
-            isNumeric(value) ? value.toString() : value
-          )
-        : null,
-      SCHEMA_VERSION
-    ]
-      .filter(x => x)
-      .map(x => x.toString())
-      .join(":");
+    reportKey +=
+      [
+        dataSourceName,
+        ENV.environment === "test" ? "start" : startDate.replace(/-/g, ""),
+        ENV.environment === "test" ? "end" : endDate.replace(/-/g, ""),
+        "[:prev_period]", this.get("reportOptions.table.limit"),
+        customFilters
+          ? JSON.stringify(customFilters, (key, value) => isNumeric(value)
+                                                            ? value.toString()
+                                                            : value)
+          : null,
+        SCHEMA_VERSION
+      ].filter(x => x)
+        .map(x => x.toString())
+        .join(":");
 
     return reportKey;
-  },
+  }
+  ,
 
-  actions: {
-    onChangeEndDate(date) {
-      const startDate = moment(this.startDate);
-      const newEndDate = moment(date).endOf("day");
+    actions: {
+      onChangeEndDate(date) {
+        const startDate = moment(this.startDate);
+        const newEndDate = moment(date).endOf("day");
 
-      if (newEndDate.isSameOrAfter(startDate)) {
-        this.set("endDate", newEndDate.format("YYYY-MM-DD"));
-      } else {
-        this.set("endDate", startDate.endOf("day").format("YYYY-MM-DD"));
+        if (newEndDate.isSameOrAfter(startDate)) {
+          this.set("endDate", newEndDate.format("YYYY-MM-DD"));
+        } else {
+          this.set("endDate", startDate.endOf("day").format("YYYY-MM-DD"));
+        }
+
+        this.send("refreshReport");
+      },
+
+      onChangeStartDate(date) {
+        const endDate = moment(this.endDate);
+        const newStartDate = moment(date).startOf("day");
+
+        if (newStartDate.isSameOrBefore(endDate)) {
+          this.set("startDate", newStartDate.format("YYYY-MM-DD"));
+        } else {
+          this.set("startDate", endDate.startOf("day").format("YYYY-MM-DD"));
+        }
+
+        this.send("refreshReport");
+      },
+
+      applyFilter(id, value) {
+        let customFilters = this.get("filters.customFilters") || {};
+
+        if (typeof value === "undefined") {
+          delete customFilters[id];
+        } else {
+          customFilters[id] = value;
+        }
+
+        this.attrs.onRefresh({
+          type: this.get("model.type"),
+          startDate: this.startDate,
+          endDate: this.endDate,
+          filters: customFilters
+        });
+      },
+
+      refreshReport() {
+        this.attrs.onRefresh({
+          type: this.get("model.type"),
+          startDate: this.startDate,
+          endDate: this.endDate,
+          filters: this.get("filters.customFilters")
+        });
+      },
+
+      exportCsv() {
+        const customFilters = this.get("filters.customFilters") || {};
+
+        exportEntity("report", {
+          name: this.get("model.type"),
+          start_date: this.startDate,
+          end_date: this.endDate,
+          category_id: customFilters.category,
+          group_id: customFilters.group
+        }).then(outputExportResult);
+      },
+
+      changeMode(mode) {
+        this.set("currentMode", mode);
       }
-
-      this.send("refreshReport");
     },
 
-    onChangeStartDate(date) {
-      const endDate = moment(this.endDate);
-      const newStartDate = moment(date).startOf("day");
-
-      if (newStartDate.isSameOrBefore(endDate)) {
-        this.set("startDate", newStartDate.format("YYYY-MM-DD"));
-      } else {
-        this.set("startDate", endDate.startOf("day").format("YYYY-MM-DD"));
-      }
-
-      this.send("refreshReport");
-    },
-
-    applyFilter(id, value) {
-      let customFilters = this.get("filters.customFilters") || {};
-
-      if (typeof value === "undefined") {
-        delete customFilters[id];
-      } else {
-        customFilters[id] = value;
-      }
-
-      this.attrs.onRefresh({
-        type: this.get("model.type"),
-        startDate: this.startDate,
-        endDate: this.endDate,
-        filters: customFilters
-      });
-    },
-
-    refreshReport() {
-      this.attrs.onRefresh({
-        type: this.get("model.type"),
-        startDate: this.startDate,
-        endDate: this.endDate,
-        filters: this.get("filters.customFilters")
-      });
-    },
-
-    exportCsv() {
-      const customFilters = this.get("filters.customFilters") || {};
-
-      exportEntity("report", {
-        name: this.get("model.type"),
-        start_date: this.startDate,
-        end_date: this.endDate,
-        category_id: customFilters.category,
-        group_id: customFilters.group
-      }).then(outputExportResult);
-    },
-
-    changeMode(mode) {
-      this.set("currentMode", mode);
-    }
-  },
-
-  _computeReport() {
+    _computeReport() {
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -280,9 +258,8 @@ export default Component.extend({
     } else {
       const reportKey = this.reportKey;
 
-      report = sort(
-        filteredReports.filter(r => r.report_key.includes(reportKey))
-      )[0];
+      report =
+        sort(filteredReports.filter(r => r.report_key.includes(reportKey)))[0];
 
       if (!report) return;
     }
@@ -292,20 +269,19 @@ export default Component.extend({
     }
 
     this._renderReport(report, this.forcedModes, this.currentMode);
-  },
+  }
+  ,
 
-  _renderReport(report, forcedModes, currentMode) {
+    _renderReport(report, forcedModes, currentMode) {
     const modes = forcedModes ? forcedModes.split(",") : report.modes;
     currentMode = currentMode || (modes ? modes[0] : null);
 
-    this.setProperties({
-      model: report,
-      currentMode,
-      options: this._buildOptions(currentMode)
-    });
-  },
+    this.setProperties(
+      { model: report, currentMode, options: this._buildOptions(currentMode) });
+  }
+  ,
 
-  _fetchReport() {
+    _fetchReport() {
     this._super(...arguments);
 
     this.setProperties({ isLoading: true, rateLimitationString: null });
@@ -321,10 +297,8 @@ export default Component.extend({
         this.set("isLoading", false);
 
         if (response === 429) {
-          this.set(
-            "rateLimitationString",
-            I18n.t("admin.dashboard.too_many_requests")
-          );
+          this.set("rateLimitationString",
+                   I18n.t("admin.dashboard.too_many_requests"));
         } else if (response === 500) {
           this.set("model.error", "exception");
         } else if (response) {
@@ -335,21 +309,20 @@ export default Component.extend({
 
       ReportLoader.enqueue(this.dataSourceName, payload.data, callback);
     });
-  },
+  }
+  ,
 
-  _buildPayload(facets) {
+    _buildPayload(facets) {
     let payload = { data: { cache: true, facets } };
 
     if (this.startDate) {
-      payload.data.start_date = moment
-        .utc(this.startDate, "YYYY-MM-DD")
-        .toISOString();
+      payload.data.start_date =
+        moment.utc(this.startDate, "YYYY-MM-DD").toISOString();
     }
 
     if (this.endDate) {
-      payload.data.end_date = moment
-        .utc(this.endDate, "YYYY-MM-DD")
-        .toISOString();
+      payload.data.end_date =
+        moment.utc(this.endDate, "YYYY-MM-DD").toISOString();
     }
 
     if (this.get("reportOptions.table.limit")) {
@@ -361,23 +334,23 @@ export default Component.extend({
     }
 
     return payload;
-  },
+  }
+  ,
 
-  _buildOptions(mode) {
+    _buildOptions(mode) {
     if (mode === "table") {
       const tableOptions = JSON.parse(JSON.stringify(TABLE_OPTIONS));
       return EmberObject.create(
-        Object.assign(tableOptions, this.get("reportOptions.table") || {})
-      );
+        Object.assign(tableOptions, this.get("reportOptions.table") || {}));
     } else {
       const chartOptions = JSON.parse(JSON.stringify(CHART_OPTIONS));
       return EmberObject.create(
-        Object.assign(chartOptions, this.get("reportOptions.chart") || {})
-      );
+        Object.assign(chartOptions, this.get("reportOptions.chart") || {}));
     }
-  },
+  }
+  ,
 
-  _loadReport(jsonReport) {
+    _loadReport(jsonReport) {
     Report.fillMissingDates(jsonReport, { filledField: "chartData" });
 
     if (jsonReport.chartData && jsonReport.modes[0] === "stacked_chart") {
@@ -394,10 +367,8 @@ export default Component.extend({
         }
       });
     } else if (jsonReport.chartData && jsonReport.chartData.length > 40) {
-      jsonReport.chartData = collapseWeekly(
-        jsonReport.chartData,
-        jsonReport.average
-      );
+      jsonReport.chartData =
+        collapseWeekly(jsonReport.chartData, jsonReport.average);
     }
 
     if (jsonReport.prev_data) {
@@ -409,10 +380,8 @@ export default Component.extend({
       });
 
       if (jsonReport.prevChartData && jsonReport.prevChartData.length > 40) {
-        jsonReport.prevChartData = collapseWeekly(
-          jsonReport.prevChartData,
-          jsonReport.average
-        );
+        jsonReport.prevChartData =
+          collapseWeekly(jsonReport.prevChartData, jsonReport.average);
       }
     }
 

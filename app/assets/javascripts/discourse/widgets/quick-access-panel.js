@@ -1,8 +1,8 @@
 import Session from "discourse/models/session";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { headerHeight } from "discourse/components/site-header";
-import { Promise } from "rsvp";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {headerHeight} from "discourse/components/site-header";
+import {Promise} from "rsvp";
 
 // even a 2 liner notification should be under 50px in default view
 const AVERAGE_ITEM_HEIGHT = 50;
@@ -70,9 +70,8 @@ export default createWidget("quick-access-panel", {
 
   estimateItemLimit() {
     // Estimate (poorly) the amount of notifications to return.
-    let limit = Math.round(
-      ($(window).height() - headerHeight() - PADDING) / AVERAGE_ITEM_HEIGHT
-    );
+    let limit = Math.round(($(window).height() - headerHeight() - PADDING) /
+                           AVERAGE_ITEM_HEIGHT);
 
     // We REALLY don't want to be asking for negative counts of notifications
     // less than 5 is also not that useful.
@@ -101,10 +100,9 @@ export default createWidget("quick-access-panel", {
         state.loading = false;
         state.loaded = true;
         this.newItemsLoaded();
-        this.sendWidgetAction("itemsLoaded", {
-          hasUnread: this.hasUnread(),
-          markRead: () => this.markRead()
-        });
+        this.sendWidgetAction(
+          "itemsLoaded",
+          { hasUnread: this.hasUnread(), markRead: () => this.markRead() });
         this.scheduleRerender();
       });
   },
@@ -119,20 +117,15 @@ export default createWidget("quick-access-panel", {
     }
 
     const items = this.getItems().length
-      ? this.getItems().map(item => this.itemHtml(item))
-      : [this.emptyStatePlaceholderItem()];
+                    ? this.getItems().map(item => this.itemHtml(item))
+                    : [this.emptyStatePlaceholderItem()];
 
     if (this.hasMore()) {
-      items.push(
-        h(
-          "li.read.last.show-all",
-          this.attach("link", {
-            title: "view_all",
-            icon: "chevron-down",
-            href: this.showAllHref()
-          })
-        )
-      );
+      items.push(h("li.read.last.show-all", this.attach("link", {
+        title: "view_all",
+        icon: "chevron-down",
+        href: this.showAllHref()
+      })));
     }
 
     return [h("ul", items)];

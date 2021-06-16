@@ -1,11 +1,11 @@
-import { createWidget } from "discourse/widgets/widget";
+import {createWidget} from "discourse/widgets/widget";
 import RawHtml from "discourse/widgets/raw-html";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { h } from "virtual-dom";
-import { avatarFor } from "discourse/widgets/post";
-import { userPath } from "discourse/lib/url";
-import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import { computed } from "@ember/object";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {h} from "virtual-dom";
+import {avatarFor} from "discourse/widgets/post";
+import {userPath} from "discourse/lib/url";
+import {autoUpdatingRelativeAge} from "discourse/lib/formatter";
+import {computed} from "@ember/object";
 
 export function actionDescriptionHtml(actionCode, createdAt, username) {
   const dt = new Date(createdAt);
@@ -79,48 +79,36 @@ export default createWidget("post-small-action", {
     const contents = [];
 
     if (attrs.canDelete) {
-      contents.push(
-        this.attach("button", {
-          className: "small-action-delete",
-          icon: "trash-alt",
-          action: "deletePost",
-          title: "post.controls.delete"
-        })
-      );
+      contents.push(this.attach("button", {
+        className: "small-action-delete",
+        icon: "trash-alt",
+        action: "deletePost",
+        title: "post.controls.delete"
+      }));
     }
 
     if (attrs.canEdit) {
-      contents.push(
-        this.attach("button", {
-          className: "small-action-edit",
-          icon: "pencil-alt",
-          action: "editPost",
-          title: "post.controls.edit"
-        })
-      );
+      contents.push(this.attach("button", {
+        className: "small-action-edit",
+        icon: "pencil-alt",
+        action: "editPost",
+        title: "post.controls.edit"
+      }));
     }
 
-    contents.push(
-      avatarFor.call(this, "small", {
-        template: attrs.avatar_template,
-        username: attrs.username,
-        url: attrs.usernameUrl
-      })
-    );
+    contents.push(avatarFor.call(this, "small", {
+      template: attrs.avatar_template,
+      username: attrs.username,
+      url: attrs.usernameUrl
+    }));
 
     const description = actionDescriptionHtml(
-      attrs.actionCode,
-      new Date(attrs.created_at),
-      attrs.actionCodeWho
-    );
+      attrs.actionCode, new Date(attrs.created_at), attrs.actionCodeWho);
     contents.push(new RawHtml({ html: `<p>${description}</p>` }));
 
     if (attrs.cooked) {
-      contents.push(
-        new RawHtml({
-          html: `<div class='custom-message'>${attrs.cooked}</div>`
-        })
-      );
+      contents.push(new RawHtml(
+        { html: `<div class='custom-message'>${attrs.cooked}</div>` }));
     }
 
     return [

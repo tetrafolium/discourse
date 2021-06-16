@@ -18,7 +18,7 @@ export default {
     screenTrack.keyValueStore = keyValueStore;
 
     // Preconditions
-    if (user) return; // must not be logged in
+    if (user) return;                                // must not be logged in
     if (keyValueStore.get("anon-cta-never")) return; // "never show again"
     if (!siteSettings.allow_new_registrations) return;
     if (siteSettings.invite_only) return;

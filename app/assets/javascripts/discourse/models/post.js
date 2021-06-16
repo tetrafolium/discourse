@@ -1,18 +1,18 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import EmberObject, { computed, get } from "@ember/object";
-import { isEmpty } from "@ember/utils";
-import { equal, and, or, not } from "@ember/object/computed";
-import { ajax } from "discourse/lib/ajax";
+import EmberObject, {computed, get} from "@ember/object";
+import {isEmpty} from "@ember/utils";
+import {equal, and, or, not} from "@ember/object/computed";
+import {ajax} from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import ActionSummary from "discourse/models/action-summary";
-import { propertyEqual } from "discourse/lib/computed";
+import {propertyEqual} from "discourse/lib/computed";
 import Quote from "discourse/lib/quote";
-import { postUrl } from "discourse/lib/utilities";
-import { cookAsync } from "discourse/lib/text";
-import { userPath } from "discourse/lib/url";
+import {postUrl} from "discourse/lib/utilities";
+import {cookAsync} from "discourse/lib/text";
+import {userPath} from "discourse/lib/url";
 import Composer from "discourse/models/composer";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import Site from "discourse/models/site";
 import User from "discourse/models/user";
 import showModal from "discourse/lib/show-modal";
@@ -30,8 +30,7 @@ const Post = RestModel.extend({
     }
   }),
 
-  @discourseComputed("url")
-  shareUrl(url) {
+    @discourseComputed("url") shareUrl(url) {
     const user = User.current();
     const userSuffix = user ? `?u=${user.username_lower}` : "";
 
@@ -40,96 +39,96 @@ const Post = RestModel.extend({
     } else {
       return url + userSuffix;
     }
-  },
+  }
+  ,
 
-  new_user: equal("trust_level", 0),
-  firstPost: equal("post_number", 1),
+    new_user: equal("trust_level", 0), firstPost: equal("post_number", 1),
 
-  // Posts can show up as deleted if the topic is deleted
-  deletedViaTopic: and("firstPost", "topic.deleted_at"),
-  deleted: or("deleted_at", "deletedViaTopic"),
-  notDeleted: not("deleted"),
+    // Posts can show up as deleted if the topic is deleted
+    deletedViaTopic: and("firstPost", "topic.deleted_at"),
+    deleted: or("deleted_at", "deletedViaTopic"), notDeleted: not("deleted"),
 
-  @discourseComputed("name", "username")
-  showName(name, username) {
-    return (
-      name && name !== username && Discourse.SiteSettings.display_name_on_posts
-    );
-  },
+    @discourseComputed("name", "username") showName(name, username) {
+    return (name && name !== username &&
+            Discourse.SiteSettings.display_name_on_posts);
+  }
+  ,
 
-  @discourseComputed("firstPost", "deleted_by", "topic.deleted_by")
-  postDeletedBy(firstPost, deletedBy, topicDeletedBy) {
+    @discourseComputed("firstPost", "deleted_by", "topic.deleted_by")
+    postDeletedBy(firstPost, deletedBy, topicDeletedBy) {
     return firstPost ? topicDeletedBy : deletedBy;
-  },
+  }
+  ,
 
-  @discourseComputed("firstPost", "deleted_at", "topic.deleted_at")
-  postDeletedAt(firstPost, deletedAt, topicDeletedAt) {
+    @discourseComputed("firstPost", "deleted_at", "topic.deleted_at")
+    postDeletedAt(firstPost, deletedAt, topicDeletedAt) {
     return firstPost ? topicDeletedAt : deletedAt;
-  },
+  }
+  ,
 
-  @discourseComputed("post_number", "topic_id", "topic.slug")
-  url(post_number, topic_id, topicSlug) {
-    return postUrl(
-      topicSlug || this.topic_slug,
-      topic_id || this.get("topic.id"),
-      post_number
-    );
-  },
+    @discourseComputed("post_number", "topic_id",
+                       "topic.slug") url(post_number, topic_id, topicSlug) {
+    return postUrl(topicSlug || this.topic_slug,
+                   topic_id || this.get("topic.id"), post_number);
+  }
+  ,
 
-  // Don't drop the /1
-  @discourseComputed("post_number", "url")
-  urlWithNumber(postNumber, baseUrl) {
+    // Don't drop the /1
+    @discourseComputed("post_number", "url") urlWithNumber(postNumber,
+                                                           baseUrl) {
     return postNumber === 1 ? `${baseUrl}/1` : baseUrl;
-  },
+  }
+  ,
 
-  @discourseComputed("username")
-  usernameUrl: userPath,
+    @discourseComputed("username") usernameUrl: userPath,
 
-  topicOwner: propertyEqual("topic.details.created_by.id", "user_id"),
+    topicOwner: propertyEqual("topic.details.created_by.id", "user_id"),
 
-  updatePostField(field, value) {
+    updatePostField(field, value) {
     const data = {};
     data[field] = value;
 
     return ajax(`/posts/${this.id}/${field}`, { type: "PUT", data })
       .then(() => this.set(field, value))
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  @discourseComputed("link_counts.@each.internal")
-  internalLinks() {
+    @discourseComputed("link_counts.@each.internal") internalLinks() {
     if (isEmpty(this.link_counts)) return null;
 
     return this.link_counts.filterBy("internal").filterBy("title");
-  },
+  }
+  ,
 
-  @discourseComputed("actions_summary.@each.can_act")
-  flagsAvailable() {
+    @discourseComputed("actions_summary.@each.can_act") flagsAvailable() {
     // TODO: Investigate why `this.site` is sometimes null when running
     // Search - Search with context
     if (!this.site) {
       return [];
     }
 
-    return this.site.flagTypes.filter(item =>
-      this.get(`actionByName.${item.name_key}.can_act`)
-    );
-  },
+    return this.site.flagTypes.filter(
+      item => this.get(`actionByName.${item.name_key}.can_act`));
+  }
+  ,
 
-  afterUpdate(res) {
+    afterUpdate(res) {
     if (res.category) {
       this.site.updateCategory(res.category);
     }
-  },
+  }
+  ,
 
-  updateProperties() {
+    updateProperties() {
     return {
       post: { raw: this.raw, edit_reason: this.editReason },
       image_sizes: this.imageSizes
     };
-  },
+  }
+  ,
 
-  createProperties() {
+    createProperties() {
     // composer only used once, defer the dependency
     const data = this.getProperties(Composer.serializedFieldsForCreate());
     data.reply_to_post_number = this.reply_to_post_number;
@@ -140,32 +139,27 @@ const Post = RestModel.extend({
     // Put the metaData into the request
     if (metaData) {
       data.meta_data = {};
-      Object.keys(metaData).forEach(
-        key => (data.meta_data[key] = metaData[key])
-      );
+      Object.keys(metaData).forEach(key =>
+                                      (data.meta_data[key] = metaData[key]));
     }
 
     return data;
-  },
+  }
+  ,
 
-  // Expands the first post's content, if embedded and shortened.
-  expand() {
+    // Expands the first post's content, if embedded and shortened.
+    expand() {
     return ajax(`/posts/${this.id}/expand-embed`).then(post => {
-      this.set(
-        "cooked",
-        `<section class="expanded-embed">${post.cooked}</section>`
-      );
+      this.set("cooked",
+               `<section class="expanded-embed">${post.cooked}</section>`);
     });
-  },
+  }
+  ,
 
-  // Recover a deleted post
-  recover() {
-    const initProperties = this.getProperties(
-      "deleted_at",
-      "deleted_by",
-      "user_deleted",
-      "can_delete"
-    );
+    // Recover a deleted post
+    recover() {
+    const initProperties = this.getProperties("deleted_at", "deleted_by",
+                                              "user_deleted", "can_delete");
 
     this.setProperties({
       deleted_at: null,
@@ -174,10 +168,7 @@ const Post = RestModel.extend({
       can_delete: false
     });
 
-    return ajax(`/posts/${this.id}/recover`, {
-      type: "PUT",
-      cache: false
-    })
+    return ajax(`/posts/${this.id}/recover`, { type: "PUT", cache: false })
       .then(data => {
         this.setProperties({
           cooked: data.cooked,
@@ -191,21 +182,20 @@ const Post = RestModel.extend({
         popupAjaxError(error);
         this.setProperties(initProperties);
       });
-  },
+  }
+  ,
 
-  /**
+    /**
     Changes the state of the post to be deleted. Does not call the server, that should be
     done elsewhere.
   **/
-  setDeletedState(deletedBy) {
+    setDeletedState(deletedBy) {
     let promise;
     this.set("oldCooked", this.cooked);
 
     // Moderators can delete posts. Users can only trigger a deleted at message, unless delete_removed_posts_after is 0.
-    if (
-      deletedBy.staff ||
-      Discourse.SiteSettings.delete_removed_posts_after === 0
-    ) {
+    if (deletedBy.staff ||
+        Discourse.SiteSettings.delete_removed_posts_after === 0) {
       this.setProperties({
         deleted_at: new Date(),
         deleted_by: deletedBy,
@@ -213,35 +203,33 @@ const Post = RestModel.extend({
         can_recover: true
       });
     } else {
-      const key =
-        this.post_number === 1
-          ? "topic.deleted_by_author"
-          : "post.deleted_by_author";
-      promise = cookAsync(
-        I18n.t(key, {
-          count: Discourse.SiteSettings.delete_removed_posts_after
-        })
-      ).then(cooked => {
-        this.setProperties({
-          cooked: cooked,
-          can_delete: false,
-          version: this.version + 1,
-          can_recover: true,
-          can_edit: false,
-          user_deleted: true
-        });
-      });
+      const key = this.post_number === 1 ? "topic.deleted_by_author"
+                                         : "post.deleted_by_author";
+      promise = cookAsync(I18n.t(key, {
+                  count: Discourse.SiteSettings.delete_removed_posts_after
+                }))
+                  .then(cooked => {
+                    this.setProperties({
+                      cooked: cooked,
+                      can_delete: false,
+                      version: this.version + 1,
+                      can_recover: true,
+                      can_edit: false,
+                      user_deleted: true
+                    });
+                  });
     }
 
     return promise || Promise.resolve();
-  },
+  }
+  ,
 
-  /**
+    /**
     Changes the state of the post to NOT be deleted. Does not call the server.
     This can only be called after setDeletedState was called, but the delete
     failed on the server.
   **/
-  undoDeleteState() {
+    undoDeleteState() {
     if (this.oldCooked) {
       this.setProperties({
         deleted_at: null,
@@ -253,25 +241,25 @@ const Post = RestModel.extend({
         user_deleted: false
       });
     }
-  },
+  }
+  ,
 
-  destroy(deletedBy) {
+    destroy(deletedBy) {
     return this.setDeletedState(deletedBy).then(() => {
-      return ajax("/posts/" + this.id, {
-        data: { context: window.location.pathname },
-        type: "DELETE"
-      });
+      return ajax(
+        "/posts/" + this.id,
+        { data: { context: window.location.pathname }, type: "DELETE" });
     });
-  },
+  }
+  ,
 
-  /**
+    /**
     Updates a post from another's attributes. This will normally happen when a post is loading but
     is already found in an identity map.
   **/
-  updateFromPost(otherPost) {
+    updateFromPost(otherPost) {
     Object.keys(otherPost).forEach(key => {
-      let value = otherPost[key],
-        oldValue = this[key];
+      let value = otherPost[key], oldValue = this[key];
 
       if (!value) {
         value = null;
@@ -284,9 +272,8 @@ const Post = RestModel.extend({
       if (typeof value !== "function" && oldValue !== value) {
         // wishing for an identity map
         if (key === "reply_to_user" && value && oldValue) {
-          skip =
-            value.username === oldValue.username ||
-            get(value, "username") === get(oldValue, "username");
+          skip = value.username === oldValue.username ||
+                 get(value, "username") === get(oldValue, "username");
         }
 
         if (!skip) {
@@ -294,23 +281,27 @@ const Post = RestModel.extend({
         }
       }
     });
-  },
+  }
+  ,
 
-  expandHidden() {
+    expandHidden() {
     return ajax(`/posts/${this.id}/cooked.json`).then(result => {
       this.setProperties({ cooked: result.cooked, cooked_hidden: false });
     });
-  },
+  }
+  ,
 
-  rebake() {
+    rebake() {
     return ajax(`/posts/${this.id}/rebake`, { type: "PUT" });
-  },
+  }
+  ,
 
-  unhide() {
+    unhide() {
     return ajax(`/posts/${this.id}/unhide`, { type: "PUT" });
-  },
+  }
+  ,
 
-  toggleBookmark() {
+    toggleBookmark() {
     let bookmarkedTopic;
 
     this.toggleProperty("bookmarked");
@@ -334,15 +325,14 @@ const Post = RestModel.extend({
         }
         throw new Error(error);
       });
-  },
+  }
+  ,
 
-  toggleBookmarkWithReminder() {
+    toggleBookmarkWithReminder() {
     this.toggleProperty("bookmarked_with_reminder");
     if (this.bookmarked_with_reminder) {
       let controller = showModal("bookmark", {
-        model: {
-          postId: this.id
-        },
+        model: { postId: this.id },
         title: "post.bookmarks.create",
         modalClass: "bookmark-with-reminder"
       });
@@ -361,10 +351,8 @@ const Post = RestModel.extend({
         }
       });
     } else {
-      this.setProperties({
-        bookmark_reminder_at: null,
-        bookmark_reminder_type: null
-      });
+      this.setProperties(
+        { bookmark_reminder_at: null, bookmark_reminder_type: null });
       return Post.destroyBookmark(this.id)
         .then(result => {
           this.set("topic.bookmarked", result.topic_bookmarked);
@@ -375,19 +363,20 @@ const Post = RestModel.extend({
           throw new Error(error);
         });
     }
-  },
+  }
+  ,
 
-  updateActionsSummary(json) {
+    updateActionsSummary(json) {
     if (json && json.id === this.id) {
       json = Post.munge(json);
       this.set("actions_summary", json.actions_summary);
     }
-  },
+  }
+  ,
 
-  revertToRevision(version) {
-    return ajax(`/posts/${this.id}/revisions/${version}/revert`, {
-      type: "PUT"
-    });
+    revertToRevision(version) {
+    return ajax(`/posts/${this.id}/revisions/${version}/revert`,
+                { type: "PUT" });
   }
 });
 
@@ -420,16 +409,12 @@ Post.reopenClass({
   },
 
   updateBookmark(postId, bookmarked) {
-    return ajax(`/posts/${postId}/bookmark`, {
-      type: "PUT",
-      data: { bookmarked }
-    });
+    return ajax(`/posts/${postId}/bookmark`,
+                { type: "PUT", data: { bookmarked } });
   },
 
   destroyBookmark(postId) {
-    return ajax(`/posts/${postId}/bookmark`, {
-      type: "DELETE"
-    });
+    return ajax(`/posts/${postId}/bookmark`, { type: "DELETE" });
   },
 
   deleteMany(post_ids, { agreeWithFirstReplyFlag = true } = {}) {
@@ -440,28 +425,20 @@ Post.reopenClass({
   },
 
   mergePosts(post_ids) {
-    return ajax("/posts/merge_posts", {
-      type: "PUT",
-      data: { post_ids }
-    });
+    return ajax("/posts/merge_posts", { type: "PUT", data: { post_ids } });
   },
 
   loadRevision(postId, version) {
-    return ajax(`/posts/${postId}/revisions/${version}.json`).then(result =>
-      EmberObject.create(result)
-    );
+    return ajax(`/posts/${postId}/revisions/${version}.json`)
+      .then(result => EmberObject.create(result));
   },
 
   hideRevision(postId, version) {
-    return ajax(`/posts/${postId}/revisions/${version}/hide`, {
-      type: "PUT"
-    });
+    return ajax(`/posts/${postId}/revisions/${version}/hide`, { type: "PUT" });
   },
 
   showRevision(postId, version) {
-    return ajax(`/posts/${postId}/revisions/${version}/show`, {
-      type: "PUT"
-    });
+    return ajax(`/posts/${postId}/revisions/${version}/show`, { type: "PUT" });
   },
 
   loadQuote(postId) {

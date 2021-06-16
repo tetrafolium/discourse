@@ -1,15 +1,17 @@
 import EmberObject from "@ember/object";
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
 import showModal from "discourse/lib/show-modal";
 import OpenComposer from "discourse/mixins/open-composer";
 import CategoryList from "discourse/models/category-list";
-import { defaultHomepage } from "discourse/lib/utilities";
+import {defaultHomepage} from "discourse/lib/utilities";
 import TopicList from "discourse/models/topic-list";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import PreloadStore from "preload-store";
-import { searchPriorities } from "discourse/components/concerns/category-search-priorities";
-import { hash } from "rsvp";
+import {
+  searchPriorities
+} from "discourse/components/concerns/category-search-priorities";
+import {hash} from "rsvp";
 import Site from "discourse/models/site";
 
 const DiscoveryCategoriesRoute = DiscourseRoute.extend(OpenComposer, {
@@ -44,48 +46,48 @@ const DiscoveryCategoriesRoute = DiscourseRoute.extend(OpenComposer, {
 
   _findCategoriesAndTopics(filter) {
     return hash({
-      wrappedCategoriesList: PreloadStore.getAndRemove("categories_list"),
-      topicsList: PreloadStore.getAndRemove(`topic_list_${filter}`)
-    }).then(response => {
-      let { wrappedCategoriesList, topicsList } = response;
-      let categoriesList =
-        wrappedCategoriesList && wrappedCategoriesList.category_list;
+             wrappedCategoriesList:
+               PreloadStore.getAndRemove("categories_list"),
+             topicsList: PreloadStore.getAndRemove(`topic_list_${filter}`)
+           })
+      .then(response => {
+        let { wrappedCategoriesList, topicsList } = response;
+        let categoriesList =
+          wrappedCategoriesList && wrappedCategoriesList.category_list;
 
-      if (categoriesList && topicsList) {
-        if (topicsList.topic_list && topicsList.topic_list.top_tags) {
-          Site.currentProp("top_tags", topicsList.topic_list.top_tags);
+        if (categoriesList && topicsList) {
+          if (topicsList.topic_list && topicsList.topic_list.top_tags) {
+            Site.currentProp("top_tags", topicsList.topic_list.top_tags);
+          }
+
+          return EmberObject.create({
+            categories:
+              CategoryList.categoriesFrom(this.store, wrappedCategoriesList),
+            topics: TopicList.topicsFrom(this.store, topicsList),
+            can_create_category: categoriesList.can_create_category,
+            can_create_topic: categoriesList.can_create_topic,
+            draft_key: categoriesList.draft_key,
+            draft: categoriesList.draft,
+            draft_sequence: categoriesList.draft_sequence
+          });
         }
+        // Otherwise, return the ajax result
+        return ajax(`/categories_and_${filter}`).then(result => {
+          if (result.topic_list && result.topic_list.top_tags) {
+            Site.currentProp("top_tags", result.topic_list.top_tags);
+          }
 
-        return EmberObject.create({
-          categories: CategoryList.categoriesFrom(
-            this.store,
-            wrappedCategoriesList
-          ),
-          topics: TopicList.topicsFrom(this.store, topicsList),
-          can_create_category: categoriesList.can_create_category,
-          can_create_topic: categoriesList.can_create_topic,
-          draft_key: categoriesList.draft_key,
-          draft: categoriesList.draft,
-          draft_sequence: categoriesList.draft_sequence
-        });
-      }
-      // Otherwise, return the ajax result
-      return ajax(`/categories_and_${filter}`).then(result => {
-        if (result.topic_list && result.topic_list.top_tags) {
-          Site.currentProp("top_tags", result.topic_list.top_tags);
-        }
-
-        return EmberObject.create({
-          categories: CategoryList.categoriesFrom(this.store, result),
-          topics: TopicList.topicsFrom(this.store, result),
-          can_create_category: result.category_list.can_create_category,
-          can_create_topic: result.category_list.can_create_topic,
-          draft_key: result.category_list.draft_key,
-          draft: result.category_list.draft,
-          draft_sequence: result.category_list.draft_sequence
+          return EmberObject.create({
+            categories: CategoryList.categoriesFrom(this.store, result),
+            topics: TopicList.topicsFrom(this.store, result),
+            can_create_category: result.category_list.can_create_category,
+            can_create_topic: result.category_list.can_create_topic,
+            draft_key: result.category_list.draft_key,
+            draft: result.category_list.draft,
+            draft_sequence: result.category_list.draft_sequence
+          });
         });
       });
-    });
   },
 
   titleToken() {
@@ -111,7 +113,7 @@ const DiscoveryCategoriesRoute = DiscourseRoute.extend(OpenComposer, {
 
     createCategory() {
       const groups = this.site.groups,
-        everyoneName = groups.findBy("id", 0).name;
+            everyoneName = groups.findBy("id", 0).name;
 
       const model = this.store.createRecord("category", {
         color: "0088CC",

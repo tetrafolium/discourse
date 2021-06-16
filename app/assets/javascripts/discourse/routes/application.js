@@ -1,17 +1,17 @@
-import { next, once } from "@ember/runloop";
+import {next, once} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
-import { ajax } from "discourse/lib/ajax";
-import { setting } from "discourse/lib/computed";
+import {ajax} from "discourse/lib/ajax";
+import {setting} from "discourse/lib/computed";
 import logout from "discourse/lib/logout";
 import showModal from "discourse/lib/show-modal";
 import OpenComposer from "discourse/mixins/open-composer";
 import Category from "discourse/models/category";
 import mobile from "discourse/lib/mobile";
-import { findAll } from "discourse/models/login-method";
-import { getOwner } from "discourse-common/lib/get-owner";
-import { userPath } from "discourse/lib/url";
+import {findAll} from "discourse/models/login-method";
+import {getOwner} from "discourse-common/lib/get-owner";
+import {userPath} from "discourse/lib/url";
 import Composer from "discourse/models/composer";
-import { EventTarget } from "rsvp";
+import {EventTarget} from "rsvp";
 
 function unlessReadOnly(method, message) {
   return function() {
@@ -38,18 +38,14 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
       mobile.toggleMobileView();
     },
 
-    logout: unlessReadOnly(
-      "_handleLogout",
-      I18n.t("read_only_mode.logout_disabled")
-    ),
+    logout:
+      unlessReadOnly("_handleLogout", I18n.t("read_only_mode.logout_disabled")),
 
     _collectTitleTokens(tokens) {
       tokens.push(this.siteTitle);
-      if (
-        (window.location.pathname === Discourse.getURL("/") ||
-          window.location.pathname === Discourse.getURL("/login")) &&
-        this.shortSiteDescription !== ""
-      ) {
+      if ((window.location.pathname === Discourse.getURL("/") ||
+           window.location.pathname === Discourse.getURL("/login")) &&
+          this.shortSiteDescription !== "") {
         tokens.push(this.shortSiteDescription);
       }
       Discourse.set("_docTitle", tokens.join(" - "));
@@ -63,22 +59,18 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
     },
 
     postWasEnqueued(details) {
-      showModal("post-enqueued", {
-        model: details,
-        title: "review.approval.title"
-      });
+      showModal("post-enqueued",
+                { model: details, title: "review.approval.title" });
     },
 
     composePrivateMessage(user, post) {
       const recipients = user ? user.get("username") : "";
-      const reply = post
-        ? `${window.location.protocol}//${window.location.host}${post.url}`
-        : null;
-      const title = post
-        ? I18n.t("composer.reference_topic_title", {
-            title: post.topic.title
-          })
-        : null;
+      const reply =
+        post ? `${window.location.protocol}//${window.location.host}${post.url}`
+             : null;
+      const title = post ? I18n.t("composer.reference_topic_title",
+                                  { title: post.topic.title })
+                         : null;
 
       // used only once, one less dependency
       return this.controllerFor("composer").open({
@@ -110,30 +102,22 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
         return this.transitionTo("exception-unknown");
       }
 
-      exceptionController.setProperties({
-        lastTransition: transition,
-        thrown: xhrOrErr
-      });
+      exceptionController.setProperties(
+        { lastTransition: transition, thrown: xhrOrErr });
 
       this.intermediateTransitionTo("exception");
       return true;
     },
 
-    showLogin: unlessReadOnly(
-      "handleShowLogin",
-      I18n.t("read_only_mode.login_disabled")
-    ),
+    showLogin: unlessReadOnly("handleShowLogin",
+                              I18n.t("read_only_mode.login_disabled")),
 
-    showCreateAccount: unlessReadOnly(
-      "handleShowCreateAccount",
-      I18n.t("read_only_mode.login_disabled")
-    ),
+    showCreateAccount: unlessReadOnly("handleShowCreateAccount",
+                                      I18n.t("read_only_mode.login_disabled")),
 
     showForgotPassword() {
-      this.controllerFor("forgot-password").setProperties({
-        offerHelp: null,
-        helpSeen: false
-      });
+      this.controllerFor("forgot-password")
+        .setProperties({ offerHelp: null, helpSeen: false });
       showModal("forgotPassword", { title: "forgot_password.title" });
     },
 
@@ -142,16 +126,13 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
     },
 
     showUploadSelector(toolbarEvent) {
-      showModal("uploadSelector").setProperties({
-        toolbarEvent,
-        imageUrl: null
-      });
+      showModal("uploadSelector")
+        .setProperties({ toolbarEvent, imageUrl: null });
     },
 
     showKeyboardShortcutsHelp() {
-      showModal("keyboard-shortcuts-help", {
-        title: "keyboard_shortcuts_help.title"
-      });
+      showModal("keyboard-shortcuts-help",
+                { title: "keyboard_shortcuts_help.title" });
     },
 
     // Close the current modal, and destroy its state.
@@ -161,9 +142,8 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
       const controllerName = modalController.get("name");
 
       if (controllerName) {
-        const controller = getOwner(this).lookup(
-          `controller:${controllerName}`
-        );
+        const controller =
+          getOwner(this).lookup(`controller:${controllerName}`);
         if (controller && controller.beforeClose) {
           if (false === controller.beforeClose()) {
             return;
@@ -174,9 +154,8 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
       this.render("hide-modal", { into: "modal", outlet: "modalBody" });
 
       if (controllerName) {
-        const controller = getOwner(this).lookup(
-          `controller:${controllerName}`
-        );
+        const controller =
+          getOwner(this).lookup(`controller:${controllerName}`);
         if (controller && controller.onClose) {
           controller.onClose();
         }
@@ -222,13 +201,8 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
     },
 
     createNewTopicViaParams(title, body, category_id, tags) {
-      this.openComposerWithTopicParams(
-        this.controllerFor("discovery/topics"),
-        title,
-        body,
-        category_id,
-        tags
-      );
+      this.openComposerWithTopicParams(this.controllerFor("discovery/topics"),
+                                       title, body, category_id, tags);
     },
 
     createNewMessageViaParams(recipients, title, body) {
@@ -254,22 +228,19 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
   handleShowLogin() {
     if (this.siteSettings.enable_sso) {
       const returnPath = encodeURIComponent(window.location.pathname);
-      window.location = Discourse.getURL(
-        "/session/sso?return_path=" + returnPath
-      );
+      window.location =
+        Discourse.getURL("/session/sso?return_path=" + returnPath);
     } else {
-      this._autoLogin("login", "login-modal", () =>
-        this.controllerFor("login").resetForm()
-      );
+      this._autoLogin("login", "login-modal",
+                      () => this.controllerFor("login").resetForm());
     }
   },
 
   handleShowCreateAccount() {
     if (this.siteSettings.enable_sso) {
       const returnPath = encodeURIComponent(window.location.pathname);
-      window.location = Discourse.getURL(
-        "/session/sso?return_path=" + returnPath
-      );
+      window.location =
+        Discourse.getURL("/session/sso?return_path=" + returnPath);
     } else {
       this._autoLogin("createAccount", "create-account");
     }
@@ -291,9 +262,8 @@ const ApplicationRoute = DiscourseRoute.extend(OpenComposer, {
 
   _handleLogout() {
     if (this.currentUser) {
-      this.currentUser
-        .destroySession()
-        .then(() => logout(this.siteSettings, this.keyValueStore));
+      this.currentUser.destroySession().then(
+        () => logout(this.siteSettings, this.keyValueStore));
     }
   }
 });

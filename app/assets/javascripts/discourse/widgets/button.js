@@ -1,6 +1,6 @@
-import { createWidget } from "discourse/widgets/widget";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { h } from "virtual-dom";
+import {createWidget} from "discourse/widgets/widget";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {h} from "virtual-dom";
 import DiscourseURL from "discourse/lib/url";
 
 export const ButtonClass = {
@@ -42,9 +42,8 @@ export const ButtonClass = {
     }
 
     if (attrs.data) {
-      Object.keys(attrs.data).forEach(
-        k => (attributes[`data-${k}`] = attrs.data[k])
-      );
+      Object.keys(attrs.data)
+        .forEach(k => (attributes[`data-${k}`] = attrs.data[k]));
     }
 
     return attributes;
@@ -58,8 +57,7 @@ export const ButtonClass = {
     }
     if (attrs.label) {
       contents.push(
-        h("span.d-button-label", I18n.t(attrs.label, attrs.labelOptions))
-      );
+        h("span.d-button-label", I18n.t(attrs.label, attrs.labelOptions)));
     }
     if (attrs.contents) {
       contents.push(attrs.contents);
@@ -77,9 +75,7 @@ export const ButtonClass = {
       return;
     }
 
-    $(`button.widget-button`)
-      .removeClass("d-hover")
-      .blur();
+    $(`button.widget-button`).removeClass("d-hover").blur();
     if (attrs.secondaryAction) {
       this.sendWidgetAction(attrs.secondaryAction);
     }
@@ -99,7 +95,4 @@ export default createWidget("button", ButtonClass);
 
 createWidget(
   "flat-button",
-  jQuery.extend(ButtonClass, {
-    tagName: "button.widget-button.btn-flat"
-  })
-);
+  jQuery.extend(ButtonClass, { tagName: "button.widget-button.btn-flat" }));

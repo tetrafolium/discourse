@@ -1,5 +1,5 @@
-import { ajax } from "discourse/lib/ajax";
-import { createWidgetFrom } from "discourse/widgets/widget";
+import {ajax} from "discourse/lib/ajax";
+import {createWidgetFrom} from "discourse/widgets/widget";
 import QuickAccessPanel from "discourse/widgets/quick-access-panel";
 
 createWidgetFrom(QuickAccessPanel, "quick-access-notifications", {
@@ -17,16 +17,12 @@ createWidgetFrom(QuickAccessPanel, "quick-access-notifications", {
   },
 
   itemHtml(notification) {
-    const notificationName = this.site.notificationLookup[
-      notification.notification_type
-    ];
+    const notificationName =
+      this.site.notificationLookup[notification.notification_type];
 
-    return this.attach(
-      `${notificationName.dasherize()}-notification-item`,
-      notification,
-      {},
-      { fallbackWidgetName: "default-notification-item" }
-    );
+    return this.attach(`${notificationName.dasherize()}-notification-item`,
+                       notification, {},
+                       { fallbackWidgetName: "default-notification-item" });
   },
 
   findNewItems() {
@@ -42,14 +38,11 @@ createWidgetFrom(QuickAccessPanel, "quick-access-notifications", {
   },
 
   _findStaleItemsInStore() {
-    return this.store.findStale(
-      "notification",
-      {
-        recent: true,
-        silent: this.currentUser.enforcedSecondFactor,
-        limit: this.estimateItemLimit()
-      },
-      { cacheKey: "recent-notifications" }
-    );
+    return this.store.findStale("notification", {
+      recent: true,
+      silent: this.currentUser.enforcedSecondFactor,
+      limit: this.estimateItemLimit()
+    },
+                                { cacheKey: "recent-notifications" });
   }
 });

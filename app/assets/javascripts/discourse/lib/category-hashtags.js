@@ -1,14 +1,9 @@
 export const SEPARATOR = ":";
-import {
-  caretRowCol,
-  caretPosition,
-  inCodeBlock
-} from "discourse/lib/utilities";
+import {caretRowCol, caretPosition, inCodeBlock} from "discourse/lib/utilities";
 
 export function replaceSpan($elem, categorySlug, categoryLink) {
-  $elem.replaceWith(
-    `<a href="${categoryLink}" class="hashtag">#<span>${categorySlug}</span></a>`
-  );
+  $elem.replaceWith(`<a href="${categoryLink}" class="hashtag">#<span>${
+    categorySlug}</span></a>`);
 }
 
 export function categoryHashtagTriggerRule(textarea, opts) {

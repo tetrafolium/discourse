@@ -1,5 +1,5 @@
-import { isEmpty } from "@ember/utils";
-import { scheduleOnce } from "@ember/runloop";
+import {isEmpty} from "@ember/utils";
+import {scheduleOnce} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
 import DiscourseURL from "discourse/lib/url";
 import Draft from "discourse/models/draft";
@@ -21,10 +21,9 @@ export default DiscourseRoute.extend({
     params = params || {};
     params.track_visit = true;
 
-    const topic = this.modelFor("topic"),
-      postStream = topic.postStream,
-      topicController = this.controllerFor("topic"),
-      composerController = this.controllerFor("composer");
+    const topic = this.modelFor("topic"), postStream = topic.postStream,
+          topicController = this.controllerFor("topic"),
+          composerController = this.controllerFor("composer");
 
     // I sincerely hope no topic gets this many posts
     if (params.nearPost === "last") {
@@ -33,8 +32,7 @@ export default DiscourseRoute.extend({
 
     params.forceLoad = true;
 
-    postStream
-      .refresh(params)
+    postStream.refresh(params)
       .then(() => {
         // TODO we are seeing errors where closest post is null and this is exploding
         // we need better handling and logging for this condition.
@@ -45,9 +43,8 @@ export default DiscourseRoute.extend({
         }
 
         // The post we requested might not exist. Let's find the closest post
-        const closestPost = postStream.closestPostForPostNumber(
-          params.nearPost || 1
-        );
+        const closestPost =
+          postStream.closestPostForPostNumber(params.nearPost || 1);
         const closest = closestPost.post_number;
 
         topicController.setProperties({
@@ -60,9 +57,8 @@ export default DiscourseRoute.extend({
         topicController.subscribe();
 
         // Highlight our post after the next render
-        scheduleOnce("afterRender", () =>
-          this.appEvents.trigger("post:highlight", closest)
-        );
+        scheduleOnce("afterRender",
+                     () => this.appEvents.trigger("post:highlight", closest));
 
         const opts = {};
         if (document.location.hash && document.location.hash.length) {
@@ -90,10 +86,8 @@ export default DiscourseRoute.extend({
 
   actions: {
     willTransition() {
-      this.controllerFor("topic").set(
-        "previousURL",
-        document.location.pathname
-      );
+      this.controllerFor("topic").set("previousURL",
+                                      document.location.pathname);
 
       // NOTE: omitting this return can break the back button when transitioning quickly between
       // topics and the latest page.

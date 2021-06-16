@@ -1,7 +1,7 @@
-import { createWidget } from "discourse/widgets/widget";
-import { avatarFor } from "discourse/widgets/post";
-import { h } from "virtual-dom";
-import { userPath } from "discourse/lib/url";
+import {createWidget} from "discourse/widgets/widget";
+import {avatarFor} from "discourse/widgets/post";
+import {h} from "virtual-dom";
+import {userPath} from "discourse/lib/url";
 import hbs from "discourse/widgets/hbs-compiler";
 
 export function avatarAtts(user) {
@@ -24,10 +24,8 @@ createWidget("small-user-list", {
     let users = atts.users;
     if (users) {
       const currentUser = this.currentUser;
-      if (
-        atts.addSelf &&
-        !users.some(u => u.username === currentUser.username)
-      ) {
+      if (atts.addSelf &&
+          !users.some(u => u.username === currentUser.username)) {
         users = users.concat(avatarAtts(currentUser));
       }
 
@@ -45,11 +43,9 @@ createWidget("small-user-list", {
       });
 
       if (postUrl) {
-        description = h(
-          "a",
-          { attributes: { href: Discourse.getURL(postUrl) } },
-          description
-        );
+        description =
+          h("a", { attributes: { href: Discourse.getURL(postUrl) } },
+            description);
       }
 
       let buffer = [icons];

@@ -1,4 +1,4 @@
-import { scheduleOnce } from "@ember/runloop";
+import {scheduleOnce} from "@ember/runloop";
 import discourseDebounce from "discourse/lib/debounce";
 import Mixin from "@ember/object/mixin";
 
@@ -32,8 +32,8 @@ const Scrolling = Mixin.create({
     opts = opts || { debounce: 100 };
 
     // So we can not call the scrolled event while transitioning
-    const router = Discourse.__container__.lookup("router:main")
-      ._routerMicrolib;
+    const router =
+      Discourse.__container__.lookup("router:main")._routerMicrolib;
 
     let onScrollMethod = () => {
       if (router.activeTransition) {
@@ -56,5 +56,5 @@ const Scrolling = Mixin.create({
   }
 });
 
-export { ScrollingDOMMethods };
+export {ScrollingDOMMethods};
 export default Scrolling;

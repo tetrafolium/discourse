@@ -1,5 +1,5 @@
-import { registerUnbound } from "discourse-common/lib/helpers";
-import { findRawTemplate } from "discourse/lib/raw-templates";
+import {registerUnbound} from "discourse-common/lib/helpers";
+import {findRawTemplate} from "discourse/lib/raw-templates";
 
 let _injections;
 

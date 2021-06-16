@@ -1,5 +1,5 @@
 import ENV from "discourse-common/config/environment";
-import { EventTarget } from "rsvp";
+import {EventTarget} from "rsvp";
 
 let _skipUpdate;
 let _rootElement;
@@ -26,17 +26,14 @@ Eyeline.prototype.update = function() {
     return;
   }
 
-  const docViewTop = _rootElement
-    ? $(_rootElement).scrollTop()
-    : $(window).scrollTop();
-  const windowHeight = _rootElement
-    ? $(_rootElement).height()
-    : $(window).height();
+  const docViewTop =
+    _rootElement ? $(_rootElement).scrollTop() : $(window).scrollTop();
+  const windowHeight =
+    _rootElement ? $(_rootElement).height() : $(window).height();
   const docViewBottom = docViewTop + windowHeight;
   const $elements = $(this.selector);
-  const bottomOffset = _rootElement
-    ? $elements.last().position()
-    : $elements.last().offset();
+  const bottomOffset =
+    _rootElement ? $elements.last().position() : $elements.last().offset();
 
   let atBottom = false;
   if (bottomOffset) {
@@ -46,8 +43,8 @@ Eyeline.prototype.update = function() {
 
   return $elements.each((i, elem) => {
     const $elem = $(elem),
-      elemTop = _rootElement ? $elem.position().top : $elem.offset().top,
-      elemBottom = elemTop + $elem.height();
+          elemTop = _rootElement ? $elem.position().top : $elem.offset().top,
+          elemBottom = elemTop + $elem.height();
 
     let markSeen = false;
 

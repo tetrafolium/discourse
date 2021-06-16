@@ -1,8 +1,8 @@
-import { run } from "@ember/runloop";
+import {run} from "@ember/runloop";
 import pageVisible from "discourse/lib/page-visible";
 import logout from "discourse/lib/logout";
 import Session from "discourse/models/session";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import Site from "discourse/models/site";
 
 let _trackView = false;
@@ -22,23 +22,15 @@ export function handleLogoff(xhr) {
     _showingLogout = true;
     const messageBus = Discourse.__container__.lookup("message-bus:main");
     messageBus.stop();
-    bootbox.dialog(
-      I18n.t("logout"),
-      { label: I18n.t("refresh"), callback: logout },
-      {
-        onEscape: () => logout(),
-        backdrop: "static"
-      }
-    );
+    bootbox.dialog(I18n.t("logout"),
+                   { label: I18n.t("refresh"), callback: logout },
+                   { onEscape: () => logout(), backdrop: "static" });
   }
 }
 
 function handleRedirect(data) {
-  if (
-    data &&
-    data.getResponseHeader &&
-    data.getResponseHeader("Discourse-Xhr-Redirect")
-  ) {
+  if (data && data.getResponseHeader &&
+      data.getResponseHeader("Discourse-Xhr-Redirect")) {
     window.location.replace(data.responseText);
     window.location.reload();
   }
@@ -102,9 +94,7 @@ export function ajax() {
 
       run(() => {
         Site.currentProp(
-          "isReadOnly",
-          !!(xhr && xhr.getResponseHeader("Discourse-Readonly"))
-        );
+          "isReadOnly", !!(xhr && xhr.getResponseHeader("Discourse-Readonly")));
       });
 
       if (args.returnXHR) {
@@ -132,11 +122,8 @@ export function ajax() {
       xhr.jqTextStatus = textStatus;
       xhr.requestedUrl = url;
 
-      run(null, reject, {
-        jqXHR: xhr,
-        textStatus: textStatus,
-        errorThrown: errorThrown
-      });
+      run(null, reject,
+          { jqXHR: xhr, textStatus: textStatus, errorThrown: errorThrown });
     };
 
     // We default to JSON on GET. If we don't, sometimes if the server doesn't return the proper header
@@ -150,7 +137,8 @@ export function ajax() {
     }
 
     if (args.type === "GET" && args.cache !== true) {
-      args.cache = true; // Disable JQuery cache busting param, which was created to deal with IE8
+      args.cache =
+        true; // Disable JQuery cache busting param, which was created to deal with IE8
     }
 
     ajaxObj = $.ajax(Discourse.getURL(url), args);
@@ -160,12 +148,9 @@ export function ajax() {
 
   // For cached pages we strip out CSRF tokens, need to round trip to server prior to sending the
   //  request (bypass for GET, not needed)
-  if (
-    args.type &&
-    args.type.toUpperCase() !== "GET" &&
-    url !== Discourse.getURL("/clicks/track") &&
-    !Session.currentProp("csrfToken")
-  ) {
+  if (args.type && args.type.toUpperCase() !== "GET" &&
+      url !== Discourse.getURL("/clicks/track") &&
+      !Session.currentProp("csrfToken")) {
     promise = new Promise((resolve, reject) => {
       ajaxObj = updateCsrfToken().then(() => {
         performAjax(resolve, reject);

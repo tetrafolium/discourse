@@ -1,33 +1,28 @@
 import Mixin from "@ember/object/mixin";
-import { computed } from "@ember/object";
+import {computed} from "@ember/object";
 import Category from "discourse/models/category";
 
 export default Mixin.create({
-  filterModeInternal: computed(
-    "rawFilterMode",
-    "filterType",
-    "category",
-    "noSubcategories",
-    function() {
-      const rawFilterMode = this.rawFilterMode;
-      if (rawFilterMode) {
-        return rawFilterMode;
-      } else {
-        const category = this.category;
-        const filterType = this.filterType;
+  filterModeInternal:
+    computed("rawFilterMode", "filterType", "category", "noSubcategories",
+             function() {
+               const rawFilterMode = this.rawFilterMode;
+               if (rawFilterMode) {
+                 return rawFilterMode;
+               } else {
+                 const category = this.category;
+                 const filterType = this.filterType;
 
-        if (category) {
-          const noSubcategories = this.noSubcategories;
+                 if (category) {
+                   const noSubcategories = this.noSubcategories;
 
-          return `c/${Category.slugFor(category)}${
-            noSubcategories ? "/none" : ""
-          }/l/${filterType}`;
-        } else {
-          return filterType;
-        }
-      }
-    }
-  ),
+                   return `c/${Category.slugFor(category)}${
+                     noSubcategories ? "/none" : ""}/l/${filterType}`;
+                 } else {
+                   return filterType;
+                 }
+               }
+             }),
 
   filterMode: computed("filterModeInternal", {
     get() {

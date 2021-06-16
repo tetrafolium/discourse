@@ -2,9 +2,8 @@ export default {
   name: "register-service-worker",
 
   initialize() {
-    const isSecured =
-      document.location.protocol === "https:" ||
-      location.hostname === "localhost";
+    const isSecured = document.location.protocol === "https:" ||
+                      location.hostname === "localhost";
 
     const isSupported = isSecured && "serviceWorker" in navigator;
 
@@ -13,17 +12,13 @@ export default {
       const isAppleBrowser =
         caps.isSafari ||
         (caps.isIOS &&
-          !window.matchMedia("(display-mode: standalone)").matches);
+         !window.matchMedia("(display-mode: standalone)").matches);
 
       if (Discourse.ServiceWorkerURL && !isAppleBrowser) {
         navigator.serviceWorker.getRegistrations().then(registrations => {
           for (let registration of registrations) {
-            if (
-              registration.active &&
-              !registration.active.scriptURL.includes(
-                Discourse.ServiceWorkerURL
-              )
-            ) {
+            if (registration.active && !registration.active.scriptURL.includes(
+                                         Discourse.ServiceWorkerURL)) {
               this.unregister(registration);
             }
           }

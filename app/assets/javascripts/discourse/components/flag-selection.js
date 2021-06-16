@@ -1,6 +1,6 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import Component from "@ember/component";
-import { observes } from "discourse-common/utils/decorators";
+import {observes} from "discourse-common/utils/decorators";
 
 // Mostly hacks because `flag.hbs` didn't use `radio-button`
 export default Component.extend({
@@ -13,10 +13,10 @@ export default Component.extend({
     }
 
     this.element.querySelector("#radio_" + nameKey).checked = "true";
-  },
+  }
+  ,
 
-  @observes("nameKey")
-  selectedChanged() {
+    @observes("nameKey") selectedChanged() {
     next(this, this._selectRadio);
   }
 });

@@ -30,8 +30,7 @@ export default Service.extend(Evented, {
     if (this._events[name]) {
       if (arguments.length === 1) {
         deprecated(
-          "Removing all event listeners at once is deprecated, please remove each listener individually."
-        );
+          "Removing all event listeners at once is deprecated, please remove each listener individually.");
 
         this._events[name].forEach(ref => {
           this._super(name, ref.target, ref.fn);

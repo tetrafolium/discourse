@@ -1,19 +1,19 @@
-import { inject } from "@ember/controller";
+import {inject} from "@ember/controller";
 import Controller from "@ember/controller";
-import { setDefaultHomepage } from "discourse/lib/utilities";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import {setDefaultHomepage} from "discourse/lib/utilities";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
 import {
   listThemes,
   previewTheme,
   setLocalTheme
 } from "discourse/lib/theme-selector";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 import {
   safariHacksDisabled,
   isiPad,
   iOSWithVisualViewport
 } from "discourse/lib/utilities";
-import { computed } from "@ember/object";
+import {computed} from "@ember/object";
 
 const USER_HOMES = {
   1: "latest",
@@ -30,17 +30,10 @@ export default Controller.extend({
   @discourseComputed("makeThemeDefault")
   saveAttrNames(makeDefault) {
     let attrs = [
-      "locale",
-      "external_links_in_new_tab",
-      "dynamic_favicon",
-      "enable_quoting",
-      "enable_defer",
-      "automatically_unpin_topics",
-      "allow_private_messages",
-      "homepage_id",
-      "hide_profile_and_presence",
-      "text_size",
-      "title_count_mode"
+      "locale", "external_links_in_new_tab", "dynamic_favicon",
+      "enable_quoting", "enable_defer", "automatically_unpin_topics",
+      "allow_private_messages", "homepage_id", "hide_profile_and_presence",
+      "text_size", "title_count_mode"
     ];
 
     if (makeDefault) {
@@ -48,87 +41,86 @@ export default Controller.extend({
     }
 
     return attrs;
-  },
+  }
+  ,
 
-  preferencesController: inject("preferences"),
+    preferencesController: inject("preferences"),
 
-  @discourseComputed()
-  isiPad() {
+    @discourseComputed() isiPad() {
     // TODO: remove this preference checkbox when iOS adoption > 90%
     // (currently only applies to iOS 12 and below)
     return isiPad() && !iOSWithVisualViewport();
-  },
+  }
+  ,
 
-  @discourseComputed()
-  disableSafariHacks() {
+    @discourseComputed() disableSafariHacks() {
     return safariHacksDisabled();
-  },
+  }
+  ,
 
-  @discourseComputed()
-  availableLocales() {
+    @discourseComputed() availableLocales() {
     return JSON.parse(this.siteSettings.available_locales);
-  },
+  }
+  ,
 
-  @discourseComputed
-  textSizes() {
+    @discourseComputed textSizes() {
     return TEXT_SIZES.map(value => {
       return { name: I18n.t(`user.text_size.${value}`), value };
     });
-  },
+  }
+  ,
 
-  homepageId: computed(
-    "model.user_option.homepage_id",
-    "userSelectableHome.[]",
-    function() {
-      return (
-        this.model.user_option.homepage_id ||
-        this.userSelectableHome.firstObject.value
-      );
-    }
-  ),
+    homepageId: computed("model.user_option.homepage_id",
+                         "userSelectableHome.[]",
+                         function() {
+                           return (this.model.user_option.homepage_id ||
+                                   this.userSelectableHome.firstObject.value);
+                         }),
 
-  @discourseComputed
-  titleCountModes() {
+    @discourseComputed titleCountModes() {
     return TITLE_COUNT_MODES.map(value => {
       return { name: I18n.t(`user.title_count_mode.${value}`), value };
     });
-  },
+  }
+  ,
 
-  @discourseComputed
-  userSelectableThemes() {
+    @discourseComputed userSelectableThemes() {
     return listThemes(this.site);
-  },
+  }
+  ,
 
-  @discourseComputed("userSelectableThemes")
-  showThemeSelector(themes) {
+    @discourseComputed("userSelectableThemes") showThemeSelector(themes) {
     return themes && themes.length > 1;
-  },
+  }
+  ,
 
-  @observes("themeId")
-  themeIdChanged() {
+    @observes("themeId") themeIdChanged() {
     const id = this.themeId;
     previewTheme([id]);
-  },
+  }
+  ,
 
-  @discourseComputed("model.user_option.theme_ids", "themeId")
-  showThemeSetDefault(userOptionThemes, selectedTheme) {
+    @discourseComputed("model.user_option.theme_ids", "themeId")
+    showThemeSetDefault(userOptionThemes, selectedTheme) {
     return !userOptionThemes || userOptionThemes[0] !== selectedTheme;
-  },
+  }
+  ,
 
-  @discourseComputed("model.user_option.text_size", "textSize")
-  showTextSetDefault(userOptionTextSize, selectedTextSize) {
+    @discourseComputed("model.user_option.text_size", "textSize")
+    showTextSetDefault(userOptionTextSize, selectedTextSize) {
     return userOptionTextSize !== selectedTextSize;
-  },
+  }
+  ,
 
-  homeChanged() {
+    homeChanged() {
     const siteHome = this.siteSettings.top_menu.split("|")[0].split(",")[0];
     const userHome = USER_HOMES[this.get("model.user_option.homepage_id")];
 
     setDefaultHomepage(userHome || siteHome);
-  },
+  }
+  ,
 
-  @discourseComputed()
-  userSelectableHome() {
+    @discourseComputed() userSelectableHome() {
     let homeValues = {};
     Object.keys(USER_HOMES).forEach(newValue => {
       const newKey = USER_HOMES[newValue];
@@ -143,71 +135,67 @@ export default Controller.extend({
       }
     });
     return result;
-  },
-
-  actions: {
-    save() {
-      this.set("saved", false);
-      const makeThemeDefault = this.makeThemeDefault;
-      if (makeThemeDefault) {
-        this.set("model.user_option.theme_ids", [this.themeId]);
-      }
-
-      const makeTextSizeDefault = this.makeTextSizeDefault;
-      if (makeTextSizeDefault) {
-        this.set("model.user_option.text_size", this.textSize);
-      }
-
-      return this.model
-        .save(this.saveAttrNames)
-        .then(() => {
-          this.set("saved", true);
-
-          if (makeThemeDefault) {
-            setLocalTheme([]);
-          } else {
-            setLocalTheme(
-              [this.themeId],
-              this.get("model.user_option.theme_key_seq")
-            );
-          }
-          if (makeTextSizeDefault) {
-            this.model.updateTextSizeCookie(null);
-          } else {
-            this.model.updateTextSizeCookie(this.textSize);
-          }
-
-          this.homeChanged();
-
-          if (this.isiPad) {
-            if (safariHacksDisabled() !== this.disableSafariHacks) {
-              Discourse.set("assetVersion", "forceRefresh");
-            }
-            localStorage.setItem(
-              "safari-hacks-disabled",
-              this.disableSafariHacks.toString()
-            );
-          }
-        })
-        .catch(popupAjaxError);
-    },
-
-    selectTextSize(newSize) {
-      const classList = document.documentElement.classList;
-
-      TEXT_SIZES.forEach(name => {
-        const className = `text-size-${name}`;
-        if (newSize === name) {
-          classList.add(className);
-        } else {
-          classList.remove(className);
-        }
-      });
-
-      // Force refresh when leaving this screen
-      Discourse.set("assetVersion", "forceRefresh");
-
-      this.set("textSize", newSize);
-    }
   }
+  ,
+
+    actions: {
+      save() {
+        this.set("saved", false);
+        const makeThemeDefault = this.makeThemeDefault;
+        if (makeThemeDefault) {
+          this.set("model.user_option.theme_ids", [this.themeId]);
+        }
+
+        const makeTextSizeDefault = this.makeTextSizeDefault;
+        if (makeTextSizeDefault) {
+          this.set("model.user_option.text_size", this.textSize);
+        }
+
+        return this.model.save(this.saveAttrNames)
+          .then(() => {
+            this.set("saved", true);
+
+            if (makeThemeDefault) {
+              setLocalTheme([]);
+            } else {
+              setLocalTheme([this.themeId],
+                            this.get("model.user_option.theme_key_seq"));
+            }
+            if (makeTextSizeDefault) {
+              this.model.updateTextSizeCookie(null);
+            } else {
+              this.model.updateTextSizeCookie(this.textSize);
+            }
+
+            this.homeChanged();
+
+            if (this.isiPad) {
+              if (safariHacksDisabled() !== this.disableSafariHacks) {
+                Discourse.set("assetVersion", "forceRefresh");
+              }
+              localStorage.setItem("safari-hacks-disabled",
+                                   this.disableSafariHacks.toString());
+            }
+          })
+          .catch(popupAjaxError);
+      },
+
+      selectTextSize(newSize) {
+        const classList = document.documentElement.classList;
+
+        TEXT_SIZES.forEach(name => {
+          const className = `text-size-${name}`;
+          if (newSize === name) {
+            classList.add(className);
+          } else {
+            classList.remove(className);
+          }
+        });
+
+        // Force refresh when leaving this screen
+        Discourse.set("assetVersion", "forceRefresh");
+
+        this.set("textSize", newSize);
+      }
+    }
 });

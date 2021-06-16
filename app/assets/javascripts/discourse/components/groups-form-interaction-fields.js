@@ -7,21 +7,18 @@ export default Component.extend({
 
     this.visibilityLevelOptions = [
       {
-        name: I18n.t(
-          "admin.groups.manage.interaction.visibility_levels.public"
-        ),
+        name:
+          I18n.t("admin.groups.manage.interaction.visibility_levels.public"),
         value: 0
       },
       {
         name: I18n.t(
-          "admin.groups.manage.interaction.visibility_levels.logged_on_users"
-        ),
+          "admin.groups.manage.interaction.visibility_levels.logged_on_users"),
         value: 1
       },
       {
-        name: I18n.t(
-          "admin.groups.manage.interaction.visibility_levels.members"
-        ),
+        name:
+          I18n.t("admin.groups.manage.interaction.visibility_levels.members"),
         value: 2
       },
       {
@@ -29,9 +26,8 @@ export default Component.extend({
         value: 3
       },
       {
-        name: I18n.t(
-          "admin.groups.manage.interaction.visibility_levels.owners"
-        ),
+        name:
+          I18n.t("admin.groups.manage.interaction.visibility_levels.owners"),
         value: 4
       }
     ];
@@ -44,14 +40,12 @@ export default Component.extend({
       { name: I18n.t("groups.alias_levels.owners_mods_and_admins"), value: 4 },
       { name: I18n.t("groups.alias_levels.everyone"), value: 99 }
     ];
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "siteSettings.email_in",
-    "model.automatic",
-    "currentUser.admin"
-  )
-  showEmailSettings(emailIn, automatic, isAdmin) {
+    @discourseComputed("siteSettings.email_in", "model.automatic",
+                       "currentUser.admin")
+    showEmailSettings(emailIn, automatic, isAdmin) {
     return emailIn && isAdmin && !automatic;
   }
 });

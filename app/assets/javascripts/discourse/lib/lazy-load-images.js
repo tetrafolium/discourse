@@ -95,15 +95,12 @@ export function setupLazyLoading(api) {
     });
   }, OBSERVER_OPTIONS);
 
-  api.decorateCooked(
-    $post => {
-      $("img", $post).each((_, img) => {
-        if (img.width >= MINIMUM_SIZE && img.height >= MINIMUM_SIZE) {
-          hide(img);
-          observer.observe(img);
-        }
-      });
-    },
-    { onlyStream: true, id: "discourse-lazy-load" }
-  );
+  api.decorateCooked($post => {
+    $("img", $post).each((_, img) => {
+      if (img.width >= MINIMUM_SIZE && img.height >= MINIMUM_SIZE) {
+        hide(img);
+        observer.observe(img);
+      }
+    });
+  }, { onlyStream: true, id: "discourse-lazy-load" });
 }

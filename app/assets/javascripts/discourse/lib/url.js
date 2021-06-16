@@ -1,9 +1,9 @@
-import { isEmpty } from "@ember/utils";
+import {isEmpty} from "@ember/utils";
 import EmberObject from "@ember/object";
-import { next, schedule } from "@ember/runloop";
+import {next, schedule} from "@ember/runloop";
 import offsetCalculator from "discourse/lib/offset-calculator";
 import LockOn from "discourse/lib/lock-on";
-import { defaultHomepage } from "discourse/lib/utilities";
+import {defaultHomepage} from "discourse/lib/utilities";
 import User from "discourse/models/user";
 
 const rewrites = [];
@@ -16,19 +16,10 @@ function redirectTo(url) {
 
 // We can add links here that have server side responses but not client side.
 const SERVER_SIDE_ONLY = [
-  /^\/assets\//,
-  /^\/uploads\//,
-  /^\/stylesheets\//,
-  /^\/site_customizations\//,
-  /^\/raw\//,
-  /^\/posts\/\d+\/raw/,
-  /^\/raw\/\d+/,
-  /^\/wizard/,
+  /^\/assets\//, /^\/uploads\//, /^\/stylesheets\//, /^\/site_customizations\//,
+  /^\/raw\//, /^\/posts\/\d+\/raw/, /^\/raw\/\d+/, /^\/wizard/,
   /^\/go\//, // EXPERIMENTAL: https://meta.discourse.org/t/-/142605
-  /\.rss$/,
-  /\.json$/,
-  /^\/admin\/upgrade$/,
-  /^\/logs($|\/)/,
+  /\.rss$/, /\.json$/, /^\/admin\/upgrade$/, /^\/logs($|\/)/,
   /^\/admin\/logs\/watched_words\/action\/[^\/]+\/download$/
 ];
 
@@ -82,319 +73,311 @@ export function jumpToElement(elementId) {
 
 let _transitioning = false;
 
-const DiscourseURL = EmberObject.extend({
-  isJumpScheduled() {
-    return _transitioning || _jumpScheduled;
-  },
+const DiscourseURL =
+  EmberObject
+    .extend({
+      isJumpScheduled() {
+        return _transitioning || _jumpScheduled;
+      },
 
-  // Jumps to a particular post in the stream
-  jumpToPost(postNumber, opts) {
-    opts = opts || {};
-    const holderId = `#post_${postNumber}`;
+      // Jumps to a particular post in the stream
+      jumpToPost(postNumber, opts) {
+        opts = opts || {};
+        const holderId = `#post_${postNumber}`;
 
-    _transitioning = postNumber > 1;
+        _transitioning = postNumber > 1;
 
-    schedule("afterRender", () => {
-      let elementId;
-      let holder;
+        schedule("afterRender", () => {
+          let elementId;
+          let holder;
 
-      if (opts.jumpEnd) {
-        let $holder = $(holderId);
-        let holderHeight = $holder.height();
-        let windowHeight = $(window).height() - offsetCalculator();
+          if (opts.jumpEnd) {
+            let $holder = $(holderId);
+            let holderHeight = $holder.height();
+            let windowHeight = $(window).height() - offsetCalculator();
 
-        // scroll to the bottom of the post and if the post is yuge we go back up the
-        // timeline by a small % of the post height so we can see the bottom of the text.
-        //
-        // otherwise just jump to the top of the post using the lock & holder method.
-        if (holderHeight > windowHeight) {
-          $(window).scrollTop(
-            $holder.offset().top + (holderHeight - holderHeight / 10)
-          );
-          _transitioning = false;
-          return;
+            // scroll to the bottom of the post and if the post is yuge we go back up the
+            // timeline by a small % of the post height so we can see the bottom of the text.
+            //
+            // otherwise just jump to the top of the post using the lock & holder method.
+            if (holderHeight > windowHeight) {
+              $(window).scrollTop($holder.offset().top +
+                                  (holderHeight - holderHeight / 10));
+              _transitioning = false;
+              return;
+            }
+          }
+
+          if (postNumber === 1 && !opts.anchor) {
+            $(window).scrollTop(0);
+            _transitioning = false;
+            return;
+          }
+
+          if (opts.anchor) {
+            elementId = opts.anchor;
+            holder = $(elementId);
+          }
+
+          if (!holder || holder.length === 0) {
+            elementId = holderId;
+            holder = $(elementId);
+          }
+
+          const lockon = new LockOn(elementId, {
+            finished() {
+              _transitioning = false;
+            }
+          });
+
+          if (holder.length > 0 && opts && opts.skipIfOnScreen) {
+            const elementTop = lockon.elementTop();
+            const scrollTop = $(window).scrollTop();
+            const windowHeight = $(window).height() - offsetCalculator();
+            const height = holder.height();
+
+            if (elementTop > scrollTop &&
+                elementTop + height < scrollTop + windowHeight) {
+              _transitioning = false;
+              return;
+            }
+          }
+
+          lockon.lock();
+          if (lockon.elementTop() < 1) {
+            _transitioning = false;
+            return;
+          }
+        });
+      },
+
+      // Browser aware replaceState. Will only be invoked if the browser supports it.
+      replaceState(path) {
+        if (window.history && window.history.pushState &&
+            window.history.replaceState && window.location.pathname !== path) {
+          // Always use replaceState in the next runloop to prevent weird routes changing
+          // while URLs are loading. For example, while a topic loads it sets `currentPost`
+          // which triggers a replaceState even though the topic hasn't fully loaded yet!
+          next(() => {
+            const location = DiscourseURL.get("router.location");
+            if (location && location.replaceURL) {
+              location.replaceURL(path);
+            }
+          });
         }
-      }
+      },
 
-      if (postNumber === 1 && !opts.anchor) {
-        $(window).scrollTop(0);
-        _transitioning = false;
-        return;
-      }
-
-      if (opts.anchor) {
-        elementId = opts.anchor;
-        holder = $(elementId);
-      }
-
-      if (!holder || holder.length === 0) {
-        elementId = holderId;
-        holder = $(elementId);
-      }
-
-      const lockon = new LockOn(elementId, {
-        finished() {
-          _transitioning = false;
+      routeToTag(a) {
+        // skip when we are provided nowhere to route to
+        if (!a || !a.href) {
+          return false;
         }
-      });
 
-      if (holder.length > 0 && opts && opts.skipIfOnScreen) {
-        const elementTop = lockon.elementTop();
-        const scrollTop = $(window).scrollTop();
-        const windowHeight = $(window).height() - offsetCalculator();
-        const height = holder.height();
-
-        if (
-          elementTop > scrollTop &&
-          elementTop + height < scrollTop + windowHeight
-        ) {
-          _transitioning = false;
-          return;
+        if (a.host && a.host !== document.location.host) {
+          document.location = a.href;
+          return false;
         }
-      }
 
-      lockon.lock();
-      if (lockon.elementTop() < 1) {
-        _transitioning = false;
-        return;
-      }
-    });
-  },
+        return this.routeTo(a.href);
+      },
 
-  // Browser aware replaceState. Will only be invoked if the browser supports it.
-  replaceState(path) {
-    if (
-      window.history &&
-      window.history.pushState &&
-      window.history.replaceState &&
-      window.location.pathname !== path
-    ) {
-      // Always use replaceState in the next runloop to prevent weird routes changing
-      // while URLs are loading. For example, while a topic loads it sets `currentPost`
-      // which triggers a replaceState even though the topic hasn't fully loaded yet!
-      next(() => {
-        const location = DiscourseURL.get("router.location");
-        if (location && location.replaceURL) {
-          location.replaceURL(path);
-        }
-      });
-    }
-  },
-
-  routeToTag(a) {
-    // skip when we are provided nowhere to route to
-    if (!a || !a.href) {
-      return false;
-    }
-
-    if (a.host && a.host !== document.location.host) {
-      document.location = a.href;
-      return false;
-    }
-
-    return this.routeTo(a.href);
-  },
-
-  /**
+      /**
     Our custom routeTo method is used to intelligently overwrite default routing
     behavior.
 
     It contains the logic necessary to route within a topic using replaceState to
     keep the history intact.
   **/
-  routeTo(path, opts) {
-    opts = opts || {};
+      routeTo(path, opts) {
+        opts = opts || {};
 
-    if (isEmpty(path)) {
-      return;
-    }
+        if (isEmpty(path)) {
+          return;
+        }
 
-    if (Discourse.get("requiresRefresh")) {
-      return redirectTo(Discourse.getURL(path));
-    }
+        if (Discourse.get("requiresRefresh")) {
+          return redirectTo(Discourse.getURL(path));
+        }
 
-    const pathname = path.replace(/(https?\:)?\/\/[^\/]+/, "");
-    const baseUri = Discourse.BaseUri;
+        const pathname = path.replace(/(https?\:)?\/\/[^\/]+/, "");
+        const baseUri = Discourse.BaseUri;
 
-    if (!DiscourseURL.isInternal(path)) {
-      return redirectTo(path);
-    }
+        if (!DiscourseURL.isInternal(path)) {
+          return redirectTo(path);
+        }
 
-    const serverSide = SERVER_SIDE_ONLY.some(r => {
-      if (pathname.match(r)) {
-        return redirectTo(path);
-      }
-    });
+        const serverSide = SERVER_SIDE_ONLY.some(r => {
+          if (pathname.match(r)) {
+            return redirectTo(path);
+          }
+        });
 
-    if (serverSide) {
-      return;
-    }
+        if (serverSide) {
+          return;
+        }
 
-    // Scroll to the same page, different anchor
-    const m = /^#(.+)$/.exec(path);
-    if (m) {
-      jumpToElement(m[1]);
-      return this.replaceState(path);
-    }
+        // Scroll to the same page, different anchor
+        const m = /^#(.+)$/.exec(path);
+        if (m) {
+          jumpToElement(m[1]);
+          return this.replaceState(path);
+        }
 
-    const oldPath = window.location.pathname;
-    path = path.replace(/(https?\:)?\/\/[^\/]+/, "");
+        const oldPath = window.location.pathname;
+        path = path.replace(/(https?\:)?\/\/[^\/]+/, "");
 
-    // Rewrite /my/* urls
-    let myPath = `${baseUri}/my/`;
-    if (path.indexOf(myPath) === 0) {
-      const currentUser = User.current();
-      if (currentUser) {
-        path = path.replace(
-          myPath,
-          userPath(currentUser.get("username_lower") + "/")
-        );
-      } else {
-        return redirectTo("/404");
-      }
-    }
+        // Rewrite /my/* urls
+        let myPath = `${baseUri}/my/`;
+        if (path.indexOf(myPath) === 0) {
+          const currentUser = User.current();
+          if (currentUser) {
+            path = path.replace(
+              myPath, userPath(currentUser.get("username_lower") + "/"));
+          } else {
+            return redirectTo("/404");
+          }
+        }
 
-    // handle prefixes
-    if (path.indexOf("/") === 0) {
-      const rootURL = (baseUri === undefined ? "/" : baseUri).replace(
-        /\/$/,
-        ""
-      );
-      path = path.replace(rootURL, "");
-    }
+        // handle prefixes
+        if (path.indexOf("/") === 0) {
+          const rootURL =
+            (baseUri === undefined ? "/" : baseUri).replace(/\/$/, "");
+          path = path.replace(rootURL, "");
+        }
 
-    path = rewritePath(path);
+        path = rewritePath(path);
 
-    if (typeof opts.afterRouteComplete === "function") {
-      schedule("afterRender", opts.afterRouteComplete);
-    }
+        if (typeof opts.afterRouteComplete === "function") {
+          schedule("afterRender", opts.afterRouteComplete);
+        }
 
-    if (this.navigatedToPost(oldPath, path, opts)) {
-      return;
-    }
+        if (this.navigatedToPost(oldPath, path, opts)) {
+          return;
+        }
 
-    if (oldPath === path) {
-      // If navigating to the same path send an app event.
-      // Views can watch it and tell their controllers to refresh
-      this.appEvents.trigger("url:refresh");
-    }
+        if (oldPath === path) {
+          // If navigating to the same path send an app event.
+          // Views can watch it and tell their controllers to refresh
+          this.appEvents.trigger("url:refresh");
+        }
 
-    // TODO: Extract into rules we can inject into the URL handler
-    if (this.navigatedToHome(oldPath, path, opts)) {
-      return;
-    }
+        // TODO: Extract into rules we can inject into the URL handler
+        if (this.navigatedToHome(oldPath, path, opts)) {
+          return;
+        }
 
-    // Navigating to empty string is the same as root
-    if (path === "") {
-      path = "/";
-    }
+        // Navigating to empty string is the same as root
+        if (path === "") {
+          path = "/";
+        }
 
-    return this.handleURL(path, opts);
-  },
+        return this.handleURL(path, opts);
+      },
 
-  routeToUrl(url, opts = {}) {
-    this.routeTo(Discourse.getURL(url), opts);
-  },
+      routeToUrl(url, opts = {}) {
+        this.routeTo(Discourse.getURL(url), opts);
+      },
 
-  rewrite(regexp, replacement, opts) {
-    rewrites.push({ regexp, replacement, opts: opts || {} });
-  },
+      rewrite(regexp, replacement, opts) {
+        rewrites.push({ regexp, replacement, opts: opts || {} });
+      },
 
-  redirectTo(url) {
-    window.location = Discourse.getURL(url);
-  },
+      redirectTo(url) {
+        window.location = Discourse.getURL(url);
+      },
 
-  /**
+      /**
    * Determines whether a URL is internal or not
    *
    * @method isInternal
    * @param {String} url
    **/
-  isInternal(url) {
-    if (url && url.length) {
-      if (url.indexOf("//") === 0) {
-        url = "http:" + url;
-      }
-      if (url.indexOf("#") === 0) {
-        return true;
-      }
-      if (url.indexOf("/") === 0) {
-        return true;
-      }
-      if (url.indexOf(this.origin()) === 0) {
-        return true;
-      }
-      if (url.replace(/^http/, "https").indexOf(this.origin()) === 0) {
-        return true;
-      }
-      if (url.replace(/^https/, "http").indexOf(this.origin()) === 0) {
-        return true;
-      }
-    }
-    return false;
-  },
+      isInternal(url) {
+        if (url && url.length) {
+          if (url.indexOf("//") === 0) {
+            url = "http:" + url;
+          }
+          if (url.indexOf("#") === 0) {
+            return true;
+          }
+          if (url.indexOf("/") === 0) {
+            return true;
+          }
+          if (url.indexOf(this.origin()) === 0) {
+            return true;
+          }
+          if (url.replace(/^http/, "https").indexOf(this.origin()) === 0) {
+            return true;
+          }
+          if (url.replace(/^https/, "http").indexOf(this.origin()) === 0) {
+            return true;
+          }
+        }
+        return false;
+      },
 
-  /**
+      /**
     If the URL is in the topic form, /t/something/:topic_id/:post_number
     then we want to apply some special logic. If the post_number changes within the
     same topic, use replaceState and instruct our controller to load more posts.
   **/
-  navigatedToPost(oldPath, path, routeOpts) {
-    const newMatches = TOPIC_REGEXP.exec(path);
-    const newTopicId = newMatches ? newMatches[2] : null;
+      navigatedToPost(oldPath, path, routeOpts) {
+        const newMatches = TOPIC_REGEXP.exec(path);
+        const newTopicId = newMatches ? newMatches[2] : null;
 
-    if (newTopicId) {
-      const oldMatches = TOPIC_REGEXP.exec(oldPath);
-      const oldTopicId = oldMatches ? oldMatches[2] : null;
+        if (newTopicId) {
+          const oldMatches = TOPIC_REGEXP.exec(oldPath);
+          const oldTopicId = oldMatches ? oldMatches[2] : null;
 
-      // If the topic_id is the same
-      if (oldTopicId === newTopicId) {
-        DiscourseURL.replaceState(path);
+          // If the topic_id is the same
+          if (oldTopicId === newTopicId) {
+            DiscourseURL.replaceState(path);
 
-        const container = Discourse.__container__;
-        const topicController = container.lookup("controller:topic");
-        const opts = {};
-        const postStream = topicController.get("model.postStream");
+            const container = Discourse.__container__;
+            const topicController = container.lookup("controller:topic");
+            const opts = {};
+            const postStream = topicController.get("model.postStream");
 
-        if (newMatches[3]) {
-          opts.nearPost = newMatches[3];
-        }
-        if (path.match(/last$/)) {
-          opts.nearPost = topicController.get("model.highest_post_number");
-        }
+            if (newMatches[3]) {
+              opts.nearPost = newMatches[3];
+            }
+            if (path.match(/last$/)) {
+              opts.nearPost = topicController.get("model.highest_post_number");
+            }
 
-        opts.cancelSummary = true;
+            opts.cancelSummary = true;
 
-        postStream.refresh(opts).then(() => {
-          const closest = postStream.closestPostNumberFor(opts.nearPost || 1);
-          topicController.setProperties({
-            "model.currentPost": closest,
-            enteredAt: new Date().getTime().toString()
-          });
+            postStream.refresh(opts).then(() => {
+              const closest =
+                postStream.closestPostNumberFor(opts.nearPost || 1);
+              topicController.setProperties({
+                "model.currentPost": closest,
+                enteredAt: new Date().getTime().toString()
+              });
 
-          this.appEvents.trigger("post:highlight", closest);
-          const jumpOpts = {
-            skipIfOnScreen: routeOpts.skipIfOnScreen,
-            jumpEnd: routeOpts.jumpEnd
-          };
+              this.appEvents.trigger("post:highlight", closest);
+              const jumpOpts = {
+                skipIfOnScreen: routeOpts.skipIfOnScreen,
+                jumpEnd: routeOpts.jumpEnd
+              };
 
-          const m = /#.+$/.exec(path);
-          if (m) {
-            jumpOpts.anchor = m[0];
+              const m = /#.+$/.exec(path);
+              if (m) {
+                jumpOpts.anchor = m[0];
+              }
+
+              this.jumpToPost(closest, jumpOpts);
+            });
+
+            // Abort routing, we have replaced our state.
+            return true;
           }
+        }
 
-          this.jumpToPost(closest, jumpOpts);
-        });
+        return false;
+      },
 
-        // Abort routing, we have replaced our state.
-        return true;
-      }
-    }
-
-    return false;
-  },
-
-  /**
+      /**
     @private
 
     Handle the custom case of routing to the root path from itself.
@@ -402,34 +385,29 @@ const DiscourseURL = EmberObject.extend({
     @param {String} oldPath the previous path we were on
     @param {String} path the path we're navigating to
   **/
-  navigatedToHome(oldPath, path) {
-    const homepage = defaultHomepage();
+      navigatedToHome(oldPath, path) {
+        const homepage = defaultHomepage();
 
-    if (
-      window.history &&
-      window.history.pushState &&
-      (path === "/" || path === "/" + homepage) &&
-      (oldPath === "/" || oldPath === "/" + homepage)
-    ) {
-      this.appEvents.trigger("url:refresh");
-      return true;
-    }
+        if (window.history && window.history.pushState &&
+            (path === "/" || path === "/" + homepage) &&
+            (oldPath === "/" || oldPath === "/" + homepage)) {
+          this.appEvents.trigger("url:refresh");
+          return true;
+        }
 
-    return false;
-  },
+        return false;
+      },
 
-  // This has been extracted so it can be tested.
-  origin() {
-    return (
-      window.location.origin +
-      (Discourse.BaseUri === "/" ? "" : Discourse.BaseUri)
-    );
-  },
+      // This has been extracted so it can be tested.
+      origin() {
+        return (window.location.origin +
+                (Discourse.BaseUri === "/" ? "" : Discourse.BaseUri));
+      },
 
-  // TODO: These container calls can be replaced eventually if we migrate this to a service
-  // object.
+      // TODO: These container calls can be replaced eventually if we migrate this to a service
+      // object.
 
-  /**
+      /**
     @private
 
     Get a handle on the application's router. Note that currently it uses `__container__` which is not
@@ -437,55 +415,56 @@ const DiscourseURL = EmberObject.extend({
 
     @property router
   **/
-  get router() {
-    return Discourse.__container__.lookup("router:main");
-  },
+      get router() {
+        return Discourse.__container__.lookup("router:main");
+      },
 
-  get appEvents() {
-    return Discourse.__container__.lookup("service:app-events");
-  },
+      get appEvents() {
+        return Discourse.__container__.lookup("service:app-events");
+      },
 
-  // Get a controller. Note that currently it uses `__container__` which is not
-  // advised but there is no other way to access the router.
-  controllerFor(name) {
-    return Discourse.__container__.lookup("controller:" + name);
-  },
+      // Get a controller. Note that currently it uses `__container__` which is not
+      // advised but there is no other way to access the router.
+      controllerFor(name) {
+        return Discourse.__container__.lookup("controller:" + name);
+      },
 
-  /**
+      /**
     Be wary of looking up the router. In this case, we have links in our
     HTML, say form compiled markdown posts, that need to be routed.
   **/
-  handleURL(path, opts) {
-    opts = opts || {};
+      handleURL(path, opts) {
+        opts = opts || {};
 
-    const router = this.router;
+        const router = this.router;
 
-    if (opts.replaceURL) {
-      this.replaceState(path);
-    }
+        if (opts.replaceURL) {
+          this.replaceState(path);
+        }
 
-    const split = path.split("#");
-    let elementId;
+        const split = path.split("#");
+        let elementId;
 
-    if (split.length === 2) {
-      path = split[0];
-      elementId = split[1];
-    }
+        if (split.length === 2) {
+          path = split[0];
+          elementId = split[1];
+        }
 
-    // The default path has a hack to allow `/` to default to defaultHomepage
-    // via BareRouter.handleUrl
-    let transition;
-    if (path === "/" || path.substring(0, 2) === "/?") {
-      router._routerMicrolib.updateURL(path);
-      transition = router.handleURL(path);
-    } else {
-      transition = router.transitionTo(path);
-    }
+        // The default path has a hack to allow `/` to default to defaultHomepage
+        // via BareRouter.handleUrl
+        let transition;
+        if (path === "/" || path.substring(0, 2) === "/?") {
+          router._routerMicrolib.updateURL(path);
+          transition = router.handleURL(path);
+        } else {
+          transition = router.transitionTo(path);
+        }
 
-    transition._discourse_intercepted = true;
-    const promise = transition.promise || transition;
-    promise.then(() => jumpToElement(elementId));
-  }
-}).create();
+        transition._discourse_intercepted = true;
+        const promise = transition.promise || transition;
+        promise.then(() => jumpToElement(elementId));
+      }
+    })
+    .create();
 
 export default DiscourseURL;

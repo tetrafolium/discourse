@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 
 export default Component.extend({
   tagName: "",

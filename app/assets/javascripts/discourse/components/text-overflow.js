@@ -1,5 +1,5 @@
-import { next } from "@ember/runloop";
-import { htmlSafe } from "@ember/template";
+import {next} from "@ember/runloop";
+import {htmlSafe} from "@ember/template";
 import Component from "@ember/component";
 
 export default Component.extend({

@@ -1,49 +1,34 @@
-import { on } from "discourse-common/utils/decorators";
-import { ajax } from "discourse/lib/ajax";
-import { url } from "discourse/lib/computed";
+import {on} from "discourse-common/utils/decorators";
+import {ajax} from "discourse/lib/ajax";
+import {url} from "discourse/lib/computed";
 import UserAction from "discourse/models/user-action";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import EmberObject from "@ember/object";
 
 export default EmberObject.extend({
   loaded: false,
 
-  @on("init")
-  _initialize() {
-    this.setProperties({
-      itemsLoaded: 0,
-      canLoadMore: true,
-      content: []
-    });
-  },
+    @on("init") _initialize() {
+    this.setProperties({ itemsLoaded: 0, canLoadMore: true, content: [] });
+  }
+  ,
 
-  url: url(
-    "user.username_lower",
-    "filter",
-    "itemsLoaded",
-    "/posts/%@/%@?offset=%@"
-  ),
+    url: url("user.username_lower", "filter", "itemsLoaded",
+             "/posts/%@/%@?offset=%@"),
 
-  filterBy(opts) {
+    filterBy(opts) {
     if (this.loaded && this.filter === opts.filter) {
       return Promise.resolve();
     }
 
-    this.setProperties(
-      Object.assign(
-        {
-          itemsLoaded: 0,
-          content: [],
-          lastLoadedUrl: null
-        },
-        opts
-      )
-    );
+    this.setProperties(Object.assign(
+      { itemsLoaded: 0, content: [], lastLoadedUrl: null }, opts));
 
     return this.findItems();
-  },
+  }
+  ,
 
-  findItems() {
+    findItems() {
     if (this.loading || !this.canLoadMore) {
       return Promise.reject();
     }

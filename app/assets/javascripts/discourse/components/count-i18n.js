@@ -9,7 +9,6 @@ export default Component.extend({
     this._super(...arguments);
     this.set(
       "i18nCount",
-      I18n.t(this.key + (this.suffix || ""), { count: this.count }).htmlSafe()
-    );
+      I18n.t(this.key + (this.suffix || ""), { count: this.count }).htmlSafe());
   }
 });

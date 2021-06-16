@@ -1,6 +1,6 @@
 import QuickAccessPanel from "discourse/widgets/quick-access-panel";
-import { createWidgetFrom } from "discourse/widgets/widget";
-import { Promise } from "rsvp";
+import {createWidgetFrom} from "discourse/widgets/widget";
+import {Promise} from "rsvp";
 
 createWidgetFrom(QuickAccessPanel, "quick-access-profile", {
   buildKey: () => "quick-access-profile",
@@ -49,18 +49,16 @@ createWidgetFrom(QuickAccessPanel, "quick-access-profile", {
         content: I18n.t("user.private_messages")
       });
     }
-    defaultItems.push(
-      {
-        icon: "pencil-alt",
-        href: `${this.attrs.path}/activity/drafts`,
-        content: I18n.t("user_action_groups.15")
-      },
-      {
-        icon: "cog",
-        href: `${this.attrs.path}/preferences`,
-        content: I18n.t("user.preferences")
-      }
-    );
+    defaultItems.push({
+      icon: "pencil-alt",
+      href: `${this.attrs.path}/activity/drafts`,
+      content: I18n.t("user_action_groups.15")
+    },
+                      {
+                        icon: "cog",
+                        href: `${this.attrs.path}/preferences`,
+                        content: I18n.t("user.preferences")
+                      });
     return defaultItems;
   },
 
@@ -92,11 +90,9 @@ createWidgetFrom(QuickAccessPanel, "quick-access-profile", {
   },
 
   _showToggleAnonymousButton() {
-    return (
-      (this.siteSettings.allow_anonymous_posting &&
-        this.currentUser.trust_level >=
-          this.siteSettings.anonymous_posting_min_trust_level) ||
-      this.currentUser.is_anonymous
-    );
+    return ((this.siteSettings.allow_anonymous_posting &&
+             this.currentUser.trust_level >=
+               this.siteSettings.anonymous_posting_min_trust_level) ||
+            this.currentUser.is_anonymous);
   }
 });

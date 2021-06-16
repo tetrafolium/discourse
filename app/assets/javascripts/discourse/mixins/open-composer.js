@@ -5,11 +5,8 @@ import Mixin from "@ember/object/mixin";
 export default Mixin.create({
   openComposer(controller) {
     let categoryId = controller.get("category.id");
-    if (
-      categoryId &&
-      controller.category.isUncategorizedCategory &&
-      !this.siteSettings.allow_uncategorized_topics
-    ) {
+    if (categoryId && controller.category.isUncategorizedCategory &&
+        !this.siteSettings.allow_uncategorized_topics) {
       categoryId = null;
     }
 
@@ -21,13 +18,8 @@ export default Mixin.create({
     });
   },
 
-  openComposerWithTopicParams(
-    controller,
-    topicTitle,
-    topicBody,
-    topicCategoryId,
-    topicTags
-  ) {
+  openComposerWithTopicParams(controller, topicTitle, topicBody,
+                              topicCategoryId, topicTags) {
     this.controllerFor("composer").open({
       action: Composer.CREATE_TOPIC,
       topicTitle,

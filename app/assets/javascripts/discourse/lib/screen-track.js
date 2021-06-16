@@ -1,5 +1,5 @@
-import { bind } from "@ember/runloop";
-import { ajax } from "discourse/lib/ajax";
+import {bind} from "@ember/runloop";
+import {ajax} from "discourse/lib/ajax";
 
 // We use this class to track how long posts in a topic are on the screen.
 const PAUSE_UNLESS_SCROLLED = 1000 * 60 * 3;
@@ -110,22 +110,26 @@ export default class {
     const stream = controller ? controller.get("model.postStream") : null;
     if (
       this.currentUser && // Logged in
-      this.currentUser.get("ignored_users.length") && // At least 1 user is ignored
-      stream && // Sanity check
-      stream.hasNoFilters && // The stream is not filtered (by username or summary)
-      !stream.canAppendMore && // We are at the end of the stream
-      stream.posts.lastObject && // The last post exists
+      this.currentUser.get(
+        "ignored_users.length") && // At least 1 user is ignored
+      stream &&                    // Sanity check
+      stream
+        .hasNoFilters && // The stream is not filtered (by username or summary)
+      !stream.canAppendMore &&        // We are at the end of the stream
+      stream.posts.lastObject &&      // The last post exists
       stream.posts.lastObject.read && // The last post is read
-      stream.gaps && // The stream has gaps
-      !!stream.gaps.after[stream.posts.lastObject.id] && // Stream ends with a gap
+      stream.gaps &&                  // The stream has gaps
+      !!stream.gaps
+          .after[stream.posts.lastObject.id] && // Stream ends with a gap
       stream.topic.last_read_post_number !==
         stream.posts.lastObject.post_number +
-          stream.get(`gaps.after.${stream.posts.lastObject.id}.length`) // The last post in the gap has not been marked read
+          stream.get(`gaps.after.${
+            stream.posts.lastObject
+              .id}.length`) // The last post in the gap has not been marked read
     ) {
-      newTimings[
-        stream.posts.lastObject.post_number +
-          stream.get(`gaps.after.${stream.posts.lastObject.id}.length`)
-      ] = 1;
+      newTimings[stream.posts.lastObject.post_number +
+                 stream.get(
+                   `gaps.after.${stream.posts.lastObject.id}.length`)] = 1;
     }
 
     Object.keys(newTimings).forEach(postNumber => {
@@ -151,25 +155,20 @@ export default class {
           },
           cache: false,
           type: "POST",
-          headers: {
-            "X-SILENCE-LOGGER": "true"
-          }
+          headers: { "X-SILENCE-LOGGER": "true" }
         })
           .then(() => {
             const topicController = this._topicController;
             if (topicController) {
-              const postNumbers = Object.keys(newTimings).map(v =>
-                parseInt(v, 10)
-              );
+              const postNumbers =
+                Object.keys(newTimings).map(v => parseInt(v, 10));
               topicController.readPosts(topicId, postNumbers);
             }
           })
           .catch(e => {
             const error = e.jqXHR;
-            if (
-              error.status === 405 &&
-              error.responseJSON.error_type === "read_only"
-            )
+            if (error.status === 405 &&
+                error.responseJSON.error_type === "read_only")
               return;
           })
           .finally(() => {
@@ -191,10 +190,8 @@ export default class {
         } else {
           topicIds = [];
         }
-        if (
-          topicIds.indexOf(topicId) === -1 &&
-          topicIds.length < ANON_MAX_TOPIC_IDS
-        ) {
+        if (topicIds.indexOf(topicId) === -1 &&
+            topicIds.length < ANON_MAX_TOPIC_IDS) {
           topicIds.push(topicId);
           storage.setItem("anon-topic-ids", topicIds.join(","));
         }
@@ -229,11 +226,8 @@ export default class {
     const nextFlush = this.siteSettings.flush_timings_secs * 1000;
 
     const rush = Object.keys(timings).some(postNumber => {
-      return (
-        timings[postNumber] > 0 &&
-        !totalTimings[postNumber] &&
-        !this._readPosts[postNumber]
-      );
+      return (timings[postNumber] > 0 && !totalTimings[postNumber] &&
+              !this._readPosts[postNumber]);
     });
 
     if (!this._inProgress && (this._lastFlush > nextFlush || rush)) {
@@ -244,8 +238,8 @@ export default class {
       this._topicTime += diff;
 
       this._onscreen.forEach(
-        postNumber => (timings[postNumber] = (timings[postNumber] || 0) + diff)
-      );
+        postNumber =>
+          (timings[postNumber] = (timings[postNumber] || 0) + diff));
 
       this._readOnscreen.forEach(postNumber => {
         this._readPosts[postNumber] = true;

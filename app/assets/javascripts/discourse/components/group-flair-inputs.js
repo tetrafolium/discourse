@@ -1,40 +1,40 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { debounce } from "@ember/runloop";
+import {debounce} from "@ember/runloop";
 import Component from "@ember/component";
-import { observes } from "discourse-common/utils/decorators";
-import { escapeExpression } from "discourse/lib/utilities";
-import { convertIconClass } from "discourse-common/lib/icon-library";
-import { ajax } from "discourse/lib/ajax";
-import { htmlSafe } from "@ember/template";
+import {observes} from "discourse-common/utils/decorators";
+import {escapeExpression} from "discourse/lib/utilities";
+import {convertIconClass} from "discourse-common/lib/icon-library";
+import {ajax} from "discourse/lib/ajax";
+import {htmlSafe} from "@ember/template";
 
 export default Component.extend({
   classNames: ["group-flair-inputs"],
 
-  @discourseComputed
-  demoAvatarUrl() {
+    @discourseComputed demoAvatarUrl() {
     return Discourse.getURL("/images/avatar.png");
-  },
+  }
+  ,
 
-  @discourseComputed("model.flair_url")
-  flairPreviewIcon(flairURL) {
+    @discourseComputed("model.flair_url") flairPreviewIcon(flairURL) {
     return flairURL && /fa(r|b?)-/.test(flairURL);
-  },
+  }
+  ,
 
-  @discourseComputed("model.flair_url", "flairPreviewIcon")
-  flairPreviewIconUrl(flairURL, flairPreviewIcon) {
+    @discourseComputed("model.flair_url", "flairPreviewIcon")
+    flairPreviewIconUrl(flairURL, flairPreviewIcon) {
     return flairPreviewIcon ? convertIconClass(flairURL) : "";
-  },
+  }
+  ,
 
-  @observes("model.flair_url")
-  _loadSVGIcon() {
+    @observes("model.flair_url") _loadSVGIcon() {
     debounce(this, this._loadIcon, 1000);
-  },
+  }
+  ,
 
-  _loadIcon() {
+    _loadIcon() {
     const icon = convertIconClass(this.get("model.flair_url")),
-      c = "#svg-sprites",
-      h = "ajax-icon-holder",
-      singleIconEl = `${c} .${h}`;
+          c = "#svg-sprites", h = "ajax-icon-holder",
+          singleIconEl = `${c} .${h}`;
 
     if (!icon) return;
 
@@ -42,30 +42,25 @@ export default Component.extend({
       ajax(`/svg-sprite/search/${icon}`).then(function(data) {
         if ($(singleIconEl).length === 0) $(c).append(`<div class="${h}">`);
 
-        $(singleIconEl).html(
-          `<svg xmlns='http://www.w3.org/2000/svg' style='display: none;'>${data}</svg>`
-        );
+        $(singleIconEl)
+          .html(
+            `<svg xmlns='http://www.w3.org/2000/svg' style='display: none;'>${
+              data}</svg>`);
       });
     }
-  },
+  }
+  ,
 
-  @discourseComputed("model.flair_url", "flairPreviewIcon")
-  flairPreviewImage(flairURL, flairPreviewIcon) {
+    @discourseComputed("model.flair_url", "flairPreviewIcon")
+    flairPreviewImage(flairURL, flairPreviewIcon) {
     return flairURL && !flairPreviewIcon;
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "model.flair_url",
-    "flairPreviewImage",
-    "model.flairBackgroundHexColor",
-    "model.flairHexColor"
-  )
-  flairPreviewStyle(
-    flairURL,
-    flairPreviewImage,
-    flairBackgroundHexColor,
-    flairHexColor
-  ) {
+    @discourseComputed("model.flair_url", "flairPreviewImage",
+                       "model.flairBackgroundHexColor", "model.flairHexColor")
+    flairPreviewStyle(flairURL, flairPreviewImage, flairBackgroundHexColor,
+                      flairHexColor) {
     let style = "";
 
     if (flairPreviewImage) {
@@ -79,15 +74,17 @@ export default Component.extend({
     if (flairHexColor) style += `color: #${flairHexColor};`;
 
     return htmlSafe(style);
-  },
+  }
+  ,
 
-  @discourseComputed("model.flairBackgroundHexColor")
-  flairPreviewClasses(flairBackgroundHexColor) {
+    @discourseComputed("model.flairBackgroundHexColor")
+    flairPreviewClasses(flairBackgroundHexColor) {
     if (flairBackgroundHexColor) return "rounded";
-  },
+  }
+  ,
 
-  @discourseComputed("flairPreviewImage")
-  flairPreviewLabel(flairPreviewImage) {
+    @discourseComputed("flairPreviewImage")
+    flairPreviewLabel(flairPreviewImage) {
     const key = flairPreviewImage ? "image" : "icon";
     return I18n.t(`groups.flair_preview_${key}`);
   }

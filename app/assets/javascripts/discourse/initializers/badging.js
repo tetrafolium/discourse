@@ -12,8 +12,7 @@ export default {
     this.notifications =
       user.unread_notifications + user.unread_private_messages;
 
-    container
-      .lookup("service:app-events")
+    container.lookup("service:app-events")
       .on("notifications:changed", this, "_updateBadge");
   },
 

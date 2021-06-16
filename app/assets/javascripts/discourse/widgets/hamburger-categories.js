@@ -1,6 +1,6 @@
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { number } from "discourse/lib/formatter";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {number} from "discourse/lib/formatter";
 import Category from "discourse/models/category";
 
 createWidget("hamburger-category", {
@@ -13,22 +13,15 @@ createWidget("hamburger-category", {
 
     this.tagName += ".category-" + Category.slugFor(c, "-");
 
-    const results = [
-      this.attach("category-link", { category: c, allowUncategorized: true })
-    ];
+    const results =
+      [this.attach("category-link", { category: c, allowUncategorized: true })];
 
     const unreadTotal =
       parseInt(c.get("unreadTopics"), 10) + parseInt(c.get("newTopics"), 10);
     if (unreadTotal) {
-      results.push(
-        h(
-          "a.badge.badge-notification",
-          {
-            attributes: { href: c.get("url") }
-          },
-          number(unreadTotal)
-        )
-      );
+      results.push(h("a.badge.badge-notification",
+                     { attributes: { href: c.get("url") } },
+                     number(unreadTotal)));
     }
 
     if (!this.currentUser) {
@@ -57,20 +50,15 @@ export default createWidget("hamburger-categories", {
       title = I18n.t("categories.n_more", { count: attrs.moreCount });
     }
 
-    let result = [
-      h(
-        "li.heading",
-        h("a.d-link.categories-link", { attributes: { href } }, title)
-      )
-    ];
+    let result = [h("li.heading", h("a.d-link.categories-link",
+                                    { attributes: { href } }, title))];
 
     const categories = attrs.categories;
     if (categories.length === 0) {
       return;
     }
-    result = result.concat(
-      categories.map(c => this.attach("hamburger-category", c))
-    );
+    result =
+      result.concat(categories.map(c => this.attach("hamburger-category", c)));
 
     return result;
   }

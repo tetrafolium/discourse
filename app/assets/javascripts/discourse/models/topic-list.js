@@ -1,12 +1,12 @@
-import { notEmpty } from "@ember/object/computed";
+import {notEmpty} from "@ember/object/computed";
 import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
-import { getOwner } from "discourse-common/lib/get-owner";
-import { Promise } from "rsvp";
+import {getOwner} from "discourse-common/lib/get-owner";
+import {Promise} from "rsvp";
 import Category from "discourse/models/category";
 import Session from "discourse/models/session";
-import { isEmpty } from "@ember/utils";
+import {isEmpty} from "@ember/utils";
 import User from "discourse/models/user";
 
 function extractByKey(collection, klass) {
@@ -121,12 +121,10 @@ const TopicList = RestModel.extend({
   loadBefore(topic_ids, storeInSession) {
     // refresh dupes
     this.topics.removeObjects(
-      this.topics.filter(topic => topic_ids.indexOf(topic.id) >= 0)
-    );
+      this.topics.filter(topic => topic_ids.indexOf(topic.id) >= 0));
 
-    const url = `${Discourse.getURL("/")}${
-      this.filter
-    }.json?topic_ids=${topic_ids.join(",")}`;
+    const url = `${Discourse.getURL("/")}${this.filter}.json?topic_ids=${
+      topic_ids.join(",")}`;
 
     return ajax({ url, data: this.params }).then(result => {
       let i = 0;
@@ -152,8 +150,8 @@ TopicList.reopenClass({
     // Stitch together our side loaded data
 
     const categories = Category.list(),
-      users = extractByKey(result.users, User),
-      groups = extractByKey(result.primary_groups, EmberObject);
+          users = extractByKey(result.users, User),
+          groups = extractByKey(result.primary_groups, EmberObject);
 
     return result.topic_list[listKey].map(t => {
       t.category = categories.findBy("id", t.category_id);
@@ -163,9 +161,8 @@ TopicList.reopenClass({
         if (p.primary_group_id) {
           p.primary_group = groups[p.primary_group_id];
           if (p.primary_group) {
-            p.extraClasses = `${p.extraClasses || ""} group-${
-              p.primary_group.name
-            }`;
+            p.extraClasses =
+              `${p.extraClasses || ""} group-${p.primary_group.name}`;
           }
         }
       });
@@ -191,9 +188,8 @@ TopicList.reopenClass({
     json.topics = this.topicsFrom(store, json);
 
     if (json.topic_list.shared_drafts) {
-      json.sharedDrafts = this.topicsFrom(store, json, {
-        listKey: "shared_drafts"
-      });
+      json.sharedDrafts =
+        this.topicsFrom(store, json, { listKey: "shared_drafts" });
     }
 
     return json;

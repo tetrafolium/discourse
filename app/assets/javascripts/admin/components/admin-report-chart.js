@@ -1,7 +1,7 @@
-import { makeArray } from "discourse-common/lib/helpers";
-import { debounce, schedule } from "@ember/runloop";
+import {makeArray} from "discourse-common/lib/helpers";
+import {debounce, schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import { number } from "discourse/lib/formatter";
+import {number} from "discourse/lib/formatter";
 import loadScript from "discourse/lib/load-script";
 
 export default Component.extend({
@@ -38,10 +38,8 @@ export default Component.extend({
 
   _scheduleChartRendering() {
     schedule("afterRender", () => {
-      this._renderChart(
-        this.model,
-        this.element && this.element.querySelector(".chart-canvas")
-      );
+      this._renderChart(this.model, this.element && this.element.querySelector(
+                                                      ".chart-canvas"));
     });
   },
 
@@ -50,27 +48,23 @@ export default Component.extend({
 
     const context = chartCanvas.getContext("2d");
     const chartData = makeArray(model.get("chartData") || model.get("data"));
-    const prevChartData = makeArray(
-      model.get("prevChartData") || model.get("prev_data")
-    );
+    const prevChartData =
+      makeArray(model.get("prevChartData") || model.get("prev_data"));
 
     const labels = chartData.map(d => d.x);
 
     const data = {
       labels,
-      datasets: [
-        {
-          data: chartData.map(d => Math.round(parseFloat(d.y))),
-          backgroundColor: prevChartData.length
-            ? "transparent"
-            : model.secondary_color,
-          borderColor: model.primary_color,
-          pointRadius: 3,
-          borderWidth: 1,
-          pointBackgroundColor: model.primary_color,
-          pointBorderColor: model.primary_color
-        }
-      ]
+      datasets: [{
+        data: chartData.map(d => Math.round(parseFloat(d.y))),
+        backgroundColor: prevChartData.length ? "transparent"
+                                              : model.secondary_color,
+        borderColor: model.primary_color,
+        pointRadius: 3,
+        borderWidth: 1,
+        pointBackgroundColor: model.primary_color,
+        pointBorderColor: model.primary_color
+      }]
     };
 
     if (prevChartData.length) {
@@ -106,53 +100,32 @@ export default Component.extend({
               moment(tooltipItem[0].xLabel, "YYYY-MM-DD").format("LL")
           }
         },
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         responsive: true,
         maintainAspectRatio: false,
         responsiveAnimationDuration: 0,
-        animation: {
-          duration: 0
-        },
-        layout: {
-          padding: {
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0
-          }
-        },
+        animation: { duration: 0 },
+        layout: { padding: { left: 0, top: 0, right: 0, bottom: 0 } },
         scales: {
-          yAxes: [
-            {
-              display: true,
-              ticks: {
-                userCallback: label => {
-                  if (Math.floor(label) === label) return label;
-                },
-                callback: label => number(label),
-                sampleSize: 5,
-                maxRotation: 25,
-                minRotation: 25
-              }
-            }
-          ],
-          xAxes: [
-            {
-              display: true,
-              gridLines: { display: false },
-              type: "time",
-              time: {
-                parser: "YYYY-MM-DD"
+          yAxes: [{
+            display: true,
+            ticks: {
+              userCallback: label => {
+                if (Math.floor(label) === label) return label;
               },
-              ticks: {
-                sampleSize: 5,
-                maxRotation: 50,
-                minRotation: 50
-              }
+              callback: label => number(label),
+              sampleSize: 5,
+              maxRotation: 25,
+              minRotation: 25
             }
-          ]
+          }],
+          xAxes: [{
+            display: true,
+            gridLines: { display: false },
+            type: "time",
+            time: { parser: "YYYY-MM-DD" },
+            ticks: { sampleSize: 5, maxRotation: 50, minRotation: 50 }
+          }]
         }
       }
     };

@@ -1,7 +1,7 @@
-import { iconNode } from "discourse-common/lib/icon-library";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { replaceEmoji } from "discourse/widgets/emoji";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
+import {replaceEmoji} from "discourse/widgets/emoji";
 
 export default createWidget("post-links", {
   tagName: "div.post-links-container",
@@ -15,21 +15,12 @@ export default createWidget("post-links", {
     const linkBody = replaceEmoji(link.title);
     if (link.clicks) {
       linkBody.push(
-        h("span.badge.badge-notification.clicks", link.clicks.toString())
-      );
+        h("span.badge.badge-notification.clicks", link.clicks.toString()));
     }
 
-    return h(
-      "li",
-      h(
-        "a.track-link",
-        {
-          className: "inbound",
-          attributes: { href: link.url }
-        },
-        [iconNode("link"), linkBody]
-      )
-    );
+    return h("li", h("a.track-link",
+                     { className: "inbound", attributes: { href: link.url } },
+                     [iconNode("link"), linkBody]));
   },
 
   html(attrs, state) {
@@ -57,18 +48,13 @@ export default createWidget("post-links", {
       }
       // 'show more' link
       if (links.length > max) {
-        result.push(
-          h(
-            "li",
-            this.attach("link", {
-              labelCount: "post_links.title",
-              title: "post_links.about",
-              count: links.length - max,
-              action: "expandLinks",
-              className: "expand-links"
-            })
-          )
-        );
+        result.push(h("li", this.attach("link", {
+          labelCount: "post_links.title",
+          title: "post_links.about",
+          count: links.length - max,
+          action: "expandLinks",
+          className: "expand-links"
+        })));
       }
     }
 

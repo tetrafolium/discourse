@@ -1,7 +1,7 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import MountWidget from "discourse/components/mount-widget";
 import Docking from "discourse/mixins/docking";
-import { observes } from "discourse-common/utils/decorators";
+import {observes} from "discourse-common/utils/decorators";
 import optionalService from "discourse/lib/optional-service";
 
 const headerPadding = () => {
@@ -14,12 +14,10 @@ const headerPadding = () => {
 };
 
 export default MountWidget.extend(Docking, {
-  adminTools: optionalService(),
-  widget: "topic-timeline-container",
-  dockBottom: null,
-  dockAt: null,
+  adminTools: optionalService(), widget: "topic-timeline-container",
+    dockBottom: null, dockAt: null,
 
-  buildArgs() {
+    buildArgs() {
     let attrs = {
       topic: this.topic,
       notificationLevel: this.notificationLevel,
@@ -43,19 +41,20 @@ export default MountWidget.extend(Docking, {
     }
 
     return attrs;
-  },
+  }
+  ,
 
-  @observes("topic.highest_post_number", "loading")
-  newPostAdded() {
+    @observes("topic.highest_post_number", "loading") newPostAdded() {
     this.queueRerender(() => this.queueDockCheck());
-  },
+  }
+  ,
 
-  @observes("topic.details.notification_level")
-  _queueRerender() {
+    @observes("topic.details.notification_level") _queueRerender() {
     this.queueRerender();
-  },
+  }
+  ,
 
-  dockCheck(info) {
+    dockCheck(info) {
     const mainOffset = $("#main").offset();
     const offsetTop = mainOffset ? mainOffset.top : 0;
     const topicTop = $(".container.posts").offset().top - offsetTop;
@@ -80,18 +79,17 @@ export default MountWidget.extend(Docking, {
       }
     } else {
       this.dockAt = null;
-      this.fastDockAt = parseInt(
-        topicBottom - timelineHeight + footerHeight - offsetTop,
-        10
-      );
+      this.fastDockAt =
+        parseInt(topicBottom - timelineHeight + footerHeight - offsetTop, 10);
     }
 
     if (this.dockAt !== prev) {
       this.queueRerender();
     }
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     if (this.fullscreen && !this.addShowClass) {
@@ -108,9 +106,10 @@ export default MountWidget.extend(Docking, {
       this.appEvents.on("composer:resized", this, this.queueRerender);
       this.appEvents.on("composer:closed", this, this.queueRerender);
     }
-  },
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     this._super(...arguments);
 
     if (!this.site.mobileView) {

@@ -8,16 +8,12 @@ export default TextField.extend({
   canToggle: false,
 
   keyPress(e) {
-    if (
-      (e.which >= 65 && e.which <= 90 && !e.shiftKey) ||
-      (e.which >= 97 && e.which <= 122 && e.shiftKey)
-    ) {
+    if ((e.which >= 65 && e.which <= 90 && !e.shiftKey) ||
+        (e.which >= 97 && e.which <= 122 && e.shiftKey)) {
       this.set("canToggle", true);
       this.set("capsLockOn", true);
-    } else if (
-      (e.which >= 65 && e.which <= 90 && e.shiftKey) ||
-      (e.which >= 97 && e.which <= 122 && !e.shiftKey)
-    ) {
+    } else if ((e.which >= 65 && e.which <= 90 && e.shiftKey) ||
+               (e.which >= 97 && e.which <= 122 && !e.shiftKey)) {
       this.set("canToggle", true);
       this.set("capsLockOn", false);
     }
@@ -34,6 +30,8 @@ export default TextField.extend({
   },
 
   focusIn() {
-    this.set("canToggle", false); // can't know the state of caps lock yet. keyPress will figure it out.
+    this.set(
+      "canToggle",
+      false); // can't know the state of caps lock yet. keyPress will figure it out.
   }
 });

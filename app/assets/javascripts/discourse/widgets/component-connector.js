@@ -1,5 +1,5 @@
-import { scheduleOnce } from "@ember/runloop";
-import { setOwner, getOwner } from "@ember/application";
+import {scheduleOnce} from "@ember/runloop";
+import {setOwner, getOwner} from "@ember/application";
 
 export default class ComponentConnector {
   constructor(widget, componentName, opts, trackedProperties) {
@@ -40,9 +40,8 @@ export default class ComponentConnector {
     const { elem, opts, widget, componentName } = this;
 
     const mounted = widget._findView();
-    const view = widget.register
-      .lookupFactory(`component:${componentName}`)
-      .create(opts);
+    const view =
+      widget.register.lookupFactory(`component:${componentName}`).create(opts);
 
     if (setOwner) {
       setOwner(view, getOwner(mounted));

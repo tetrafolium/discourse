@@ -1,7 +1,7 @@
-import { makeArray } from "discourse-common/lib/helpers";
-import { debounce, schedule } from "@ember/runloop";
+import {makeArray} from "discourse-common/lib/helpers";
+import {debounce, schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import { number } from "discourse/lib/formatter";
+import {number} from "discourse/lib/formatter";
 import loadScript from "discourse/lib/load-script";
 
 export default Component.extend({
@@ -40,10 +40,8 @@ export default Component.extend({
         return;
       }
 
-      this._renderChart(
-        this.model,
-        this.element.querySelector(".chart-canvas")
-      );
+      this._renderChart(this.model,
+                        this.element.querySelector(".chart-canvas"));
     });
   },
 
@@ -82,65 +80,44 @@ export default Component.extend({
         maintainAspectRatio: false,
         responsiveAnimationDuration: 0,
         hover: { mode: "index" },
-        animation: {
-          duration: 0
-        },
+        animation: { duration: 0 },
         tooltips: {
           mode: "index",
           intersect: false,
           callbacks: {
             beforeFooter: tooltipItem => {
               let total = 0;
-              tooltipItem.forEach(
-                item => (total += parseInt(item.yLabel || 0, 10))
-              );
+              tooltipItem.forEach(item =>
+                                    (total += parseInt(item.yLabel || 0, 10)));
               return `= ${total}`;
             },
             title: tooltipItem =>
               moment(tooltipItem[0].xLabel, "YYYY-MM-DD").format("LL")
           }
         },
-        layout: {
-          padding: {
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0
-          }
-        },
+        layout: { padding: { left: 0, top: 0, right: 0, bottom: 0 } },
         scales: {
-          yAxes: [
-            {
-              stacked: true,
-              display: true,
-              ticks: {
-                userCallback: label => {
-                  if (Math.floor(label) === label) return label;
-                },
-                callback: label => number(label),
-                sampleSize: 5,
-                maxRotation: 25,
-                minRotation: 25
-              }
-            }
-          ],
-          xAxes: [
-            {
-              display: true,
-              gridLines: { display: false },
-              type: "time",
-              offset: true,
-              time: {
-                parser: "YYYY-MM-DD",
-                minUnit: "day"
+          yAxes: [{
+            stacked: true,
+            display: true,
+            ticks: {
+              userCallback: label => {
+                if (Math.floor(label) === label) return label;
               },
-              ticks: {
-                sampleSize: 5,
-                maxRotation: 50,
-                minRotation: 50
-              }
+              callback: label => number(label),
+              sampleSize: 5,
+              maxRotation: 25,
+              minRotation: 25
             }
-          ]
+          }],
+          xAxes: [{
+            display: true,
+            gridLines: { display: false },
+            type: "time",
+            offset: true,
+            time: { parser: "YYYY-MM-DD", minUnit: "day" },
+            ticks: { sampleSize: 5, maxRotation: 50, minRotation: 50 }
+          }]
         }
       }
     };

@@ -2,9 +2,8 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
   renderTemplate() {
-    this.render("admin/templates/logs/screened-ip-addresses", {
-      into: "adminLogs"
-    });
+    this.render("admin/templates/logs/screened-ip-addresses",
+                { into: "adminLogs" });
   },
 
   setupController() {

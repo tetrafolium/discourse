@@ -1,14 +1,12 @@
-import { get } from "@ember/object";
-import { isEmpty } from "@ember/utils";
-import { cancel, later, scheduleOnce } from "@ember/runloop";
+import {get} from "@ember/object";
+import {isEmpty} from "@ember/utils";
+import {cancel, later, scheduleOnce} from "@ember/runloop";
 import DiscourseRoute from "discourse/routes/discourse";
 import DiscourseURL from "discourse/lib/url";
-import { ID_CONSTRAINT } from "discourse/models/topic";
-import { EventTarget } from "rsvp";
+import {ID_CONSTRAINT} from "discourse/models/topic";
+import {EventTarget} from "rsvp";
 
-let isTransitioning = false,
-  scheduledReplace = null,
-  lastScrollPos = null;
+let isTransitioning = false, scheduledReplace = null, lastScrollPos = null;
 
 const SCROLL_DELAY = 500;
 
@@ -19,26 +17,19 @@ const TopicRoute = DiscourseRoute.extend({
     return this.redirectIfLoginRequired();
   },
 
-  queryParams: {
-    filter: { replace: true },
-    username_filters: { replace: true }
-  },
+  queryParams:
+    { filter: { replace: true }, username_filters: { replace: true } },
 
   titleToken() {
     const model = this.modelFor("topic");
     if (model) {
       const result = model.get("unicode_title") || model.get("title"),
-        cat = model.get("category");
+            cat = model.get("category");
 
       // Only display uncategorized in the title tag if it was renamed
-      if (
-        this.siteSettings.topic_page_title_includes_category &&
-        cat &&
-        !(
-          cat.get("isUncategorizedCategory") &&
-          cat.get("name").toLowerCase() === "uncategorized"
-        )
-      ) {
+      if (this.siteSettings.topic_page_title_includes_category && cat &&
+          !(cat.get("isUncategorizedCategory") &&
+            cat.get("name").toLowerCase() === "uncategorized")) {
         let catName = cat.get("name");
 
         const parentCategory = cat.get("parentCategory");
@@ -66,15 +57,11 @@ const TopicRoute = DiscourseRoute.extend({
 
       showModal("share-and-invite", {
         modalClass: "share-and-invite",
-        panels: [
-          {
-            id: "invite",
-            title: invitePanelTitle,
-            model: {
-              inviteModel: this.modelFor("topic")
-            }
-          }
-        ]
+        panels: [{
+          id: "invite",
+          title: invitePanelTitle,
+          model: { inviteModel: this.modelFor("topic") }
+        }]
       });
     },
 
@@ -114,29 +101,25 @@ const TopicRoute = DiscourseRoute.extend({
     },
 
     showFeatureTopic() {
-      showModal("featureTopic", {
-        model: this.modelFor("topic"),
-        title: "topic.feature_topic.title"
-      });
+      showModal(
+        "featureTopic",
+        { model: this.modelFor("topic"), title: "topic.feature_topic.title" });
       this.controllerFor("modal").set("modalClass", "feature-topic-modal");
       this.controllerFor("feature_topic").reset();
     },
 
     showHistory(model, revision) {
-      let historyController = showModal("history", {
-        model,
-        modalClass: "history-modal"
-      });
+      let historyController =
+        showModal("history", { model, modalClass: "history-modal" });
       historyController.refresh(model.get("id"), revision || "latest");
       historyController.set("post", model);
       historyController.set("topicController", this.controllerFor("topic"));
     },
 
     showGrantBadgeModal() {
-      showModal("grant-badge", {
-        model: this.modelFor("topic"),
-        title: "admin.badges.grant_badge"
-      });
+      showModal(
+        "grant-badge",
+        { model: this.modelFor("topic"), title: "admin.badges.grant_badge" });
     },
 
     showRawEmail(model) {
@@ -145,17 +128,15 @@ const TopicRoute = DiscourseRoute.extend({
     },
 
     moveToTopic() {
-      showModal("move-to-topic", {
-        model: this.modelFor("topic"),
-        title: "topic.move_to.title"
-      });
+      showModal(
+        "move-to-topic",
+        { model: this.modelFor("topic"), title: "topic.move_to.title" });
     },
 
     changeOwner() {
-      showModal("change-owner", {
-        model: this.modelFor("topic"),
-        title: "topic.change_owner.title"
-      });
+      showModal(
+        "change-owner",
+        { model: this.modelFor("topic"), title: "topic.change_owner.title" });
     },
 
     // Use replaceState to update the URL once it changes
@@ -174,12 +155,8 @@ const TopicRoute = DiscourseRoute.extend({
 
         cancel(scheduledReplace);
         lastScrollPos = parseInt($(document).scrollTop(), 10);
-        scheduledReplace = later(
-          this,
-          "_replaceUnlessScrolling",
-          postUrl,
-          Ember.Test ? 0 : SCROLL_DELAY
-        );
+        scheduledReplace = later(this, "_replaceUnlessScrolling", postUrl,
+                                 Ember.Test ? 0 : SCROLL_DELAY);
       }
     },
 
@@ -205,12 +182,8 @@ const TopicRoute = DiscourseRoute.extend({
       return;
     }
     lastScrollPos = currentPos;
-    scheduledReplace = later(
-      this,
-      "_replaceUnlessScrolling",
-      url,
-      SCROLL_DELAY
-    );
+    scheduledReplace =
+      later(this, "_replaceUnlessScrolling", url, SCROLL_DELAY);
   },
 
   setupParams(topic, params) {
@@ -218,7 +191,7 @@ const TopicRoute = DiscourseRoute.extend({
     postStream.set("summary", get(params, "filter") === "summary");
 
     const usernames = get(params, "username_filters"),
-      userFilters = postStream.get("userFilters");
+          userFilters = postStream.get("userFilters");
 
     userFilters.clear();
     if (!isEmpty(usernames) && usernames !== "undefined") {
@@ -232,9 +205,8 @@ const TopicRoute = DiscourseRoute.extend({
     if (params.slug.match(ID_CONSTRAINT)) {
       transition.abort();
 
-      DiscourseURL.routeTo(`/t/topic/${params.slug}/${params.id}`, {
-        replaceURL: true
-      });
+      DiscourseURL.routeTo(`/t/topic/${params.slug}/${params.id}`,
+                           { replaceURL: true });
 
       return;
     }
@@ -247,9 +219,7 @@ const TopicRoute = DiscourseRoute.extend({
       return topic;
     } else {
       topic = this.store.createRecord(
-        "topic",
-        _.omit(params, "username_filters", "filter")
-      );
+        "topic", _.omit(params, "username_filters", "filter"));
       return this.setupParams(topic, queryParams);
     }
   },
@@ -286,11 +256,8 @@ const TopicRoute = DiscourseRoute.extend({
     // In case we navigate from one topic directly to another
     isTransitioning = false;
 
-    controller.setProperties({
-      model,
-      editingTopic: false,
-      firstPostExpanded: false
-    });
+    controller.setProperties(
+      { model, editingTopic: false, firstPostExpanded: false });
 
     TopicRoute.trigger("setupTopicController", this);
 

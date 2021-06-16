@@ -1,6 +1,6 @@
 import Controller from "@ember/controller";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {ajax} from "discourse/lib/ajax";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default Controller.extend({
   saving: false,
@@ -14,10 +14,8 @@ export default Controller.extend({
       });
 
       this.set("saving", true);
-      ajax("/review/settings", {
-        method: "PUT",
-        data: { reviewable_priorities: priorities }
-      })
+      ajax("/review/settings",
+           { method: "PUT", data: { reviewable_priorities: priorities } })
         .then(() => {
           this.set("saved", true);
         })

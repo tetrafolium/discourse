@@ -1,7 +1,7 @@
-import { get } from "@ember/object";
-import { registerUnbound } from "discourse-common/lib/helpers";
-import { isRTL } from "discourse/lib/text-direction";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {get} from "@ember/object";
+import {registerUnbound} from "discourse-common/lib/helpers";
+import {isRTL} from "discourse/lib/text-direction";
+import {iconHTML} from "discourse-common/lib/icon-library";
 import Category from "discourse/models/category";
 import Site from "discourse/models/site";
 
@@ -32,12 +32,10 @@ function categoryStripe(color, classes) {
 export function categoryBadgeHTML(category, opts) {
   opts = opts || {};
 
-  if (
-    !category ||
-    (!opts.allowUncategorized &&
-      get(category, "id") === Site.currentProp("uncategorized_category_id") &&
-      Discourse.SiteSettings.suppress_uncategorized_badge)
-  )
+  if (!category ||
+      (!opts.allowUncategorized &&
+       get(category, "id") === Site.currentProp("uncategorized_category_id") &&
+       Discourse.SiteSettings.suppress_uncategorized_badge))
     return "";
 
   const depth = (opts.depth || 1) + 1;
@@ -80,27 +78,23 @@ export function categoryLinkHTML(category, options) {
     }
   }
   return new Handlebars.SafeString(
-    categoryBadgeHTML(category, categoryOptions)
-  );
+    categoryBadgeHTML(category, categoryOptions));
 }
 
 registerUnbound("category-link", categoryLinkHTML);
 
 function buildTopicCount(count) {
-  return `<span class="topic-count" aria-label="${I18n.t(
-    "category_row.topic_count",
-    { count }
-  )}">&times; ${count}</span>`;
+  return `<span class="topic-count" aria-label="${
+    I18n.t("category_row.topic_count", { count })}">&times; ${count}</span>`;
 }
 
 function defaultCategoryLinkRenderer(category, opts) {
   let descriptionText = get(category, "description_text");
   let restricted = get(category, "read_restricted");
   let url = opts.url
-    ? opts.url
-    : Discourse.getURL(
-        `/c/${Category.slugFor(category)}/${get(category, "id")}`
-      );
+              ? opts.url
+              : Discourse.getURL(
+                  `/c/${Category.slugFor(category)}/${get(category, "id")}`);
   let href = opts.link === false ? "" : url;
   let tagName = opts.link === false || opts.link === "false" ? "span" : "a";
   let extraClasses = opts.extraClasses ? " " + opts.extraClasses : "";
@@ -117,10 +111,8 @@ function defaultCategoryLinkRenderer(category, opts) {
     opts.categoryStyle || Discourse.SiteSettings.category_style;
   if (categoryStyle !== "none") {
     if (parentCat && parentCat !== category) {
-      html += categoryStripe(
-        get(parentCat, "color"),
-        "badge-category-parent-bg"
-      );
+      html +=
+        categoryStripe(get(parentCat, "color"), "badge-category-parent-bg");
     }
     html += categoryStripe(color, "badge-category-bg");
   }
@@ -135,13 +127,9 @@ function defaultCategoryLinkRenderer(category, opts) {
     style = `style="color: #${get(category, "text_color")};"`;
   }
 
-  html +=
-    `<span ${style} ` +
-    'data-drop-close="true" class="' +
-    classNames +
-    '"' +
-    (descriptionText ? 'title="' + descriptionText + '" ' : "") +
-    ">";
+  html += `<span ${style} ` +
+          'data-drop-close="true" class="' + classNames + '"' +
+          (descriptionText ? 'title="' + descriptionText + '" ' : "") + ">";
 
   let categoryName = escapeExpression(get(category, "name"));
 
@@ -150,9 +138,8 @@ function defaultCategoryLinkRenderer(category, opts) {
   }
 
   if (restricted) {
-    html += `${iconHTML(
-      "lock"
-    )}<span class="category-name" ${categoryDir}>${categoryName}</span>`;
+    html += `${iconHTML("lock")}<span class="category-name" ${categoryDir}>${
+      categoryName}</span>`;
   } else {
     html += `<span class="category-name" ${categoryDir}>${categoryName}</span>`;
   }
@@ -172,5 +159,6 @@ function defaultCategoryLinkRenderer(category, opts) {
   if (opts.topicCount && categoryStyle === "box") {
     afterBadgeWrapper += buildTopicCount(opts.topicCount);
   }
-  return `<${tagName} class="badge-wrapper ${extraClasses}" ${href}>${html}</${tagName}>${afterBadgeWrapper}`;
+  return `<${tagName} class="badge-wrapper ${extraClasses}" ${href}>${html}</${
+    tagName}>${afterBadgeWrapper}`;
 }

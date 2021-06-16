@@ -1,7 +1,7 @@
-import { sort } from "@ember/object/computed";
+import {sort} from "@ember/object/computed";
 import EmberObject from "@ember/object";
 import Controller from "@ember/controller";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 export default Controller.extend({
   sortedEmojis: sort("model", "emojiSorting"),
 
@@ -20,18 +20,15 @@ export default Controller.extend({
     destroy(emoji) {
       return bootbox.confirm(
         I18n.t("admin.emoji.delete_confirm", { name: emoji.get("name") }),
-        I18n.t("no_value"),
-        I18n.t("yes_value"),
-        destroy => {
+        I18n.t("no_value"), I18n.t("yes_value"), destroy => {
           if (destroy) {
-            return ajax("/admin/customize/emojis/" + emoji.get("name"), {
-              type: "DELETE"
-            }).then(() => {
-              this.model.removeObject(emoji);
-            });
+            return ajax("/admin/customize/emojis/" + emoji.get("name"),
+                        { type: "DELETE" })
+              .then(() => {
+                this.model.removeObject(emoji);
+              });
           }
-        }
-      );
+        });
     }
   }
 });

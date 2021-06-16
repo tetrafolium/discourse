@@ -1,32 +1,30 @@
-import { schedule } from "@ember/runloop";
+import {schedule} from "@ember/runloop";
 import Component from "@ember/component";
 /* global Pikaday:true */
 import loadScript from "discourse/lib/load-script";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 
 const DATE_FORMAT = "YYYY-MM-DD";
 
 export default Component.extend({
-  classNames: ["date-picker-wrapper"],
-  _picker: null,
-  value: null,
+  classNames: ["date-picker-wrapper"], _picker: null, value: null,
 
-  @discourseComputed("site.mobileView")
-  inputType(mobileView) {
+    @discourseComputed("site.mobileView") inputType(mobileView) {
     return mobileView ? "date" : "text";
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  _loadDatePicker() {
+    @on("didInsertElement") _loadDatePicker() {
     if (this.site.mobileView) {
       this._loadNativePicker();
     } else {
       const container = document.getElementById(this.containerId);
       this._loadPikadayPicker(container);
     }
-  },
+  }
+  ,
 
-  _loadPikadayPicker(container) {
+    _loadPikadayPicker(container) {
     loadScript("/javascripts/pikaday.js").then(() => {
       schedule("afterRender", () => {
         const options = {
@@ -48,9 +46,10 @@ export default Component.extend({
         this._picker = new Pikaday(Object.assign(options, this._opts()));
       });
     });
-  },
+  }
+  ,
 
-  _loadNativePicker() {
+    _loadNativePicker() {
     const picker = this.element.querySelector("input.date-picker");
     picker.onchange = () => this._handleSelection(picker.value);
     picker.hide = () => {
@@ -60,9 +59,10 @@ export default Component.extend({
       /* do nothing for native */
     };
     this._picker = picker;
-  },
+  }
+  ,
 
-  _handleSelection(value) {
+    _handleSelection(value) {
     const formattedDate = moment(value).format(DATE_FORMAT);
 
     if (!this.element || this.isDestroying || this.isDestroyed) return;
@@ -70,22 +70,23 @@ export default Component.extend({
     if (this.onSelect) {
       this.onSelect(formattedDate);
     }
-  },
+  }
+  ,
 
-  @on("willDestroyElement")
-  _destroy() {
+    @on("willDestroyElement") _destroy() {
     if (this._picker) {
       this._picker.destroy();
       this._picker = null;
     }
-  },
+  }
+  ,
 
-  @discourseComputed()
-  placeholder() {
+    @discourseComputed() placeholder() {
     return I18n.t("dates.placeholder");
-  },
+  }
+  ,
 
-  _opts() {
+    _opts() {
     return null;
   }
 });

@@ -1,15 +1,13 @@
 import QuickAccessPanel from "discourse/widgets/quick-access-panel";
-import { createWidgetFrom } from "discourse/widgets/widget";
-import { postUrl } from "discourse/lib/utilities";
+import {createWidgetFrom} from "discourse/widgets/widget";
+import {postUrl} from "discourse/lib/utilities";
 
 const ICON = "notification.private_message";
 
 function toItem(message) {
   const lastReadPostNumber = message.last_read_post_number || 0;
-  const nextUnreadPostNumber = Math.min(
-    lastReadPostNumber + 1,
-    message.highest_post_number
-  );
+  const nextUnreadPostNumber =
+    Math.min(lastReadPostNumber + 1, message.highest_post_number);
 
   return {
     escapedContent: message.fancy_title,

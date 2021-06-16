@@ -1,26 +1,24 @@
 import Component from "@ember/component";
-import discourseComputed, {
-  on,
-  observes
-} from "discourse-common/utils/decorators";
-import { findRawTemplate } from "discourse/lib/raw-templates";
+import discourseComputed,
+{on, observes} from "discourse-common/utils/decorators";
+import {findRawTemplate} from "discourse/lib/raw-templates";
 const { makeArray } = Ember;
 
 export default Component.extend({
   @discourseComputed("placeholderKey")
   placeholder(placeholderKey) {
     return placeholderKey ? I18n.t(placeholderKey) : "";
-  },
+  }
+  ,
 
-  @observes("badgeNames")
-  _update() {
+    @observes("badgeNames") _update() {
     if (this.canReceiveUpdates === "true") {
       this._initializeAutocomplete({ updateData: true });
     }
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  _initializeAutocomplete(opts) {
+    @on("didInsertElement") _initializeAutocomplete(opts) {
     let selectedBadges;
 
     $(this.element.querySelector("input")).autocomplete({
@@ -43,9 +41,8 @@ export default Component.extend({
         return this.badgeFinder(term).then(badges => {
           if (!selectedBadges) return badges;
 
-          return badges.filter(
-            badge => !selectedBadges.any(s => s === badge.name)
-          );
+          return badges.filter(badge =>
+                                 !selectedBadges.any(s => s === badge.name));
         });
       }
     });

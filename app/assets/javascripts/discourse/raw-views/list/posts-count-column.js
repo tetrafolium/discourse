@@ -1,12 +1,12 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import EmberObject from "@ember/object";
-import { fmt } from "discourse/lib/computed";
+import {fmt} from "discourse/lib/computed";
 
 export default EmberObject.extend({
   tagName: "td",
 
-  @discourseComputed("topic.like_count", "topic.posts_count")
-  ratio(likeCount, postCount) {
+    @discourseComputed("topic.like_count",
+                       "topic.posts_count") ratio(likeCount, postCount) {
     const likes = parseFloat(likeCount);
     const posts = parseFloat(postCount);
 
@@ -15,15 +15,15 @@ export default EmberObject.extend({
     }
 
     return (likes || 0) / posts;
-  },
+  }
+  ,
 
-  @discourseComputed("topic.replyCount", "ratioText")
-  title(count, ratio) {
+    @discourseComputed("topic.replyCount", "ratioText") title(count, ratio) {
     return I18n.messageFormat("posts_likes_MF", { count, ratio }).trim();
-  },
+  }
+  ,
 
-  @discourseComputed("ratio")
-  ratioText(ratio) {
+    @discourseComputed("ratio") ratioText(ratio) {
     const settings = this.siteSettings;
     if (ratio > settings.topic_post_like_heat_high) {
       return "high";
@@ -35,7 +35,8 @@ export default EmberObject.extend({
       return "low";
     }
     return "";
-  },
+  }
+  ,
 
-  likesHeat: fmt("ratioText", "heatmap-%@")
+    likesHeat: fmt("ratioText", "heatmap-%@")
 });

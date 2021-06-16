@@ -1,6 +1,6 @@
 import Route from "@ember/routing/route";
-import { scrollTop } from "discourse/mixins/scroll-top";
-import { THEMES, COMPONENTS } from "admin/models/theme";
+import {scrollTop} from "discourse/mixins/scroll-top";
+import {THEMES, COMPONENTS} from "admin/models/theme";
 
 export default Route.extend({
   serialize(model) {
@@ -56,17 +56,15 @@ export default Route.extend({
       const model = this.controller.model;
       if (model.recentlyInstalled && !model.hasParents && model.component) {
         transition.abort();
-        bootbox.confirm(
-          I18n.t("admin.customize.theme.unsaved_parent_themes"),
-          I18n.t("admin.customize.theme.discard"),
-          I18n.t("admin.customize.theme.stay"),
-          result => {
-            if (!result) {
-              this.controller.model.setProperties({ recentlyInstalled: false });
-              transition.retry();
-            }
-          }
-        );
+        bootbox.confirm(I18n.t("admin.customize.theme.unsaved_parent_themes"),
+                        I18n.t("admin.customize.theme.discard"),
+                        I18n.t("admin.customize.theme.stay"), result => {
+                          if (!result) {
+                            this.controller.model.setProperties(
+                              { recentlyInstalled: false });
+                            transition.retry();
+                          }
+                        });
       }
     }
   }

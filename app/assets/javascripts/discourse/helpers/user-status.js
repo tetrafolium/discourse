@@ -1,6 +1,6 @@
-import { iconHTML } from "discourse-common/lib/icon-library";
-import { htmlHelper } from "discourse-common/lib/helpers";
-import { escapeExpression } from "discourse/lib/utilities";
+import {iconHTML} from "discourse-common/lib/icon-library";
+import {htmlHelper} from "discourse-common/lib/helpers";
+import {escapeExpression} from "discourse/lib/utilities";
 
 export default htmlHelper((user, args) => {
   if (!user) {
@@ -14,13 +14,11 @@ export default htmlHelper((user, args) => {
   }
 
   if (currentUser && user.get("admin") && currentUser.get("staff")) {
-    return iconHTML("shield-alt", {
-      label: I18n.t("user.admin", { user: name })
-    });
+    return iconHTML("shield-alt",
+                    { label: I18n.t("user.admin", { user: name }) });
   }
   if (user.get("moderator")) {
-    return iconHTML("shield-alt", {
-      label: I18n.t("user.moderator", { user: name })
-    });
+    return iconHTML("shield-alt",
+                    { label: I18n.t("user.moderator", { user: name }) });
   }
 });

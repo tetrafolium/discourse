@@ -32,9 +32,8 @@ I18n.lookup = function(scope, options) {
   options = options || {};
 
   var translations = this.prepareOptions(I18n.translations),
-    locale = options.locale || I18n.currentLocale(),
-    messages = translations[locale] || {},
-    currentScope;
+      locale = options.locale || I18n.currentLocale(),
+      messages = translations[locale] || {}, currentScope;
 
   options = this.prepareOptions(options);
 
@@ -82,9 +81,7 @@ I18n.lookup = function(scope, options) {
 //   #=> {name: "John Doe", role: "user"}
 //
 I18n.prepareOptions = function() {
-  var options = {},
-    opts,
-    count = arguments.length;
+  var options = {}, opts, count = arguments.length;
 
   for (var i = 0; i < count; i++) {
     opts = arguments[i];
@@ -106,10 +103,7 @@ I18n.prepareOptions = function() {
 I18n.interpolate = function(message, options) {
   options = this.prepareOptions(options);
 
-  var matches = message.match(this.PLACEHOLDER),
-    placeholder,
-    value,
-    name;
+  var matches = message.match(this.PLACEHOLDER), placeholder, value, name;
 
   if (!matches) {
     return message;
@@ -132,9 +126,8 @@ I18n.interpolate = function(message, options) {
       value = "[missing " + placeholder + " value]";
     }
 
-    var regex = new RegExp(
-      placeholder.replace(/\{/gm, "\\{").replace(/\}/gm, "\\}")
-    );
+    var regex =
+      new RegExp(placeholder.replace(/\{/gm, "\\{").replace(/\}/gm, "\\}"));
     message = message.replace(regex, value);
   }
 
@@ -193,13 +186,9 @@ I18n.toNumber = function(number, options) {
   });
 
   var negative = number < 0,
-    string = Math.abs(number)
-      .toFixed(options.precision)
-      .toString(),
-    parts = string.split(this.SEPARATOR),
-    precision,
-    buffer = [],
-    formattedNumber;
+      string = Math.abs(number).toFixed(options.precision).toString(),
+      parts = string.split(this.SEPARATOR), precision, buffer = [],
+      formattedNumber;
 
   number = parts[0];
   precision = parts[1];
@@ -225,20 +214,15 @@ I18n.toNumber = function(number, options) {
       zeros: /0+$/
     };
 
-    formattedNumber = formattedNumber
-      .replace(regex.zeros, "")
-      .replace(regex.separator, "");
+    formattedNumber =
+      formattedNumber.replace(regex.zeros, "").replace(regex.separator, "");
   }
 
   return formattedNumber;
 };
 
 I18n.toHumanSize = function(number, options) {
-  var kb = 1024,
-    size = number,
-    iterations = 0,
-    unit,
-    precision;
+  var kb = 1024, size = number, iterations = 0, unit, precision;
 
   while (size >= kb && iterations < 4) {
     size = size / kb;
@@ -249,18 +233,13 @@ I18n.toHumanSize = function(number, options) {
     unit = this.t("number.human.storage_units.units.byte", { count: size });
     precision = 0;
   } else {
-    unit = this.t(
-      "number.human.storage_units.units." +
-        [null, "kb", "mb", "gb", "tb"][iterations]
-    );
+    unit = this.t("number.human.storage_units.units." +
+                  [null, "kb", "mb", "gb", "tb"][iterations]);
     precision = size - Math.floor(size) === 0 ? 0 : 1;
   }
 
-  options = this.prepareOptions(options, {
-    precision: precision,
-    format: "%n%u",
-    delimiter: ""
-  });
+  options = this.prepareOptions(
+    options, { precision: precision, format: "%n%u", delimiter: "" });
 
   number = this.toNumber(size, options);
   number = options.format.replace("%u", unit).replace("%n", number);

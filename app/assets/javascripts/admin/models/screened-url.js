@@ -1,5 +1,5 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import EmberObject from "@ember/object";
 
 const ScreenedUrl = EmberObject.extend({

@@ -1,8 +1,8 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { emojiUnescape } from "discourse/lib/text";
+import {emojiUnescape} from "discourse/lib/text";
 import Category from "discourse/models/category";
 import EmberObject from "@ember/object";
-import { reads } from "@ember/object/computed";
+import {reads} from "@ember/object/computed";
 import deprecated from "discourse-common/lib/deprecated";
 import Site from "discourse/models/site";
 import User from "discourse/models/user";
@@ -13,16 +13,14 @@ const NavItem = EmberObject.extend({
     const extra = {};
 
     return I18n.t("filters." + name.replace("/", ".") + ".help", extra);
-  },
+  }
+  ,
 
-  @discourseComputed("name", "count")
-  displayName(name, count) {
+    @discourseComputed("name", "count") displayName(name, count) {
     count = count || 0;
 
-    if (
-      name === "latest" &&
-      (!Site.currentProp("mobileView") || this.tagId !== undefined)
-    ) {
+    if (name === "latest" &&
+        (!Site.currentProp("mobileView") || this.tagId !== undefined)) {
       count = 0;
     }
 
@@ -30,12 +28,12 @@ const NavItem = EmberObject.extend({
     const titleKey = count === 0 ? ".title" : ".title_with_count";
 
     return emojiUnescape(
-      I18n.t(`filters.${name.replace("/", ".") + titleKey}`, extra)
-    );
-  },
+      I18n.t(`filters.${name.replace("/", ".") + titleKey}`, extra));
+  }
+  ,
 
-  @discourseComputed("filterType", "category", "noSubcategories", "tagId")
-  href(filterType, category, noSubcategories, tagId) {
+    @discourseComputed("filterType", "category", "noSubcategories", "tagId")
+    href(filterType, category, noSubcategories, tagId) {
     let customHref = null;
 
     NavItem.customNavItemHrefs.forEach(function(cb) {
@@ -51,12 +49,13 @@ const NavItem = EmberObject.extend({
 
     const context = { category, noSubcategories, tagId };
     return NavItem.pathFor(filterType, context);
-  },
+  }
+  ,
 
-  filterType: reads("name"),
+    filterType: reads("name"),
 
-  @discourseComputed("name", "category", "noSubcategories")
-  filterMode(name, category, noSubcategories) {
+    @discourseComputed("name", "category", "noSubcategories")
+    filterMode(name, category, noSubcategories) {
     let mode = "";
     if (category) {
       mode += "c/";
@@ -67,10 +66,11 @@ const NavItem = EmberObject.extend({
       mode += "/l/";
     }
     return mode + name.replace(" ", "-");
-  },
+  }
+  ,
 
-  @discourseComputed("name", "category", "topicTrackingState.messageCount")
-  count(name, category) {
+    @discourseComputed("name", "category", "topicTrackingState.messageCount")
+    count(name, category) {
     const state = this.topicTrackingState;
     if (state) {
       return state.lookupCount(name, category);
@@ -173,9 +173,8 @@ NavItem.reopenClass({
     if (opts.noSubcategories) {
       args.noSubcategories = true;
     }
-    NavItem.extraArgsCallbacks.forEach(cb =>
-      _.merge(args, cb.call(this, filterType, opts))
-    );
+    NavItem.extraArgsCallbacks.forEach(
+      cb => _.merge(args, cb.call(this, filterType, opts)));
 
     const store = Discourse.__container__.lookup("service:store");
     return store.createRecord("nav-item", args);
@@ -196,11 +195,10 @@ NavItem.reopenClass({
       items.push(filterType);
     }
 
-    items = items
-      .map(i => NavItem.fromText(i, args))
-      .filter(
-        i => i !== null && !(category && i.get("name").indexOf("categor") === 0)
-      );
+    items =
+      items.map(i => NavItem.fromText(i, args))
+        .filter(i => i !== null &&
+                     !(category && i.get("name").indexOf("categor") === 0));
 
     const context = {
       category: args.category,
@@ -209,11 +207,12 @@ NavItem.reopenClass({
     };
 
     const extraItems = NavItem.extraNavItemDescriptors
-      .map(descriptor => ExtraNavItem.create(_.merge({}, context, descriptor)))
-      .filter(item => {
-        if (!item.customFilter) return true;
-        return item.customFilter(category, args);
-      });
+                         .map(descriptor => ExtraNavItem.create(
+                                _.merge({}, context, descriptor)))
+                         .filter(item => {
+                           if (!item.customFilter) return true;
+                           return item.customFilter(category, args);
+                         });
 
     let forceActive = false;
 
@@ -274,10 +273,8 @@ export function addNavItem(item) {
 
 Object.defineProperty(Discourse, "NavItem", {
   get() {
-    deprecated("Import the NavItem class instead of using Discourse.NavItem", {
-      since: "2.4.0",
-      dropFrom: "2.5.0"
-    });
+    deprecated("Import the NavItem class instead of using Discourse.NavItem",
+               { since: "2.4.0", dropFrom: "2.5.0" });
     return NavItem;
   }
 });

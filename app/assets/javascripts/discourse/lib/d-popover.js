@@ -1,4 +1,4 @@
-import { siteDir } from "discourse/lib/text-direction";
+import {siteDir} from "discourse/lib/text-direction";
 
 const D_POPOVER_ID = "d-popover";
 
@@ -20,17 +20,13 @@ export const POPOVER_SELECTORS =
   "[data-html-popover], [data-html-tooltip], [data-popover], [data-tooltip]";
 
 export function hidePopover() {
-  getPopover()
-    .fadeOut()
-    .remove();
+  getPopover().fadeOut().remove();
 
   return getPopover();
 }
 
 export function showPopover(event, options = {}) {
-  let $enteredElement = $(event.target)
-    .closest(POPOVER_SELECTORS)
-    .first();
+  let $enteredElement = $(event.target).closest(POPOVER_SELECTORS).first();
 
   if (!$enteredElement.length) {
     $enteredElement = $(event.target);
@@ -59,37 +55,29 @@ export function showPopover(event, options = {}) {
 }
 
 function setPopoverHtmlContent($enteredElement, content) {
-  content =
-    content ||
-    $enteredElement.attr("data-html-popover") ||
-    $enteredElement.attr("data-html-tooltip");
+  content = content || $enteredElement.attr("data-html-popover") ||
+            $enteredElement.attr("data-html-tooltip");
 
   replaceHtmlContent($enteredElement, content);
 }
 
 function setPopoverTextContent($enteredElement, content) {
-  content =
-    content ||
-    $enteredElement.attr("data-popover") ||
-    $enteredElement.attr("data-tooltip");
+  content = content || $enteredElement.attr("data-popover") ||
+            $enteredElement.attr("data-tooltip");
 
   replaceTextContent($enteredElement, content);
 }
 
 function replaceTextContent($enteredElement, content) {
   if (content) {
-    getPopover()
-      .find(".d-popover-content")
-      .text(content);
+    getPopover().find(".d-popover-content").text(content);
     window.requestAnimationFrame(() => positionPopover($enteredElement));
   }
 }
 
 function replaceHtmlContent($enteredElement, content) {
   if (content) {
-    getPopover()
-      .find(".d-popover-content")
-      .html(content);
+    getPopover().find(".d-popover-content").html(content);
     window.requestAnimationFrame(() => positionPopover($enteredElement));
   }
 }
@@ -122,22 +110,14 @@ function positionPopover($element) {
   const underSpace = windowRect.height - targetRect.bottom - D_ARROW_HEIGHT;
   const topSpace = targetRect.top - windowRect.top - D_ARROW_HEIGHT;
 
-  if (
-    underSpace > popoverRect.height + D_HORIZONTAL_MARGIN ||
-    underSpace > topSpace
-  ) {
-    $popover
-      .css("top", targetRect.bottom + window.pageYOffset + D_ARROW_HEIGHT)
+  if (underSpace > popoverRect.height + D_HORIZONTAL_MARGIN ||
+      underSpace > topSpace) {
+    $popover.css("top", targetRect.bottom + window.pageYOffset + D_ARROW_HEIGHT)
       .addClass("is-under");
   } else {
     $popover
-      .css(
-        "top",
-        targetRect.top +
-          window.pageYOffset -
-          popoverRect.height -
-          D_ARROW_HEIGHT
-      )
+      .css("top", targetRect.top + window.pageYOffset - popoverRect.height -
+                    D_ARROW_HEIGHT)
       .addClass("is-above");
   }
 

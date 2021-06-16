@@ -1,5 +1,5 @@
-import { empty, and } from "@ember/object/computed";
-import { buildCategoryPanel } from "discourse/components/edit-category-panel";
+import {empty, and} from "@ember/object/computed";
+import {buildCategoryPanel} from "discourse/components/edit-category-panel";
 
 export default buildCategoryPanel("tags", {
   allowedTagsEmpty: empty("category.allowed_tags"),

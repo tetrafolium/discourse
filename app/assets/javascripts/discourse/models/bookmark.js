@@ -1,59 +1,61 @@
 import Category from "discourse/models/category";
-import { isRTL } from "discourse/lib/text-direction";
-import { censor } from "pretty-text/censored-words";
-import { emojiUnescape } from "discourse/lib/text";
+import {isRTL} from "discourse/lib/text-direction";
+import {censor} from "pretty-text/censored-words";
+import {emojiUnescape} from "discourse/lib/text";
 import Site from "discourse/models/site";
-import { longDate } from "discourse/lib/formatter";
+import {longDate} from "discourse/lib/formatter";
 import PreloadStore from "preload-store";
-import { none } from "@ember/object/computed";
-import { computed } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
-import { Promise } from "rsvp";
+import {none} from "@ember/object/computed";
+import {computed} from "@ember/object";
+import {ajax} from "discourse/lib/ajax";
+import {Promise} from "rsvp";
 import RestModel from "discourse/models/rest";
 import discourseComputed from "discourse-common/utils/decorators";
 
 const Bookmark = RestModel.extend({
   newBookmark: none("id"),
 
-  @computed
-  get url() {
+    @computed get url() {
     return Discourse.getURL(`/bookmarks/${this.id}`);
-  },
+  }
+  ,
 
-  destroy() {
+    destroy() {
     if (this.newBookmark) return Promise.resolve();
 
-    return ajax(this.url, {
-      type: "DELETE"
-    });
-  },
+    return ajax(this.url, { type: "DELETE" });
+  }
+  ,
 
-  @discourseComputed("highest_post_number", "url")
-  lastPostUrl(highestPostNumber) {
+    @discourseComputed("highest_post_number",
+                       "url") lastPostUrl(highestPostNumber) {
     return this.urlForPostNumber(highestPostNumber);
-  },
+  }
+  ,
 
-  // Helper to build a Url with a post number
-  urlForPostNumber(postNumber) {
+    // Helper to build a Url with a post number
+    urlForPostNumber(postNumber) {
     let url = Discourse.getURL(`/t/${this.topic_id}`);
     if (postNumber > 0) {
       url += `/${postNumber}`;
     }
     return url;
-  },
+  }
+  ,
 
-  // returns createdAt if there's no bumped date
-  @discourseComputed("bumped_at", "createdAt")
-  bumpedAt(bumped_at, createdAt) {
+    // returns createdAt if there's no bumped date
+    @discourseComputed("bumped_at", "createdAt") bumpedAt(bumped_at,
+                                                          createdAt) {
     if (bumped_at) {
       return new Date(bumped_at);
     } else {
       return createdAt;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("bumpedAt", "createdAt")
-  bumpedAtTitle(bumpedAt, createdAt) {
+    @discourseComputed("bumpedAt", "createdAt") bumpedAtTitle(bumpedAt,
+                                                              createdAt) {
     const firstPost = I18n.t("first_post");
     const lastPost = I18n.t("last_post");
     const createdAtDate = longDate(createdAt);
@@ -65,29 +67,27 @@ const Bookmark = RestModel.extend({
       LAST_POST: lastPost,
       BUMPED_AT: bumpedAtDate
     });
-  },
+  }
+  ,
 
-  @discourseComputed("title")
-  fancyTitle(title) {
-    let fancyTitle = censor(
-      emojiUnescape(title) || "",
-      Site.currentProp("censored_regexp")
-    );
+    @discourseComputed("title") fancyTitle(title) {
+    let fancyTitle =
+      censor(emojiUnescape(title) || "", Site.currentProp("censored_regexp"));
 
     if (this.siteSettings.support_mixed_text_direction) {
       const titleDir = isRTL(title) ? "rtl" : "ltr";
       return `<span dir="${titleDir}">${fancyTitle}</span>`;
     }
     return fancyTitle;
-  },
+  }
+  ,
 
-  @discourseComputed("created_at")
-  createdAt(created_at) {
+    @discourseComputed("created_at") createdAt(created_at) {
     return new Date(created_at);
-  },
+  }
+  ,
 
-  @discourseComputed("tags")
-  visibleListTags(tags) {
+    @discourseComputed("tags") visibleListTags(tags) {
     if (!tags || !this.siteSettings.suppress_overlapping_tags_in_list) {
       return tags;
     }
@@ -102,22 +102,23 @@ const Bookmark = RestModel.extend({
     });
 
     return newTags;
-  },
+  }
+  ,
 
-  @discourseComputed("category_id")
-  category(categoryId) {
+    @discourseComputed("category_id") category(categoryId) {
     return Category.findById(categoryId);
-  },
+  }
+  ,
 
-  @discourseComputed("reminder_at")
-  formattedReminder(bookmarkReminderAt) {
+    @discourseComputed("reminder_at") formattedReminder(bookmarkReminderAt) {
     const currentUser = PreloadStore.get("currentUser");
     return moment
       .tz(bookmarkReminderAt, currentUser.timezone || moment.tz.guess())
       .format(I18n.t("dates.long_with_year"));
-  },
+  }
+  ,
 
-  loadItems() {
+    loadItems() {
     return ajax(`/u/${this.user.username}/bookmarks.json`, { cache: "false" });
   }
 });

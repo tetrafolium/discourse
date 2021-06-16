@@ -6,7 +6,7 @@ export default Route.extend({
       this.transitionTo("adminApiKeys.show", apiKey.id);
     },
 
-    new() {
+    new () {
       this.transitionTo("adminApiKeys.new");
     }
   }

@@ -1,54 +1,45 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { inject } from "@ember/controller";
+import {inject} from "@ember/controller";
 import Controller from "@ember/controller";
-import { setting } from "discourse/lib/computed";
+import {setting} from "discourse/lib/computed";
 import AdminDashboard from "admin/models/admin-dashboard";
 import VersionCheck from "admin/models/version-check";
 
 const PROBLEMS_CHECK_MINUTES = 1;
 
 export default Controller.extend({
-  isLoading: false,
-  dashboardFetchedAt: null,
-  exceptionController: inject("exception"),
-  showVersionChecks: setting("version_checks"),
+  isLoading: false, dashboardFetchedAt: null,
+    exceptionController: inject("exception"),
+    showVersionChecks: setting("version_checks"),
 
-  @discourseComputed("problems.length")
-  foundProblems(problemsLength) {
+    @discourseComputed("problems.length") foundProblems(problemsLength) {
     return this.currentUser.get("admin") && (problemsLength || 0) > 0;
-  },
+  }
+  ,
 
-  fetchProblems() {
+    fetchProblems() {
     if (this.isLoadingProblems) return;
 
-    if (
-      !this.problemsFetchedAt ||
-      moment()
-        .subtract(PROBLEMS_CHECK_MINUTES, "minutes")
-        .toDate() > this.problemsFetchedAt
-    ) {
+    if (!this.problemsFetchedAt ||
+        moment().subtract(PROBLEMS_CHECK_MINUTES, "minutes").toDate() >
+          this.problemsFetchedAt) {
       this._loadProblems();
     }
-  },
+  }
+  ,
 
-  fetchDashboard() {
+    fetchDashboard() {
     const versionChecks = this.siteSettings.version_checks;
 
     if (this.isLoading || !versionChecks) return;
 
-    if (
-      !this.dashboardFetchedAt ||
-      moment()
-        .subtract(30, "minutes")
-        .toDate() > this.dashboardFetchedAt
-    ) {
+    if (!this.dashboardFetchedAt ||
+        moment().subtract(30, "minutes").toDate() > this.dashboardFetchedAt) {
       this.set("isLoading", true);
 
       AdminDashboard.fetch()
         .then(model => {
-          let properties = {
-            dashboardFetchedAt: new Date()
-          };
+          let properties = { dashboardFetchedAt: new Date() };
 
           if (versionChecks) {
             properties.versionCheck = VersionCheck.create(model.version_check);
@@ -64,29 +55,28 @@ export default Controller.extend({
           this.set("isLoading", false);
         });
     }
-  },
+  }
+  ,
 
-  _loadProblems() {
-    this.setProperties({
-      loadingProblems: true,
-      problemsFetchedAt: new Date()
-    });
+    _loadProblems() {
+    this.setProperties(
+      { loadingProblems: true, problemsFetchedAt: new Date() });
 
     AdminDashboard.fetchProblems()
       .then(model => this.set("problems", model.problems))
       .finally(() => this.set("loadingProblems", false));
-  },
-
-  @discourseComputed("problemsFetchedAt")
-  problemsTimestamp(problemsFetchedAt) {
-    return moment(problemsFetchedAt)
-      .locale("en")
-      .format("LLL");
-  },
-
-  actions: {
-    refreshProblems() {
-      this._loadProblems();
-    }
   }
+  ,
+
+    @discourseComputed("problemsFetchedAt")
+    problemsTimestamp(problemsFetchedAt) {
+    return moment(problemsFetchedAt).locale("en").format("LLL");
+  }
+  ,
+
+    actions: {
+      refreshProblems() {
+        this._loadProblems();
+      }
+    }
 });

@@ -1,22 +1,21 @@
-import { A } from "@ember/array";
-import { ajax } from "discourse/lib/ajax";
-import { url } from "discourse/lib/computed";
+import {A} from "@ember/array";
+import {ajax} from "discourse/lib/ajax";
+import {url} from "discourse/lib/computed";
 import RestModel from "discourse/models/rest";
 import UserAction from "discourse/models/user-action";
-import { emojiUnescape } from "discourse/lib/text";
-import { Promise } from "rsvp";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import {emojiUnescape} from "discourse/lib/text";
+import {Promise} from "rsvp";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 
 export default RestModel.extend({
   loaded: false,
 
-  @on("init")
-  _initialize() {
+    @on("init") _initialize() {
     this.setProperties({ itemsLoaded: 0, content: [] });
-  },
+  }
+  ,
 
-  @discourseComputed("filter")
-  filterParam(filter) {
+    @discourseComputed("filter") filterParam(filter) {
     if (filter === UserAction.TYPES.replies) {
       return [UserAction.TYPES.replies, UserAction.TYPES.quotes].join(",");
     }
@@ -26,35 +25,26 @@ export default RestModel.extend({
     }
 
     return filter;
-  },
+  }
+  ,
 
-  baseUrl: url(
-    "itemsLoaded",
-    "user.username_lower",
-    "/user_actions.json?offset=%@&username=%@"
-  ),
+    baseUrl: url("itemsLoaded", "user.username_lower",
+                 "/user_actions.json?offset=%@&username=%@"),
 
-  filterBy(opts) {
-    this.setProperties(
-      Object.assign(
-        {
-          itemsLoaded: 0,
-          content: [],
-          lastLoadedUrl: null
-        },
-        opts
-      )
-    );
+    filterBy(opts) {
+    this.setProperties(Object.assign(
+      { itemsLoaded: 0, content: [], lastLoadedUrl: null }, opts));
 
     return this.findItems();
-  },
+  }
+  ,
 
-  @discourseComputed("loaded", "content.[]")
-  noContent(loaded, content) {
+    @discourseComputed("loaded", "content.[]") noContent(loaded, content) {
     return loaded && content.length === 0;
-  },
+  }
+  ,
 
-  remove(userAction) {
+    remove(userAction) {
     // 1) remove the user action from the child groups
     this.content.forEach(ua => {
       ["likes", "stars", "edits", "bookmarks"].forEach(group => {
@@ -73,9 +63,10 @@ export default RestModel.extend({
     });
 
     this.setProperties({ content, itemsLoaded: content.length });
-  },
+  }
+  ,
 
-  findItems() {
+    findItems() {
     let findUrl = this.baseUrl;
     if (this.filterParam) {
       findUrl += `&filter=${this.filterParam}`;
@@ -107,24 +98,17 @@ export default RestModel.extend({
         if (result && result.user_actions) {
           const copy = A();
           result.user_actions.forEach(action => {
-            action.title = emojiUnescape(
-              Handlebars.Utils.escapeExpression(action.title)
-            );
+            action.title =
+              emojiUnescape(Handlebars.Utils.escapeExpression(action.title));
             copy.pushObject(UserAction.create(action));
           });
 
           this.content.pushObjects(UserAction.collapseStream(copy));
-          this.setProperties({
-            itemsLoaded: this.itemsLoaded + result.user_actions.length
-          });
+          this.setProperties(
+            { itemsLoaded: this.itemsLoaded + result.user_actions.length });
         }
       })
-      .finally(() =>
-        this.setProperties({
-          loaded: true,
-          loading: false,
-          lastLoadedUrl: findUrl
-        })
-      );
+      .finally(() => this.setProperties(
+                 { loaded: true, loading: false, lastLoadedUrl: findUrl }));
   }
 });

@@ -1,16 +1,17 @@
-import { scheduleOnce } from "@ember/runloop";
+import {scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
-import { observes } from "discourse-common/utils/decorators";
+import {observes} from "discourse-common/utils/decorators";
 
 export default Component.extend({
   _slug: null,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
     this.refreshClass();
-  },
+  }
+  ,
 
-  _updateClass() {
+    _updateClass() {
     if (this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -23,20 +24,21 @@ export default Component.extend({
     if (slug) classes.push(`category-${slug}`);
     if (tags) tags.forEach(t => classes.push(`tag-${t}`));
     if (classes.length > 0) $("body").addClass(classes.join(" "));
-  },
+  }
+  ,
 
-  @observes("category.fullSlug", "tags")
-  refreshClass() {
+    @observes("category.fullSlug", "tags") refreshClass() {
     scheduleOnce("afterRender", this, this._updateClass);
-  },
+  }
+  ,
 
-  _removeClass() {
-    $("body").removeClass((_, css) =>
-      (css.match(/\b(?:category|tag)-\S+/g) || []).join(" ")
-    );
-  },
+    _removeClass() {
+    $("body").removeClass(
+      (_, css) => (css.match(/\b(?:category|tag)-\S+/g) || []).join(" "));
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     this._super(...arguments);
     this._removeClass();
   }

@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import {popupAjaxError} from "discourse/lib/ajax-error";
 
 export default Controller.extend({
   saving: null,
@@ -9,8 +9,7 @@ export default Controller.extend({
       this.set("saving", true);
       const group = this.model;
 
-      group
-        .create()
+      group.create()
         .then(() => {
           this.transitionToRoute("group.members", group.name);
         })

@@ -1,18 +1,17 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { get } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
+import {get} from "@ember/object";
+import {ajax} from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
-import { on } from "discourse-common/utils/decorators";
+import {on} from "discourse-common/utils/decorators";
 import PermissionType from "discourse/models/permission-type";
-import { NotificationLevels } from "discourse/lib/notification-levels";
+import {NotificationLevels} from "discourse/lib/notification-levels";
 import deprecated from "discourse-common/lib/deprecated";
 import Site from "discourse/models/site";
 
 const Category = RestModel.extend({
   permissions: null,
 
-  @on("init")
-  setupGroupsAndPermissions() {
+    @on("init") setupGroupsAndPermissions() {
     const availableGroups = this.available_groups;
     if (!availableGroups) {
       return;
@@ -21,125 +20,122 @@ const Category = RestModel.extend({
 
     const groupPermissions = this.group_permissions;
     if (groupPermissions) {
-      this.set(
-        "permissions",
-        groupPermissions.map(elem => {
-          availableGroups.removeObject(elem.group_name);
-          return {
-            group_name: elem.group_name,
-            permission: PermissionType.create({ id: elem.permission_type })
-          };
-        })
-      );
+      this.set("permissions", groupPermissions.map(elem => {
+        availableGroups.removeObject(elem.group_name);
+        return {
+          group_name: elem.group_name,
+          permission: PermissionType.create({ id: elem.permission_type })
+        };
+      }));
     }
-  },
+  }
+  ,
 
-  @on("init")
-  setupRequiredTagGroups() {
+    @on("init") setupRequiredTagGroups() {
     if (this.required_tag_group_name) {
       this.set("required_tag_groups", [this.required_tag_group_name]);
     }
-  },
+  }
+  ,
 
-  @discourseComputed
-  availablePermissions() {
+    @discourseComputed availablePermissions() {
     return [
       PermissionType.create({ id: PermissionType.FULL }),
       PermissionType.create({ id: PermissionType.CREATE_POST }),
       PermissionType.create({ id: PermissionType.READONLY })
     ];
-  },
+  }
+  ,
 
-  @discourseComputed("id")
-  searchContext(id) {
+    @discourseComputed("id") searchContext(id) {
     return { type: "category", id, category: this };
-  },
+  }
+  ,
 
-  @discourseComputed("parentCategory.ancestors")
-  ancestors(parentAncestors) {
+    @discourseComputed("parentCategory.ancestors") ancestors(parentAncestors) {
     return [...(parentAncestors || []), this];
-  },
+  }
+  ,
 
-  @discourseComputed("parentCategory.level")
-  level(parentLevel) {
+    @discourseComputed("parentCategory.level") level(parentLevel) {
     return (parentLevel || -1) + 1;
-  },
+  }
+  ,
 
-  @discourseComputed("subcategories")
-  isParent(subcategories) {
+    @discourseComputed("subcategories") isParent(subcategories) {
     return subcategories && subcategories.length > 0;
-  },
+  }
+  ,
 
-  @discourseComputed("subcategories")
-  isGrandParent(subcategories) {
-    return (
-      subcategories &&
-      subcategories.some(
-        cat => cat.subcategories && cat.subcategories.length > 0
-      )
-    );
-  },
+    @discourseComputed("subcategories") isGrandParent(subcategories) {
+    return (subcategories &&
+            subcategories.some(cat => cat.subcategories &&
+                                      cat.subcategories.length > 0));
+  }
+  ,
 
-  @discourseComputed("notification_level")
-  isMuted(notificationLevel) {
+    @discourseComputed("notification_level") isMuted(notificationLevel) {
     return notificationLevel === NotificationLevels.MUTED;
-  },
+  }
+  ,
 
-  @discourseComputed("notification_level")
-  notificationLevelString(notificationLevel) {
+    @discourseComputed("notification_level")
+    notificationLevelString(notificationLevel) {
     // Get the key from the value
-    const notificationLevelString = Object.keys(NotificationLevels).find(
-      key => NotificationLevels[key] === notificationLevel
-    );
+    const notificationLevelString =
+      Object.keys(NotificationLevels)
+        .find(key => NotificationLevels[key] === notificationLevel);
     if (notificationLevelString) return notificationLevelString.toLowerCase();
-  },
+  }
+  ,
 
-  @discourseComputed("name")
-  url() {
+    @discourseComputed("name") url() {
     return Discourse.getURL(`/c/${Category.slugFor(this)}/${this.id}`);
-  },
+  }
+  ,
 
-  @discourseComputed
-  fullSlug() {
+    @discourseComputed fullSlug() {
     return Category.slugFor(this).replace(/\//g, "-");
-  },
+  }
+  ,
 
-  @discourseComputed("name")
-  nameLower(name) {
+    @discourseComputed("name") nameLower(name) {
     return name.toLowerCase();
-  },
+  }
+  ,
 
-  @discourseComputed("url")
-  unreadUrl(url) {
+    @discourseComputed("url") unreadUrl(url) {
     return `${url}/l/unread`;
-  },
+  }
+  ,
 
-  @discourseComputed("url")
-  newUrl(url) {
+    @discourseComputed("url") newUrl(url) {
     return `${url}/l/new`;
-  },
+  }
+  ,
 
-  @discourseComputed("color", "text_color")
-  style(color, textColor) {
+    @discourseComputed("color", "text_color") style(color, textColor) {
     return `background-color: #${color}; color: #${textColor}`;
-  },
+  }
+  ,
 
-  @discourseComputed("topic_count")
-  moreTopics(topicCount) {
+    @discourseComputed("topic_count") moreTopics(topicCount) {
     return topicCount > (this.num_featured_topics || 2);
-  },
+  }
+  ,
 
-  @discourseComputed("topic_count", "subcategories.[]")
-  totalTopicCount(topicCount, subcategories) {
+    @discourseComputed("topic_count", "subcategories.[]")
+    totalTopicCount(topicCount, subcategories) {
     if (subcategories) {
       subcategories.forEach(subcategory => {
         topicCount += subcategory.topic_count;
       });
     }
     return topicCount;
-  },
+  }
+  ,
 
-  save() {
+    save() {
     const id = this.id;
     const url = id ? `/categories/${id}` : "/categories";
 
@@ -152,9 +148,8 @@ const Category = RestModel.extend({
         secure: this.secure,
         permissions: this._permissionsForUpdate(),
         auto_close_hours: this.auto_close_hours,
-        auto_close_based_on_last_post: this.get(
-          "auto_close_based_on_last_post"
-        ),
+        auto_close_based_on_last_post:
+          this.get("auto_close_based_on_last_post"),
         position: this.position,
         email_in: this.email_in,
         email_in_allow_strangers: this.email_in_allow_strangers,
@@ -169,9 +164,8 @@ const Category = RestModel.extend({
         allowed_tags: this.allowed_tags,
         allowed_tag_groups: this.allowed_tag_groups,
         allow_global_tags: this.allow_global_tags,
-        required_tag_group_name: this.required_tag_groups
-          ? this.required_tag_groups[0]
-          : null,
+        required_tag_group_name:
+          this.required_tag_groups ? this.required_tag_groups[0] : null,
         min_tags_from_required_group: this.min_tags_from_required_group,
         sort_order: this.sort_order,
         sort_ascending: this.sort_ascending,
@@ -182,71 +176,74 @@ const Category = RestModel.extend({
         subcategory_list_style: this.subcategory_list_style,
         default_top_period: this.default_top_period,
         minimum_required_tags: this.minimum_required_tags,
-        navigate_to_first_post_after_read: this.get(
-          "navigate_to_first_post_after_read"
-        ),
+        navigate_to_first_post_after_read:
+          this.get("navigate_to_first_post_after_read"),
         search_priority: this.search_priority,
         reviewable_by_group_name: this.reviewable_by_group_name
       },
       type: id ? "PUT" : "POST"
     });
-  },
+  }
+  ,
 
-  _permissionsForUpdate() {
+    _permissionsForUpdate() {
     const permissions = this.permissions;
     let rval = {};
     permissions.forEach(p => (rval[p.group_name] = p.permission.id));
     return rval;
-  },
+  }
+  ,
 
-  destroy() {
-    return ajax(`/categories/${this.id || this.slug}`, {
-      type: "DELETE"
-    });
-  },
+    destroy() {
+    return ajax(`/categories/${this.id || this.slug}`, { type: "DELETE" });
+  }
+  ,
 
-  addPermission(permission) {
+    addPermission(permission) {
     this.permissions.addObject(permission);
     this.availableGroups.removeObject(permission.group_name);
-  },
+  }
+  ,
 
-  removePermission(permission) {
+    removePermission(permission) {
     this.permissions.removeObject(permission);
     this.availableGroups.addObject(permission.group_name);
-  },
+  }
+  ,
 
-  @discourseComputed("topics")
-  latestTopic(topics) {
+    @discourseComputed("topics") latestTopic(topics) {
     if (topics && topics.length) {
       return topics[0];
     }
-  },
+  }
+  ,
 
-  @discourseComputed("topics")
-  featuredTopics(topics) {
+    @discourseComputed("topics") featuredTopics(topics) {
     if (topics && topics.length) {
       return topics.slice(0, this.num_featured_topics || 2);
     }
-  },
+  }
+  ,
 
-  @discourseComputed("id", "topicTrackingState.messageCount")
-  unreadTopics(id) {
+    @discourseComputed("id",
+                       "topicTrackingState.messageCount") unreadTopics(id) {
     return this.topicTrackingState.countUnread(id);
-  },
+  }
+  ,
 
-  @discourseComputed("id", "topicTrackingState.messageCount")
-  newTopics(id) {
+    @discourseComputed("id", "topicTrackingState.messageCount") newTopics(id) {
     return this.topicTrackingState.countNew(id);
-  },
+  }
+  ,
 
-  setNotification(notification_level) {
+    setNotification(notification_level) {
     this.set("notification_level", notification_level);
     const url = `/category/${this.id}/notifications`;
     return ajax(url, { data: { notification_level }, type: "POST" });
-  },
+  }
+  ,
 
-  @discourseComputed("id")
-  isUncategorizedCategory(id) {
+    @discourseComputed("id") isUncategorizedCategory(id) {
     return id === Site.currentProp("uncategorized_category_id");
   }
 });
@@ -256,11 +253,8 @@ var _uncategorized;
 Category.reopenClass({
   findUncategorized() {
     _uncategorized =
-      _uncategorized ||
-      Category.list().findBy(
-        "id",
-        Site.currentProp("uncategorized_category_id")
-      );
+      _uncategorized || Category.list().findBy(
+                          "id", Site.currentProp("uncategorized_category_id"));
     return _uncategorized;
   },
 
@@ -274,12 +268,10 @@ Category.reopenClass({
       result = Category.slugFor(parentCategory) + separator;
     }
 
-    const id = get(category, "id"),
-      slug = get(category, "slug");
+    const id = get(category, "id"), slug = get(category, "slug");
 
-    return !slug || slug.trim().length === 0
-      ? `${result}${id}-category`
-      : result + slug;
+    return !slug || slug.trim().length === 0 ? `${result}${id}-category`
+                                             : result + slug;
   },
 
   list() {
@@ -325,10 +317,8 @@ Category.reopenClass({
       slug = encodeURI(slug);
     }
     return Category.list().find(category => {
-      return (
-        category.slug === slug &&
-        (category.parentCategory || null) === parentCategory
-      );
+      return (category.slug === slug &&
+              (category.parentCategory || null) === parentCategory);
     });
   },
 
@@ -361,11 +351,8 @@ Category.reopenClass({
     } else {
       category = Category.findBySlugPath(parts);
 
-      if (
-        !category &&
-        parts.length > 0 &&
-        parts[parts.length - 1].match(/^\d+-category/)
-      ) {
+      if (!category && parts.length > 0 &&
+          parts[parts.length - 1].match(/^\d+-category/)) {
         const id = parseInt(parts.pop(), 10);
 
         category = Category.findById(id);
@@ -388,14 +375,12 @@ Category.reopenClass({
 
         category = categories.find(item => {
           return (
-            item &&
-            item.get("parentCategory") === parentCategory &&
+            item && item.get("parentCategory") === parentCategory &&
             ((Discourse.SiteSettings.slug_generation_method !== "encoded" &&
               Category.slugFor(item) === parentSlug + "/" + slug) ||
-              (Discourse.SiteSettings.slug_generation_method === "encoded" &&
-                Category.slugFor(item) ===
-                  encodeURI(parentSlug) + "/" + encodeURI(slug)))
-          );
+             (Discourse.SiteSettings.slug_generation_method === "encoded" &&
+              Category.slugFor(item) ===
+                encodeURI(parentSlug) + "/" + encodeURI(slug))));
         });
       }
     } else {
@@ -418,9 +403,8 @@ Category.reopenClass({
   },
 
   reloadBySlug(slug, parentSlug) {
-    return parentSlug
-      ? ajax(`/c/${parentSlug}/${slug}/find_by_slug.json`)
-      : ajax(`/c/${slug}/find_by_slug.json`);
+    return parentSlug ? ajax(`/c/${parentSlug}/${slug}/find_by_slug.json`)
+                      : ajax(`/c/${slug}/find_by_slug.json`);
   },
 
   reloadBySlugPath(slugPath) {
@@ -458,18 +442,10 @@ Category.reopenClass({
 
     for (i = 0; i < length && !done(); i++) {
       const category = categories[i];
-      if (
-        (emptyTerm && !category.get("parent_category_id")) ||
-        (!emptyTerm &&
-          (category
-            .get("name")
-            .toLowerCase()
-            .indexOf(term) === 0 ||
-            category
-              .get("slug")
-              .toLowerCase()
-              .indexOf(slugTerm) === 0))
-      ) {
+      if ((emptyTerm && !category.get("parent_category_id")) ||
+          (!emptyTerm &&
+           (category.get("name").toLowerCase().indexOf(term) === 0 ||
+            category.get("slug").toLowerCase().indexOf(slugTerm) === 0))) {
         data.push(category);
       }
     }
@@ -478,17 +454,9 @@ Category.reopenClass({
       for (i = 0; i < length && !done(); i++) {
         const category = categories[i];
 
-        if (
-          !emptyTerm &&
-          (category
-            .get("name")
-            .toLowerCase()
-            .indexOf(term) > 0 ||
-            category
-              .get("slug")
-              .toLowerCase()
-              .indexOf(slugTerm) > 0)
-        ) {
+        if (!emptyTerm &&
+            (category.get("name").toLowerCase().indexOf(term) > 0 ||
+             category.get("slug").toLowerCase().indexOf(slugTerm) > 0)) {
           if (data.indexOf(category) === -1) data.push(category);
         }
       }
@@ -502,10 +470,8 @@ Category.reopenClass({
 
 Object.defineProperty(Discourse, "Category", {
   get() {
-    deprecated(
-      "Import the Category class instead of using Discourse.Category",
-      { since: "2.4.0", dropFrom: "2.5.0" }
-    );
+    deprecated("Import the Category class instead of using Discourse.Category",
+               { since: "2.4.0", dropFrom: "2.5.0" });
     return Category;
   }
 });

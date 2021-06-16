@@ -1,15 +1,13 @@
-import DropdownSelectBoxComponent from "select-kit/components/dropdown-select-box";
-import { computed } from "@ember/object";
+import DropdownSelectBoxComponent from
+  "select-kit/components/dropdown-select-box";
+import {computed} from "@ember/object";
 
 export default DropdownSelectBoxComponent.extend({
   pluginApiIdentifiers: ["tags-admin-dropdown"],
   classNames: ["tags-admin-dropdown"],
   actionsMapping: null,
 
-  selectKitOptions: {
-    icons: ["bars", "caret-down"],
-    showFullTitle: false
-  },
+  selectKitOptions: {icons: ["bars", "caret-down"], showFullTitle: false},
 
   content: computed(function() {
     return [

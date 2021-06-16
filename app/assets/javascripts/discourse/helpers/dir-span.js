@@ -1,6 +1,6 @@
-import { registerUnbound } from "discourse-common/lib/helpers";
-import { isRTL } from "discourse/lib/text-direction";
-import { htmlSafe } from "@ember/template";
+import {registerUnbound} from "discourse-common/lib/helpers";
+import {isRTL} from "discourse/lib/text-direction";
+import {htmlSafe} from "@ember/template";
 
 function setDir(text) {
   let content = text ? text : "";

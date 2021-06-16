@@ -15,11 +15,8 @@ export default Controller.extend({
     },
 
     sortById() {
-      this.setProperties({
-        sortProperties: ["id"],
-        sortedByCount: false,
-        sortedByName: true
-      });
+      this.setProperties(
+        { sortProperties: ["id"], sortedByCount: false, sortedByName: true });
     }
   }
 });

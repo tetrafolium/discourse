@@ -1,4 +1,4 @@
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({

@@ -1,8 +1,8 @@
-import { scheduleOnce } from "@ember/runloop";
+import {scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
 import discourseDebounce from "discourse/lib/debounce";
-import { selectedText, selectedElement } from "discourse/lib/utilities";
-import { INPUT_DELAY } from "discourse-common/config/environment";
+import {selectedText, selectedElement} from "discourse/lib/utilities";
+import {INPUT_DELAY} from "discourse-common/config/environment";
 
 function getQuoteTitle(element) {
   const titleEl = element.querySelector(".title");
@@ -56,11 +56,9 @@ export default Component.extend({
     }
 
     let opts = { raw: true };
-    for (
-      let element = selectedElement();
-      element && element.tagName !== "ARTICLE";
-      element = element.parentElement
-    ) {
+    for (let element = selectedElement();
+         element && element.tagName !== "ARTICLE";
+         element = element.parentElement) {
       if (element.tagName === "ASIDE" && element.classList.contains("quote")) {
         opts.username = element.dataset.username || getQuoteTitle(element);
         opts.post = element.dataset.post;
@@ -133,10 +131,8 @@ export default Component.extend({
           $(window).width() - $quoteButton.outerWidth() < left + 10;
 
         top = nearRightEdgeOfScreen ? top + 50 : top + 20;
-        left = Math.min(
-          left + 10,
-          $(window).width() - $quoteButton.outerWidth() - 10
-        );
+        left = Math.min(left + 10,
+                        $(window).width() - $quoteButton.outerWidth() - 10);
       } else {
         top = top - $quoteButton.outerHeight() - 5;
       }
@@ -148,28 +144,27 @@ export default Component.extend({
   didInsertElement() {
     const { isWinphone, isAndroid } = this.capabilities;
     const wait = isWinphone || isAndroid ? INPUT_DELAY : 25;
-    const onSelectionChanged = discourseDebounce(
-      () => this._selectionChanged(),
-      wait
-    );
+    const onSelectionChanged =
+      discourseDebounce(() => this._selectionChanged(), wait);
 
     $(document)
-      .on("mousedown.quote-button", e => {
-        this._prevSelection = null;
-        this._isMouseDown = true;
-        this._reselected = false;
-        if (
-          $(e.target).closest(".quote-button, .create, .share, .reply-new")
-            .length === 0
-        ) {
-          this._hideButton();
-        }
-      })
-      .on("mouseup.quote-button", () => {
-        this._prevSelection = null;
-        this._isMouseDown = false;
-        onSelectionChanged();
-      })
+      .on("mousedown.quote-button",
+          e => {
+            this._prevSelection = null;
+            this._isMouseDown = true;
+            this._reselected = false;
+            if ($(e.target)
+                  .closest(".quote-button, .create, .share, .reply-new")
+                  .length === 0) {
+              this._hideButton();
+            }
+          })
+      .on("mouseup.quote-button",
+          () => {
+            this._prevSelection = null;
+            this._isMouseDown = false;
+            onSelectionChanged();
+          })
       .on("selectionchange.quote-button", () => {
         if (!this._isMouseDown && !this._reselected) {
           onSelectionChanged();

@@ -1,9 +1,9 @@
-import { get } from "@ember/object";
-import { debounce, later } from "@ember/runloop";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { searchForTerm, isValidSearchTerm } from "discourse/lib/search";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
+import {get} from "@ember/object";
+import {debounce, later} from "@ember/runloop";
+import {popupAjaxError} from "discourse/lib/ajax-error";
+import {searchForTerm, isValidSearchTerm} from "discourse/lib/search";
+import {createWidget} from "discourse/widgets/widget";
+import {h} from "virtual-dom";
 import DiscourseURL from "discourse/lib/url";
 
 const searchData = {};
@@ -59,11 +59,8 @@ const SearchHelper = {
       widget.scheduleRerender();
     } else {
       searchData.invalidTerm = false;
-      this._activeSearch = searchForTerm(term, {
-        typeFilter,
-        searchContext,
-        fullSearchUrl
-      });
+      this._activeSearch =
+        searchForTerm(term, { typeFilter, searchContext, fullSearchUrl });
       this._activeSearch
         .then(content => {
           searchData.noResults = content.resultTypes.length === 0;
@@ -110,12 +107,10 @@ export default createWidget("search-menu", {
       query += `q=${encodeURIComponent(searchData.term)}`;
 
       if (contextEnabled && ctx) {
-        if (
-          this.currentUser &&
-          ctx.id.toString().toLowerCase() ===
-            this.currentUser.get("username_lower") &&
-          type === "private_messages"
-        ) {
+        if (this.currentUser &&
+            ctx.id.toString().toLowerCase() ===
+              this.currentUser.get("username_lower") &&
+            type === "private_messages") {
           query += " in:personal";
         } else {
           query += encodeURIComponent(" " + type + ":" + ctx.id);
@@ -137,31 +132,27 @@ export default createWidget("search-menu", {
   panelContents() {
     const contextEnabled = searchData.contextEnabled;
 
-    let searchInput = [
-      this.attach("search-term", { value: searchData.term, contextEnabled })
-    ];
+    let searchInput =
+      [this.attach("search-term", { value: searchData.term, contextEnabled })];
     if (searchData.term && searchData.loading) {
       searchInput.push(h("div.searching", h("div.spinner")));
     }
 
     const results = [
       h("div.search-input", searchInput),
-      this.attach("search-context", {
-        contextEnabled,
-        url: this.fullSearchUrl({ expanded: true })
-      })
+      this.attach(
+        "search-context",
+        { contextEnabled, url: this.fullSearchUrl({ expanded: true }) })
     ];
 
     if (searchData.term && !searchData.loading) {
-      results.push(
-        this.attach("search-menu-results", {
-          term: searchData.term,
-          noResults: searchData.noResults,
-          results: searchData.results,
-          invalidTerm: searchData.invalidTerm,
-          searchContextEnabled: searchData.contextEnabled
-        })
-      );
+      results.push(this.attach("search-menu-results", {
+        term: searchData.term,
+        noResults: searchData.noResults,
+        results: searchData.results,
+        invalidTerm: searchData.invalidTerm,
+        searchContextEnabled: searchData.contextEnabled
+      }));
     }
 
     return results;
@@ -186,10 +177,8 @@ export default createWidget("search-menu", {
 
     const shouldTriggerSearch =
       searchData.contextEnabled !== attrs.contextEnabled ||
-      (searchContext &&
-        searchContext.type === "topic" &&
-        searchData.topicId !== null &&
-        searchData.topicId !== searchContext.id);
+      (searchContext && searchContext.type === "topic" &&
+       searchData.topicId !== null && searchData.topicId !== searchContext.id);
 
     if (shouldTriggerSearch && searchData.term) {
       this.triggerSearch();
@@ -197,10 +186,8 @@ export default createWidget("search-menu", {
 
     searchData.contextEnabled = attrs.contextEnabled;
 
-    return this.attach("menu-panel", {
-      maxWidth: 500,
-      contents: () => this.panelContents()
-    });
+    return this.attach("menu-panel",
+                       { maxWidth: 500, contents: () => this.panelContents() });
   },
 
   mouseDownOutside() {
@@ -224,9 +211,8 @@ export default createWidget("search-menu", {
         if ($("#reply-control.open").length === 1) {
           // add a link and focus composer
 
-          this.appEvents.trigger("composer:insert-text", focused[0].href, {
-            ensureSpace: true
-          });
+          this.appEvents.trigger("composer:insert-text", focused[0].href,
+                                 { ensureSpace: true });
           this.appEvents.trigger("header:keyboard-trigger", { type: "search" });
 
           e.preventDefault();

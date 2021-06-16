@@ -22,10 +22,8 @@ export default type => {
       if (this._isArchive()) channel = `${channel}/archive`;
       this.controllerFor("user-topics-list").subscribe(channel);
 
-      this.controllerFor("user-topics-list").setProperties({
-        hideCategory: true,
-        showPosters: true
-      });
+      this.controllerFor("user-topics-list")
+        .setProperties({ hideCategory: true, showPosters: true });
     },
 
     _isArchive() {

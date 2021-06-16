@@ -1,6 +1,6 @@
-import { once } from "@ember/runloop";
+import {once} from "@ember/runloop";
 import Composer from "discourse/models/composer";
-import { getOwner } from "discourse-common/lib/get-owner";
+import {getOwner} from "discourse-common/lib/get-owner";
 import Route from "@ember/routing/route";
 import deprecated from "discourse-common/lib/deprecated";
 
@@ -25,9 +25,9 @@ const DiscourseRoute = Route.extend({
 
     const router = getOwner(this).lookup("router:main");
     if (!router._routerMicrolib.activeTransition) {
-      const controller = this.controller,
-        model = controller.get("model"),
-        params = this.controller.getProperties(Object.keys(this.queryParams));
+      const controller = this.controller, model = controller.get("model"),
+            params =
+              this.controller.getProperties(Object.keys(this.queryParams));
 
       model.set("loading", true);
       this.model(params).then(m => this.setupController(controller, m));
@@ -88,10 +88,8 @@ const DiscourseRoute = Route.extend({
   openTopicDraft(model) {
     const composer = this.controllerFor("composer");
 
-    if (
-      composer.get("model.action") === Composer.CREATE_TOPIC &&
-      composer.get("model.draftKey") === model.draft_key
-    ) {
+    if (composer.get("model.action") === Composer.CREATE_TOPIC &&
+        composer.get("model.draftKey") === model.draft_key) {
       composer.set("model.composeState", Composer.OPEN);
     } else {
       composer.open({
@@ -110,10 +108,8 @@ const DiscourseRoute = Route.extend({
 
 Object.defineProperty(Discourse, "Route", {
   get() {
-    deprecated("Import the Route class instead of using Discourse.Route", {
-      since: "2.4.0",
-      dropFrom: "2.5.0"
-    });
+    deprecated("Import the Route class instead of using Discourse.Route",
+               { since: "2.4.0", dropFrom: "2.5.0" });
     return Route;
   }
 });

@@ -20,8 +20,7 @@ export default Controller.extend(ModalFunctionality, {
       webauthnUnsupported: !isWebauthnSupported()
     });
 
-    this.model
-      .requestSecurityKeyChallenge()
+    this.model.requestSecurityKeyChallenge()
       .then(response => {
         if (response.error) {
           this.set("errorMessage", response.error);
@@ -30,14 +29,11 @@ export default Controller.extend(ModalFunctionality, {
 
         this.setProperties({
           errorMessage: isWebauthnSupported()
-            ? null
-            : I18n.t("login.security_key_support_missing_error"),
+                          ? null
+                          : I18n.t("login.security_key_support_missing_error"),
           loading: false,
           challenge: response.challenge,
-          relayingParty: {
-            id: response.rp_id,
-            name: response.rp_name
-          },
+          relayingParty: { id: response.rp_id, name: response.rp_name },
           supported_algorithms: response.supported_algorithms,
           user_secure_id: response.user_secure_id,
           existing_active_credential_ids:
@@ -54,18 +50,13 @@ export default Controller.extend(ModalFunctionality, {
   actions: {
     registerSecurityKey() {
       if (!this.securityKeyName) {
-        this.set(
-          "errorMessage",
-          I18n.t("user.second_factor.security_key.name_required_error")
-        );
+        this.set("errorMessage",
+                 I18n.t("user.second_factor.security_key.name_required_error"));
         return;
       }
       const publicKeyCredentialCreationOptions = {
         challenge: Uint8Array.from(this.challenge, c => c.charCodeAt(0)),
-        rp: {
-          name: this.relayingParty.name,
-          id: this.relayingParty.id
-        },
+        rp: { name: this.relayingParty.name, id: this.relayingParty.id },
         user: {
           id: Uint8Array.from(this.user_secure_id, c => c.charCodeAt(0)),
           displayName: this.model.username_lower,
@@ -74,14 +65,13 @@ export default Controller.extend(ModalFunctionality, {
         pubKeyCredParams: this.supported_algorithms.map(alg => {
           return { type: "public-key", alg: alg };
         }),
-        excludeCredentials: this.existing_active_credential_ids.map(
-          credentialId => {
+        excludeCredentials:
+          this.existing_active_credential_ids.map(credentialId => {
             return {
               type: "public-key",
               id: stringToBuffer(atob(credentialId))
             };
-          }
-        ),
+          }),
         timeout: 20000,
         attestation: "none",
         authenticatorSelection: {
@@ -93,24 +83,20 @@ export default Controller.extend(ModalFunctionality, {
       };
 
       navigator.credentials
-        .create({
-          publicKey: publicKeyCredentialCreationOptions
-        })
+        .create({ publicKey: publicKeyCredentialCreationOptions })
         .then(
           credential => {
             let serverData = {
               id: credential.id,
               rawId: bufferToBase64(credential.rawId),
               type: credential.type,
-              attestation: bufferToBase64(
-                credential.response.attestationObject
-              ),
+              attestation:
+                bufferToBase64(credential.response.attestationObject),
               clientData: bufferToBase64(credential.response.clientDataJSON),
               name: this.securityKeyName
             };
 
-            this.model
-              .registerSecurityKey(serverData)
+            this.model.registerSecurityKey(serverData)
               .then(response => {
                 if (response.error) {
                   this.set("errorMessage", response.error);
@@ -127,18 +113,15 @@ export default Controller.extend(ModalFunctionality, {
             if (err.name === "InvalidStateError") {
               return this.set(
                 "errorMessage",
-                I18n.t("user.second_factor.security_key.already_added_error")
-              );
+                I18n.t("user.second_factor.security_key.already_added_error"));
             }
             if (err.name === "NotAllowedError") {
               return this.set(
                 "errorMessage",
-                I18n.t("user.second_factor.security_key.not_allowed_error")
-              );
+                I18n.t("user.second_factor.security_key.not_allowed_error"));
             }
             this.set("errorMessage", err.message);
-          }
-        );
+          });
     }
   }
 });

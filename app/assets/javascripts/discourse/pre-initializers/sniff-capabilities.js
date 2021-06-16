@@ -5,13 +5,12 @@ export default {
   name: "sniff-capabilities",
   initialize(container, application) {
     const $html = $("html"),
-      touch = navigator.maxTouchPoints > 1 || "ontouchstart" in window,
-      caps = { touch };
+          touch = navigator.maxTouchPoints > 1 || "ontouchstart" in window,
+          caps = { touch };
 
     // Store the touch ability in our capabilities object
-    $html.addClass(
-      touch ? "touch discourse-touch" : "no-touch discourse-no-touch"
-    );
+    $html.addClass(touch ? "touch discourse-touch"
+                         : "no-touch discourse-no-touch");
 
     // Detect Devices
     if (navigator) {
@@ -23,9 +22,8 @@ export default {
         caps.isOpera = !!window.opera || ua.indexOf(" OPR/") >= 0;
         caps.isFirefox = typeof InstallTrigger !== "undefined";
         caps.isSafari =
-          Object.prototype.toString
-            .call(window.HTMLElement)
-            .indexOf("Constructor") > 0 ||
+          Object.prototype.toString.call(window.HTMLElement)
+              .indexOf("Constructor") > 0 ||
           (function(p) {
             return p.toString() === "[object SafariRemoteNotification]";
           })(!window["safari"] || safari.pushNotification);
@@ -35,14 +33,11 @@ export default {
         caps.canPasteImages = caps.isChrome || caps.isFirefox;
       }
 
-      caps.isIpadOS =
-        ua.indexOf("Mac OS") !== -1 &&
-        !/iPhone|iPod/.test(navigator.userAgent) &&
-        touch;
+      caps.isIpadOS = ua.indexOf("Mac OS") !== -1 &&
+                      !/iPhone|iPod/.test(navigator.userAgent) && touch;
 
-      caps.isIOS =
-        (/iPhone|iPod/.test(navigator.userAgent) || caps.isIpadOS) &&
-        !window.MSStream;
+      caps.isIOS = (/iPhone|iPod/.test(navigator.userAgent) || caps.isIpadOS) &&
+                   !window.MSStream;
 
       caps.hasContactPicker =
         "contacts" in navigator && "ContactsManager" in window;

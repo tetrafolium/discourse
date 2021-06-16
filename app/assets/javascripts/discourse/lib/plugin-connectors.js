@@ -61,9 +61,8 @@ function findClass(outletName, uniqueName) {
   const id = `${outletName}/${uniqueName}`;
   let foundClass = _extraConnectorClasses[id] || _classPaths[id];
 
-  return foundClass
-    ? jQuery.extend({}, DefaultConnectorClass, foundClass)
-    : DefaultConnectorClass;
+  return foundClass ? jQuery.extend({}, DefaultConnectorClass, foundClass)
+                    : DefaultConnectorClass;
 }
 
 function buildConnectorCache() {
@@ -86,9 +85,8 @@ function buildRawConnectorCache() {
   _rawConnectorCache = {};
   findOutlets(Discourse.RAW_TEMPLATES, (outletName, resource) => {
     _rawConnectorCache[outletName] = _rawConnectorCache[outletName] || [];
-    _rawConnectorCache[outletName].push({
-      template: Discourse.RAW_TEMPLATES[resource]
-    });
+    _rawConnectorCache[outletName].push(
+      { template: Discourse.RAW_TEMPLATES[resource] });
   });
 }
 

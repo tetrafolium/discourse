@@ -4,12 +4,12 @@
 
 import EmberObject from "@ember/object";
 import AdminUser from "admin/models/admin-user";
-import { iconHTML } from "discourse-common/lib/icon-library";
-import { ajax } from "discourse/lib/ajax";
+import {iconHTML} from "discourse-common/lib/icon-library";
+import {ajax} from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
-import { getOwner } from "discourse-common/lib/get-owner";
+import {getOwner} from "discourse-common/lib/get-owner";
 import Service from "@ember/service";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 export default Service.extend({
   init() {
@@ -20,9 +20,8 @@ export default Service.extend({
   },
 
   showActionLogs(target, filters) {
-    const controller = getOwner(target).lookup(
-      "controller:adminLogs.staffActionLogs"
-    );
+    const controller =
+      getOwner(target).lookup("controller:adminLogs.staffActionLogs");
     target.transitionToRoute("adminLogs.staffActionLogs").then(() => {
       controller.set("filters", EmberObject.create());
       controller._changeFilters(filters);
@@ -48,23 +47,20 @@ export default Service.extend({
   _showControlModal(type, user, opts) {
     opts = opts || {};
 
-    let controller = showModal(`admin-${type}-user`, {
-      admin: true,
-      modalClass: `${type}-user-modal`
-    });
+    let controller = showModal(
+      `admin-${type}-user`, { admin: true, modalClass: `${type}-user-modal` });
     controller.setProperties({ postId: opts.postId, postEdit: opts.postEdit });
 
-    return (user.adminUserView
-      ? Promise.resolve(user)
-      : AdminUser.find(user.get("id"))
-    ).then(loadedUser => {
-      controller.setProperties({
-        user: loadedUser,
-        loadingUser: false,
-        before: opts.before,
-        successCallback: opts.successCallback
+    return (user.adminUserView ? Promise.resolve(user)
+                               : AdminUser.find(user.get("id")))
+      .then(loadedUser => {
+        controller.setProperties({
+          user: loadedUser,
+          loadingUser: false,
+          before: opts.before,
+          successCallback: opts.successCallback
+        });
       });
-    });
   },
 
   showSilenceModal(user, opts) {
@@ -78,8 +74,8 @@ export default Service.extend({
   _deleteSpammer(adminUser) {
     // Try loading the email if the site supports it
     let tryEmail = this.siteSettings.moderators_view_emails
-      ? adminUser.checkEmail()
-      : Promise.resolve();
+                     ? adminUser.checkEmail()
+                     : Promise.resolve();
 
     return tryEmail.then(() => {
       let message = I18n.messageFormat("flagging.delete_confirm_MF", {
@@ -101,22 +97,21 @@ export default Service.extend({
             link: true
           },
           {
-            label:
-              `${iconHTML("exclamation-triangle")} ` +
-              I18n.t("flagging.yes_delete_spammer"),
+            label: `${iconHTML("exclamation-triangle")} ` +
+                     I18n.t("flagging.yes_delete_spammer"),
             class: "btn btn-danger confirm-delete",
             callback() {
               return ajax(`/admin/users/${userId}.json`, {
-                type: "DELETE",
-                data: {
-                  delete_posts: true,
-                  block_email: true,
-                  block_urls: true,
-                  block_ip: true,
-                  delete_as_spammer: true,
-                  context: window.location.pathname
-                }
-              })
+                       type: "DELETE",
+                       data: {
+                         delete_posts: true,
+                         block_email: true,
+                         block_urls: true,
+                         block_ip: true,
+                         delete_as_spammer: true,
+                         context: window.location.pathname
+                       }
+                     })
                 .then(result => {
                   if (result.deleted) {
                     resolve();
@@ -132,9 +127,8 @@ export default Service.extend({
           }
         ];
 
-        bootbox.dialog(message, buttons, {
-          classes: "flagging-delete-spammer"
-        });
+        bootbox.dialog(message, buttons,
+                       { classes: "flagging-delete-spammer" });
       });
     });
   }

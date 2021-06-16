@@ -1,66 +1,55 @@
-import { alias } from "@ember/object/computed";
-import { scheduleOnce } from "@ember/runloop";
+import {alias} from "@ember/object/computed";
+import {scheduleOnce} from "@ember/runloop";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
 
 export default Component.extend({
-  elementId: "topic-progress-wrapper",
-  classNameBindings: ["docked"],
-  docked: false,
-  progressPosition: null,
-  postStream: alias("topic.postStream"),
-  _streamPercentage: null,
+  elementId: "topic-progress-wrapper", classNameBindings: ["docked"],
+    docked: false, progressPosition: null,
+    postStream: alias("topic.postStream"), _streamPercentage: null,
 
-  @discourseComputed("progressPosition")
-  jumpTopDisabled(progressPosition) {
+    @discourseComputed("progressPosition") jumpTopDisabled(progressPosition) {
     return progressPosition <= 3;
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "postStream.filteredPostsCount",
-    "topic.highest_post_number",
-    "progressPosition"
-  )
-  jumpBottomDisabled(filteredPostsCount, highestPostNumber, progressPosition) {
-    return (
-      progressPosition >= filteredPostsCount ||
-      progressPosition >= highestPostNumber
-    );
-  },
+    @discourseComputed("postStream.filteredPostsCount",
+                       "topic.highest_post_number", "progressPosition")
+    jumpBottomDisabled(filteredPostsCount, highestPostNumber,
+                       progressPosition) {
+    return (progressPosition >= filteredPostsCount ||
+            progressPosition >= highestPostNumber);
+  }
+  ,
 
-  @discourseComputed(
-    "postStream.loaded",
-    "topic.currentPost",
-    "postStream.filteredPostsCount"
-  )
-  hideProgress(loaded, currentPost, filteredPostsCount) {
-    return (
-      !loaded ||
-      !currentPost ||
-      (!this.site.mobileView && filteredPostsCount < 2)
-    );
-  },
+    @discourseComputed("postStream.loaded", "topic.currentPost",
+                       "postStream.filteredPostsCount")
+    hideProgress(loaded, currentPost, filteredPostsCount) {
+    return (!loaded || !currentPost ||
+            (!this.site.mobileView && filteredPostsCount < 2));
+  }
+  ,
 
-  @discourseComputed("postStream.filteredPostsCount")
-  hugeNumberOfPosts(filteredPostsCount) {
-    return (
-      filteredPostsCount >= this.siteSettings.short_progress_text_threshold
-    );
-  },
+    @discourseComputed("postStream.filteredPostsCount")
+    hugeNumberOfPosts(filteredPostsCount) {
+    return (filteredPostsCount >=
+            this.siteSettings.short_progress_text_threshold);
+  }
+  ,
 
-  @discourseComputed("hugeNumberOfPosts", "topic.highest_post_number")
-  jumpToBottomTitle(hugeNumberOfPosts, highestPostNumber) {
+    @discourseComputed("hugeNumberOfPosts", "topic.highest_post_number")
+    jumpToBottomTitle(hugeNumberOfPosts, highestPostNumber) {
     if (hugeNumberOfPosts) {
-      return I18n.t("topic.progress.jump_bottom_with_number", {
-        post_number: highestPostNumber
-      });
+      return I18n.t("topic.progress.jump_bottom_with_number",
+                    { post_number: highestPostNumber });
     } else {
       return I18n.t("topic.progress.jump_bottom");
     }
-  },
+  }
+  ,
 
-  @discourseComputed("progressPosition", "topic.last_read_post_id")
-  showBackButton(position, lastReadId) {
+    @discourseComputed("progressPosition", "topic.last_read_post_id")
+    showBackButton(position, lastReadId) {
     if (!lastReadId) {
       return;
     }
@@ -68,14 +57,15 @@ export default Component.extend({
     const stream = this.get("postStream.stream");
     const readPos = stream.indexOf(lastReadId) || 0;
     return readPos < stream.length - 1 && readPos > position;
-  },
+  }
+  ,
 
-  @observes("postStream.stream.[]")
-  _updateBar() {
+    @observes("postStream.stream.[]") _updateBar() {
     scheduleOnce("afterRender", this, this._updateProgressBar);
-  },
+  }
+  ,
 
-  _topicScrolled(event) {
+    _topicScrolled(event) {
     if (this.docked) {
       this.set("progressPosition", this.get("postStream.filteredPostsCount"));
       this._streamPercentage = 1.0;
@@ -85,13 +75,13 @@ export default Component.extend({
     }
 
     this._updateBar();
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
-    this.appEvents
-      .on("composer:will-open", this, this._dock)
+    this.appEvents.on("composer:will-open", this, this._dock)
       .on("composer:resized", this, this._dock)
       .on("composer:closed", this, this._dock)
       .on("topic:scrolled", this, this._dock)
@@ -104,19 +94,20 @@ export default Component.extend({
       scheduleOnce("afterRender", this, this._updateProgressBar);
     }
     scheduleOnce("afterRender", this, this._dock);
-  },
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     this._super(...arguments);
-    this.appEvents
-      .off("composer:will-open", this, this._dock)
+    this.appEvents.off("composer:will-open", this, this._dock)
       .off("composer:resized", this, this._dock)
       .off("composer:closed", this, this._dock)
       .off("topic:scrolled", this, this._dock)
       .off("topic:current-post-scrolled", this, this._topicScrolled);
-  },
+  }
+  ,
 
-  _updateProgressBar() {
+    _updateProgressBar() {
     if (this.isDestroyed || this.isDestroying) {
       return;
     }
@@ -138,22 +129,23 @@ export default Component.extend({
 
     const $bg = $topicProgress.find(".bg");
     if ($bg.length === 0) {
-      const style = `border-right-width: ${borderSize}; width: ${progressWidth}px`;
+      const style =
+        `border-right-width: ${borderSize}; width: ${progressWidth}px`;
       $topicProgress.append(`<div class='bg' style="${style}">&nbsp;</div>`);
     } else {
       $bg.css("border-right-width", borderSize).width(progressWidth - 2);
     }
-  },
+  }
+  ,
 
-  _dock() {
+    _dock() {
     const $wrapper = $(this.element);
     if (!$wrapper || $wrapper.length === 0) return;
 
     const $html = $("html");
     const offset = window.pageYOffset || $html.scrollTop();
-    const progressHeight = this.site.mobileView
-      ? 0
-      : $("#topic-progress").outerHeight();
+    const progressHeight =
+      this.site.mobileView ? 0 : $("#topic-progress").outerHeight();
     const maximumOffset = $("#topic-bottom").offset().top + progressHeight;
     const windowHeight = $(window).height();
     let composerHeight = $("#reply-control").height() || 0;
@@ -188,25 +180,26 @@ export default Component.extend({
       $wrapper.css(wrapperDir, "1em");
     }
 
-    $wrapper.css(
-      "margin-bottom",
-      !isDocked && composerHeight > draftComposerHeight ? "0px" : ""
-    );
-  },
+    $wrapper.css("margin-bottom",
+                 !isDocked && composerHeight > draftComposerHeight ? "0px"
+                                                                   : "");
+  }
+  ,
 
-  click(e) {
+    click(e) {
     if ($(e.target).closest("#topic-progress").length) {
       this.send("toggleExpansion");
     }
-  },
-
-  actions: {
-    toggleExpansion() {
-      this.toggleProperty("expanded");
-    },
-
-    goBack() {
-      this.attrs.jumpToPost(this.get("topic.last_read_post_number"));
-    }
   }
+  ,
+
+    actions: {
+      toggleExpansion() {
+        this.toggleProperty("expanded");
+      },
+
+      goBack() {
+        this.attrs.jumpToPost(this.get("topic.last_read_post_number"));
+      }
+    }
 });

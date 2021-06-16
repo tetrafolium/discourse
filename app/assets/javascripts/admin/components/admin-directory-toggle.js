@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {iconHTML} from "discourse-common/lib/icon-library";
 
 export default Component.extend({
   tagName: "th",

@@ -4,13 +4,12 @@
 
   SO: http://stackoverflow.com/questions/9943435/css3-animation-end-techniques
 **/
-var dummy = document.createElement("div"),
-  eventNameHash = {
-    webkit: "webkitTransitionEnd",
-    Moz: "transitionend",
-    O: "oTransitionEnd",
-    ms: "MSTransitionEnd"
-  };
+var dummy = document.createElement("div"), eventNameHash = {
+  webkit: "webkitTransitionEnd",
+  Moz: "transitionend",
+  O: "oTransitionEnd",
+  ms: "MSTransitionEnd"
+};
 
 var transitionEnd = (function() {
   var retValue;

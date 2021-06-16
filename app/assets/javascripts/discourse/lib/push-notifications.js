@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import KeyValueStore from "discourse/lib/key-value-store";
 
 export const keyValueStore = new KeyValueStore("discourse_push_notifications_");
@@ -18,19 +18,16 @@ function sendSubscriptionToServer(subscription, sendConfirmation) {
 }
 
 function userAgentVersionChecker(agent, version, mobileView) {
-  const uaMatch = navigator.userAgent.match(
-    new RegExp(`${agent}\/(\\d+)\\.\\d`)
-  );
+  const uaMatch =
+    navigator.userAgent.match(new RegExp(`${agent}\/(\\d+)\\.\\d`));
   if (uaMatch && mobileView) return false;
   if (!uaMatch || parseInt(uaMatch[1], 10) < version) return false;
   return true;
 }
 
 function resetIdle() {
-  if (
-    "controller" in navigator.serviceWorker &&
-    navigator.serviceWorker.controller != null
-  ) {
+  if ("controller" in navigator.serviceWorker &&
+      navigator.serviceWorker.controller != null) {
     navigator.serviceWorker.controller.postMessage({ lastAction: Date.now() });
   }
 }
@@ -46,22 +43,15 @@ function setupActivityListeners(appEvents) {
 }
 
 export function isPushNotificationsSupported(mobileView) {
-  if (
-    !(
-      "serviceWorker" in navigator &&
-      ServiceWorkerRegistration &&
-      typeof Notification !== "undefined" &&
-      "showNotification" in ServiceWorkerRegistration.prototype &&
-      "PushManager" in window
-    )
-  ) {
+  if (!("serviceWorker" in navigator && ServiceWorkerRegistration &&
+        typeof Notification !== "undefined" &&
+        "showNotification" in ServiceWorkerRegistration.prototype &&
+        "PushManager" in window)) {
     return false;
   }
 
-  if (
-    !userAgentVersionChecker("Firefox", 44, mobileView) &&
-    !userAgentVersionChecker("Chrome", 50)
-  ) {
+  if (!userAgentVersionChecker("Firefox", 44, mobileView) &&
+      !userAgentVersionChecker("Chrome", 50)) {
     return false;
   }
 
@@ -69,11 +59,8 @@ export function isPushNotificationsSupported(mobileView) {
 }
 
 export function isPushNotificationsEnabled(user, mobileView) {
-  return (
-    user &&
-    isPushNotificationsSupported(mobileView) &&
-    keyValueStore.getItem(userSubscriptionKey(user))
-  );
+  return (user && isPushNotificationsSupported(mobileView) &&
+          keyValueStore.getItem(userSubscriptionKey(user)));
 }
 
 export function register(user, mobileView, router, appEvents) {
@@ -81,8 +68,7 @@ export function register(user, mobileView, router, appEvents) {
   if (Notification.permission === "denied" || !user) return;
 
   navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
-    serviceWorkerRegistration.pushManager
-      .getSubscription()
+    serviceWorkerRegistration.pushManager.getSubscription()
       .then(subscription => {
         if (subscription) {
           sendSubscriptionToServer(subscription, false);
@@ -112,7 +98,8 @@ export function subscribe(callback, applicationServerKey, mobileView) {
     serviceWorkerRegistration.pushManager
       .subscribe({
         userVisibleOnly: true,
-        applicationServerKey: new Uint8Array(applicationServerKey.split("|")) // eslint-disable-line no-undef
+        applicationServerKey: new Uint8Array(
+          applicationServerKey.split("|")) // eslint-disable-line no-undef
       })
       .then(subscription => {
         sendSubscriptionToServer(subscription, true);
@@ -130,8 +117,7 @@ export function unsubscribe(user, callback, mobileView) {
 
   keyValueStore.setItem(userSubscriptionKey(user), "");
   navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
-    serviceWorkerRegistration.pushManager
-      .getSubscription()
+    serviceWorkerRegistration.pushManager.getSubscription()
       .then(subscription => {
         if (subscription) {
           subscription.unsubscribe().then(successful => {

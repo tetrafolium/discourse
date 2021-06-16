@@ -1,4 +1,4 @@
-import { next } from "@ember/runloop";
+import {next} from "@ember/runloop";
 import Component from "@ember/component";
 import Scrolling from "discourse/mixins/scrolling";
 
@@ -33,9 +33,7 @@ export default Component.extend(Scrolling, {
   scrolled() {
     this._super(...arguments);
 
-    this.session.set(this.trackerName, {
-      position: $(window).scrollTop(),
-      tag: this.tag
-    });
+    this.session.set(this.trackerName,
+                     { position: $(window).scrollTop(), tag: this.tag });
   }
 });

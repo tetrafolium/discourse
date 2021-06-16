@@ -1,23 +1,22 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import Badge from "discourse/models/badge";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import Topic from "discourse/models/topic";
 import EmberObject from "@ember/object";
 import User from "discourse/models/user";
 
 const UserBadge = EmberObject.extend({
   @discourseComputed
-  postUrl: function() {
-    if (this.topic_title) {
-      return "/t/-/" + this.topic_id + "/" + this.post_number;
-    }
-  }, // avoid the extra bindings for now
+  postUrl:
+    function() {
+      if (this.topic_title) {
+        return "/t/-/" + this.topic_id + "/" + this.post_number;
+      }
+    }, // avoid the extra bindings for now
 
-  revoke() {
-    return ajax("/user_badges/" + this.id, {
-      type: "DELETE"
-    });
+    revoke() {
+    return ajax("/user_badges/" + this.id, { type: "DELETE" });
   }
 });
 
@@ -55,9 +54,8 @@ UserBadge.reopenClass({
     if ("user_badge" in json) {
       userBadges = [json.user_badge];
     } else {
-      userBadges =
-        (json.user_badge_info && json.user_badge_info.user_badges) ||
-        json.user_badges;
+      userBadges = (json.user_badge_info && json.user_badge_info.user_badges) ||
+                   json.user_badges;
     }
 
     userBadges = userBadges.map(function(userBadgeJson) {
@@ -124,9 +122,7 @@ UserBadge.reopenClass({
     }
     options.badge_id = badgeId;
 
-    return ajax("/user_badges.json", {
-      data: options
-    }).then(function(json) {
+    return ajax("/user_badges.json", { data: options }).then(function(json) {
       return UserBadge.createFromJson(json);
     });
   },
@@ -141,15 +137,12 @@ UserBadge.reopenClass({
   **/
   grant: function(badgeId, username, reason) {
     return ajax("/user_badges", {
-      type: "POST",
-      data: {
-        username: username,
-        badge_id: badgeId,
-        reason: reason
-      }
-    }).then(function(json) {
-      return UserBadge.createFromJson(json);
-    });
+             type: "POST",
+             data: { username: username, badge_id: badgeId, reason: reason }
+           })
+      .then(function(json) {
+        return UserBadge.createFromJson(json);
+      });
   }
 });
 

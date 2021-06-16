@@ -4,7 +4,7 @@
 **/
 import DiscourseRoute from "discourse/routes/discourse";
 import OpenComposer from "discourse/mixins/open-composer";
-import { scrollTop } from "discourse/mixins/scroll-top";
+import {scrollTop} from "discourse/mixins/scroll-top";
 import User from "discourse/models/user";
 
 export default DiscourseRoute.extend(OpenComposer, {
@@ -17,21 +17,15 @@ export default DiscourseRoute.extend(OpenComposer, {
     // including being able to show links to multiple posts to the same topic
     // and being based on a different model. better to just redirect
     const url = transition.intent.url;
-    if (
-      this.siteSettings.enable_bookmarks_with_reminders &&
-      url === "/bookmarks"
-    ) {
-      this.transitionTo(
-        "userActivity.bookmarksWithReminders",
-        this.currentUser
-      );
+    if (this.siteSettings.enable_bookmarks_with_reminders &&
+        url === "/bookmarks") {
+      this.transitionTo("userActivity.bookmarksWithReminders",
+                        this.currentUser);
     }
 
-    if (
-      (url === "/" || url === "/latest" || url === "/categories") &&
-      transition.targetName.indexOf("discovery.top") === -1 &&
-      User.currentProp("should_be_redirected_to_top")
-    ) {
+    if ((url === "/" || url === "/latest" || url === "/categories") &&
+        transition.targetName.indexOf("discovery.top") === -1 &&
+        User.currentProp("should_be_redirected_to_top")) {
       User.currentProp("should_be_redirected_to_top", false);
       const period = User.currentProp("redirected_to_top.period") || "all";
       this.replaceWith(`discovery.top${period.capitalize()}`);
@@ -79,9 +73,8 @@ export default DiscourseRoute.extend(OpenComposer, {
 
     dismissRead(operationType) {
       const controller = this.controllerFor("discovery/topics");
-      controller.send("dismissRead", operationType, {
-        includeSubcategories: !controller.noSubcategories
-      });
+      controller.send("dismissRead", operationType,
+                      { includeSubcategories: !controller.noSubcategories });
     }
   }
 });

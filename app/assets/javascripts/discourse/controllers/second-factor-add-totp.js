@@ -18,8 +18,7 @@ export default Controller.extend(ModalFunctionality, {
       secondFactorImage: null,
       loading: true
     });
-    this.model
-      .createSecondFactorTotp()
+    this.model.createSecondFactorTotp()
       .then(response => {
         if (response.error) {
           this.set("errorMessage", response.error);
@@ -48,8 +47,7 @@ export default Controller.extend(ModalFunctionality, {
       if (!this.secondFactorToken || !this.secondFactorName) {
         this.set(
           "errorMessage",
-          I18n.t("user.second_factor.totp.name_and_code_required_error")
-        );
+          I18n.t("user.second_factor.totp.name_and_code_required_error"));
         return;
       }
       this.set("loading", true);

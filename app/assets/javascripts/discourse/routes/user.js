@@ -35,23 +35,18 @@ export default DiscourseRoute.extend({
 
   model(params) {
     // If we're viewing the currently logged in user, return that object instead
-    if (
-      this.currentUser &&
-      params.username.toLowerCase() === this.currentUser.username_lower
-    ) {
+    if (this.currentUser &&
+        params.username.toLowerCase() === this.currentUser.username_lower) {
       return this.currentUser;
     }
 
-    return User.create({
-      username: encodeURIComponent(params.username)
-    });
+    return User.create({ username: encodeURIComponent(params.username) });
   },
 
   afterModel() {
     const user = this.modelFor("user");
 
-    return user
-      .findDetails()
+    return user.findDetails()
       .then(() => user.findStaffInfo())
       .catch(() => this.replaceWith("/404"));
   },
@@ -71,9 +66,8 @@ export default DiscourseRoute.extend({
     this._super(...arguments);
 
     const user = this.modelFor("user");
-    this.messageBus.subscribe(`/u/${user.username_lower}`, data =>
-      user.loadUserAction(data)
-    );
+    this.messageBus.subscribe(`/u/${user.username_lower}`,
+                              data => user.loadUserAction(data));
   },
 
   deactivate() {

@@ -1,10 +1,10 @@
 import discourseComputed from "discourse-common/utils/decorators";
-import { or, equal, and } from "@ember/object/computed";
+import {or, equal, and} from "@ember/object/computed";
 import RestModel from "discourse/models/rest";
-import { on } from "discourse-common/utils/decorators";
+import {on} from "discourse-common/utils/decorators";
 import UserActionGroup from "discourse/models/user-action-group";
-import { postUrl } from "discourse/lib/utilities";
-import { userPath } from "discourse/lib/url";
+import {postUrl} from "discourse/lib/utilities";
+import {userPath} from "discourse/lib/url";
 import Category from "discourse/models/category";
 import User from "discourse/models/user";
 
@@ -24,9 +24,8 @@ const UserActionTypes = {
 };
 const InvertedActionTypes = {};
 
-Object.keys(UserActionTypes).forEach(
-  k => (InvertedActionTypes[k] = UserActionTypes[k])
-);
+Object.keys(UserActionTypes)
+  .forEach(k => (InvertedActionTypes[k] = UserActionTypes[k]));
 
 const UserAction = RestModel.extend({
   @on("init")
@@ -35,10 +34,10 @@ const UserAction = RestModel.extend({
     if (categoryId) {
       this.set("category", Category.findById(categoryId));
     }
-  },
+  }
+  ,
 
-  @discourseComputed("action_type")
-  descriptionKey(action) {
+    @discourseComputed("action_type") descriptionKey(action) {
     if (action === null || UserAction.TO_SHOW.indexOf(action) >= 0) {
       if (this.isPM) {
         return this.sameUser ? "sent_by_you" : "sent_by_user";
@@ -66,59 +65,61 @@ const UserAction = RestModel.extend({
         return this.targetUser ? "user_mentioned_you" : "user_mentioned_user";
       }
     }
-  },
+  }
+  ,
 
-  @discourseComputed("username")
-  sameUser(username) {
+    @discourseComputed("username") sameUser(username) {
     return username === User.currentProp("username");
-  },
+  }
+  ,
 
-  @discourseComputed("target_username")
-  targetUser(targetUsername) {
+    @discourseComputed("target_username") targetUser(targetUsername) {
     return targetUsername === User.currentProp("username");
-  },
+  }
+  ,
 
-  presentName: or("name", "username"),
-  targetDisplayName: or("target_name", "target_username"),
-  actingDisplayName: or("acting_name", "acting_username"),
+    presentName: or("name", "username"),
+    targetDisplayName: or("target_name", "target_username"),
+    actingDisplayName: or("acting_name", "acting_username"),
 
-  @discourseComputed("target_username")
-  targetUserUrl(username) {
+    @discourseComputed("target_username") targetUserUrl(username) {
     return userPath(username);
-  },
+  }
+  ,
 
-  @discourseComputed("username")
-  usernameLower(username) {
+    @discourseComputed("username") usernameLower(username) {
     return username.toLowerCase();
-  },
+  }
+  ,
 
-  @discourseComputed("usernameLower")
-  userUrl(usernameLower) {
+    @discourseComputed("usernameLower") userUrl(usernameLower) {
     return userPath(usernameLower);
-  },
+  }
+  ,
 
-  @discourseComputed()
-  postUrl() {
+    @discourseComputed() postUrl() {
     return postUrl(this.slug, this.topic_id, this.post_number);
-  },
+  }
+  ,
 
-  @discourseComputed()
-  replyUrl() {
+    @discourseComputed() replyUrl() {
     return postUrl(this.slug, this.topic_id, this.reply_to_post_number);
-  },
+  }
+  ,
 
-  replyType: equal("action_type", UserActionTypes.replies),
-  postType: equal("action_type", UserActionTypes.posts),
-  topicType: equal("action_type", UserActionTypes.topics),
-  bookmarkType: equal("action_type", UserActionTypes.bookmarks),
-  messageSentType: equal("action_type", UserActionTypes.messages_sent),
-  messageReceivedType: equal("action_type", UserActionTypes.messages_received),
-  mentionType: equal("action_type", UserActionTypes.mentions),
-  isPM: or("messageSentType", "messageReceivedType"),
-  postReplyType: or("postType", "replyType"),
-  removableBookmark: and("bookmarkType", "sameUser"),
+    replyType: equal("action_type", UserActionTypes.replies),
+    postType: equal("action_type", UserActionTypes.posts),
+    topicType: equal("action_type", UserActionTypes.topics),
+    bookmarkType: equal("action_type", UserActionTypes.bookmarks),
+    messageSentType: equal("action_type", UserActionTypes.messages_sent),
+    messageReceivedType:
+      equal("action_type", UserActionTypes.messages_received),
+    mentionType: equal("action_type", UserActionTypes.mentions),
+    isPM: or("messageSentType", "messageReceivedType"),
+    postReplyType: or("postType", "replyType"),
+    removableBookmark: and("bookmarkType", "sameUser"),
 
-  addChild(action) {
+    addChild(action) {
     let groups = this.childGroups;
     if (!groups) {
       groups = {
@@ -132,33 +133,28 @@ const UserAction = RestModel.extend({
 
     const bucket = (function() {
       switch (action.action_type) {
-        case UserActionTypes.likes_given:
-        case UserActionTypes.likes_received:
-          return "likes";
-        case UserActionTypes.edits:
-          return "edits";
-        case UserActionTypes.bookmarks:
-          return "bookmarks";
+      case UserActionTypes.likes_given:
+      case UserActionTypes.likes_received:
+        return "likes";
+      case UserActionTypes.edits:
+        return "edits";
+      case UserActionTypes.bookmarks:
+        return "bookmarks";
       }
     })();
     const current = groups[bucket];
     if (current) {
       current.push(action);
     }
-  },
+  }
+  ,
 
-  @discourseComputed(
-    "childGroups",
-    "childGroups.likes.items",
-    "childGroups.likes.items.[]",
-    "childGroups.stars.items",
-    "childGroups.stars.items.[]",
-    "childGroups.edits.items",
-    "childGroups.edits.items.[]",
-    "childGroups.bookmarks.items",
-    "childGroups.bookmarks.items.[]"
-  )
-  children() {
+    @discourseComputed("childGroups", "childGroups.likes.items",
+                       "childGroups.likes.items.[]", "childGroups.stars.items",
+                       "childGroups.stars.items.[]", "childGroups.edits.items",
+                       "childGroups.edits.items.[]",
+                       "childGroups.bookmarks.items",
+                       "childGroups.bookmarks.items.[]") children() {
     const g = this.childGroups;
     let rval = [];
     if (g) {
@@ -167,13 +163,12 @@ const UserAction = RestModel.extend({
       });
     }
     return rval;
-  },
+  }
+  ,
 
-  switchToActing() {
-    this.setProperties({
-      username: this.acting_username,
-      name: this.actingDisplayName
-    });
+    switchToActing() {
+    this.setProperties(
+      { username: this.acting_username, name: this.actingDisplayName });
   }
 });
 
@@ -204,8 +199,7 @@ UserAction.reopenClass({
           collapsed[found].addChild(item);
         } else {
           collapsed[found].setProperties(
-            item.getProperties("action_type", "description")
-          );
+            item.getProperties("action_type", "description"));
         }
       }
     });
@@ -216,19 +210,14 @@ UserAction.reopenClass({
   TYPES_INVERTED: InvertedActionTypes,
 
   TO_COLLAPSE: [
-    UserActionTypes.likes_given,
-    UserActionTypes.likes_received,
-    UserActionTypes.edits,
-    UserActionTypes.bookmarks
+    UserActionTypes.likes_given, UserActionTypes.likes_received,
+    UserActionTypes.edits, UserActionTypes.bookmarks
   ],
 
   TO_SHOW: [
-    UserActionTypes.likes_given,
-    UserActionTypes.likes_received,
-    UserActionTypes.edits,
-    UserActionTypes.bookmarks,
-    UserActionTypes.messages_sent,
-    UserActionTypes.messages_received
+    UserActionTypes.likes_given, UserActionTypes.likes_received,
+    UserActionTypes.edits, UserActionTypes.bookmarks,
+    UserActionTypes.messages_sent, UserActionTypes.messages_received
   ]
 });
 

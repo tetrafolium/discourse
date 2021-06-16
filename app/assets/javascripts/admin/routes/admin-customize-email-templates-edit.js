@@ -1,5 +1,5 @@
 import Route from "@ember/routing/route";
-import { scrollTop } from "discourse/mixins/scroll-top";
+import {scrollTop} from "discourse/mixins/scroll-top";
 
 export default Route.extend({
   model(params) {

@@ -7,13 +7,13 @@ import {
   throttle
 } from "@ember/runloop";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
 import Composer from "discourse/models/composer";
 import afterTransition from "discourse/lib/after-transition";
 import positioningWorkaround from "discourse/lib/safari-hacks";
-import { headerHeight } from "discourse/components/site-header";
+import {headerHeight} from "discourse/components/site-header";
 import KeyEnterEscape from "discourse/mixins/key-enter-escape";
-import { iOSWithVisualViewport } from "discourse/lib/utilities";
+import {iOSWithVisualViewport} from "discourse/lib/utilities";
 
 const START_EVENTS = "touchstart mousedown";
 const DRAG_EVENTS = "touchmove mousemove";
@@ -29,42 +29,37 @@ function mouseYPos(e) {
 export default Component.extend(KeyEnterEscape, {
   elementId: "reply-control",
 
-  classNameBindings: [
-    "composer.creatingPrivateMessage:private-message",
-    "composeState",
-    "composer.loading",
-    "composer.canEditTitle:edit-title",
-    "composer.createdPost:created-post",
-    "composer.creatingTopic:topic",
-    "composer.whisper:composing-whisper",
-    "composer.sharedDraft:composing-shared-draft",
-    "showPreview:show-preview:hide-preview",
-    "currentUserPrimaryGroupClass"
-  ],
+    classNameBindings:
+      [
+        "composer.creatingPrivateMessage:private-message", "composeState",
+        "composer.loading", "composer.canEditTitle:edit-title",
+        "composer.createdPost:created-post", "composer.creatingTopic:topic",
+        "composer.whisper:composing-whisper",
+        "composer.sharedDraft:composing-shared-draft",
+        "showPreview:show-preview:hide-preview", "currentUserPrimaryGroupClass"
+      ],
 
-  @discourseComputed("currentUser.primary_group_name")
-  currentUserPrimaryGroupClass(primaryGroupName) {
+    @discourseComputed("currentUser.primary_group_name")
+    currentUserPrimaryGroupClass(primaryGroupName) {
     return primaryGroupName && `group-${primaryGroupName}`;
-  },
+  }
+  ,
 
-  @discourseComputed("composer.composeState")
-  composeState(composeState) {
+    @discourseComputed("composer.composeState") composeState(composeState) {
     return composeState || Composer.CLOSED;
-  },
+  }
+  ,
 
-  movePanels(size) {
+    movePanels(size) {
     $("#main-outlet").css("padding-bottom", size ? size : "");
 
     // signal the progress bar it should move!
     this.appEvents.trigger("composer:resized");
-  },
+  }
+  ,
 
-  @observes(
-    "composeState",
-    "composer.action",
-    "composer.canEditTopicFeaturedLink"
-  )
-  resize() {
+    @observes("composeState", "composer.action",
+              "composer.canEditTopicFeaturedLink") resize() {
     scheduleOnce("afterRender", () => {
       if (!this.element || this.isDestroying || this.isDestroyed) {
         return;
@@ -72,14 +67,16 @@ export default Component.extend(KeyEnterEscape, {
 
       debounce(this, this.debounceMove, 300);
     });
-  },
+  }
+  ,
 
-  debounceMove() {
+    debounceMove() {
     const h = $("#reply-control:not(.saving)").height() || 0;
     this.movePanels(h);
-  },
+  }
+  ,
 
-  keyUp() {
+    keyUp() {
     this.typed();
 
     const lastKeyUp = new Date();
@@ -94,16 +91,17 @@ export default Component.extend(KeyEnterEscape, {
       }
       this.appEvents.trigger("composer:find-similar");
     }, 1000);
-  },
+  }
+  ,
 
-  @observes("composeState")
-  disableFullscreen() {
+    @observes("composeState") disableFullscreen() {
     if (this.composeState !== Composer.OPEN && positioningWorkaround.blur) {
       positioningWorkaround.blur();
     }
-  },
+  }
+  ,
 
-  setupComposerResizeEvents() {
+    setupComposerResizeEvents() {
     const $composer = $(this.element);
     const $grippie = $(this.element.querySelector(".grippie"));
     const $document = $(document);
@@ -123,10 +121,11 @@ export default Component.extend(KeyEnterEscape, {
       $composer.height(size);
     };
 
-    const throttledPerformDrag = (event => {
-      event.preventDefault();
-      throttle(this, performDrag, event, THROTTLE_RATE);
-    }).bind(this);
+    const throttledPerformDrag =
+      (event => {
+        event.preventDefault();
+        throttle(this, performDrag, event, THROTTLE_RATE);
+      }).bind(this);
 
     const endDrag = () => {
       $document.off(DRAG_EVENTS, throttledPerformDrag);
@@ -147,18 +146,18 @@ export default Component.extend(KeyEnterEscape, {
       this.viewportResize();
       window.visualViewport.addEventListener("resize", this.viewportResize);
     }
-  },
+  }
+  ,
 
-  viewportResize() {
+    viewportResize() {
     const composerVH = window.visualViewport.height * 0.01;
 
-    document.documentElement.style.setProperty(
-      "--composer-vh",
-      `${composerVH}px`
-    );
-  },
+    document.documentElement.style.setProperty("--composer-vh",
+                                               `${composerVH}px`);
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
     this.setupComposerResizeEvents();
 
@@ -175,17 +174,19 @@ export default Component.extend(KeyEnterEscape, {
       triggerOpen();
     });
     positioningWorkaround($(this.element));
-  },
+  }
+  ,
 
-  willDestroyElement() {
+    willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("composer:resize", this, this.resize);
     if (iOSWithVisualViewport()) {
       window.visualViewport.removeEventListener("resize", this.viewportResize);
     }
-  },
+  }
+  ,
 
-  click() {
+    click() {
     this.openIfDraft();
   }
 });

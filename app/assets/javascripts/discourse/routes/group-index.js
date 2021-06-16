@@ -14,10 +14,7 @@ export default DiscourseRoute.extend({
   setupController(controller, model) {
     this.controllerFor("group").set("showing", "members");
 
-    controller.setProperties({
-      model,
-      filterInput: this._params.filter
-    });
+    controller.setProperties({ model, filterInput: this._params.filter });
 
     controller.findMembers(true);
   },

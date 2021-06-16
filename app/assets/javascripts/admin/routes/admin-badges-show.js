@@ -1,6 +1,6 @@
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 import Route from "@ember/routing/route";
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import Badge from "discourse/models/badge";
 import showModal from "discourse/lib/show-modal";
 
@@ -11,23 +11,18 @@ export default Route.extend({
 
   model(params) {
     if (params.badge_id === "new") {
-      return Badge.create({
-        name: I18n.t("admin.badges.new_badge")
-      });
+      return Badge.create({ name: I18n.t("admin.badges.new_badge") });
     }
-    return this.modelFor("adminBadges").findBy(
-      "id",
-      parseInt(params.badge_id, 10)
-    );
+    return this.modelFor("adminBadges")
+      .findBy("id", parseInt(params.badge_id, 10));
   },
 
   actions: {
     saveError(e) {
       let msg = I18n.t("generic_error");
       if (e.responseJSON && e.responseJSON.errors) {
-        msg = I18n.t("generic_error_with_reason", {
-          error: e.responseJSON.errors.join(". ")
-        });
+        msg = I18n.t("generic_error_with_reason",
+                     { error: e.responseJSON.errors.join(". ") });
       }
       bootbox.alert(msg);
     },

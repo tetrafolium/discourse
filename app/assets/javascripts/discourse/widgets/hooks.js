@@ -38,14 +38,10 @@ function buildHook(attributeName, setAttr) {
 
 export const WidgetClickHook = buildHook(CLICK_ATTRIBUTE_NAME);
 export const WidgetDoubleClickHook = buildHook(DOUBLE_CLICK_ATTRIBUTE_NAME);
-export const WidgetClickOutsideHook = buildHook(
-  CLICK_OUTSIDE_ATTRIBUTE_NAME,
-  "data-click-outside"
-);
-export const WidgetMouseDownOutsideHook = buildHook(
-  MOUSE_DOWN_OUTSIDE_ATTRIBUTE_NAME,
-  "data-mouse-down-outside"
-);
+export const WidgetClickOutsideHook =
+  buildHook(CLICK_OUTSIDE_ATTRIBUTE_NAME, "data-click-outside");
+export const WidgetMouseDownOutsideHook =
+  buildHook(MOUSE_DOWN_OUTSIDE_ATTRIBUTE_NAME, "data-mouse-down-outside");
 export const WidgetKeyUpHook = buildHook(KEY_UP_ATTRIBUTE_NAME);
 export const WidgetKeyDownHook = buildHook(KEY_DOWN_ATTRIBUTE_NAME);
 export const WidgetDragHook = buildHook(DRAG_ATTRIBUTE_NAME);
@@ -55,7 +51,9 @@ export const WidgetMouseUpHook = buildHook(MOUSE_UP_ATTRIBUTE_NAME);
 export const WidgetMouseDownHook = buildHook(MOUSE_DOWN_ATTRIBUTE_NAME);
 export const WidgetMouseMoveHook = buildHook(MOUSE_MOVE_ATTRIBUTE_NAME);
 
-function nodeCallback(node, attrName, cb, options = { rerender: true }) {
+function nodeCallback(node, attrName, cb, options = {
+  rerender: true
+}) {
   const { rerender } = options;
   const widget = findWidget(node, attrName);
 
@@ -112,14 +110,11 @@ WidgetClickHook.setupDocumentCallback = function() {
     }
   };
 
-  document.addEventListener("touchmove", onDrag, {
-    passive: false,
-    capture: true
-  });
+  document.addEventListener("touchmove", onDrag,
+                            { passive: false, capture: true });
 
   $(document).on(
-    "mousedown.discource-widget-drag, touchstart.discourse-widget-drag",
-    e => {
+    "mousedown.discource-widget-drag, touchstart.discourse-widget-drag", e => {
       cancelDrag(e);
       widget = findWidget(e.target, DRAG_ATTRIBUTE_NAME);
       if (widget) {
@@ -133,16 +128,13 @@ WidgetClickHook.setupDocumentCallback = function() {
           }
         });
       }
-    }
-  );
+    });
 
   $(document).on(
-    "mouseup.discourse-widget-drag, touchend.discourse-widget-drag",
-    e => {
+    "mouseup.discourse-widget-drag, touchend.discourse-widget-drag", e => {
       widget = null;
       cancelDrag(e);
-    }
-  );
+    });
 
   $(document).on("dblclick.discourse-widget", e => {
     nodeCallback(e.target, DOUBLE_CLICK_ATTRIBUTE_NAME, w => w.doubleClick(e));
@@ -154,10 +146,8 @@ WidgetClickHook.setupDocumentCallback = function() {
     let node = e.target;
     const $outside = $("[data-click-outside]");
     $outside.each((i, outNode) => {
-      if (
-        outNode.contains(node) ||
-        (outNode === node && outNode.style.position === "absolute")
-      ) {
+      if (outNode.contains(node) ||
+          (outNode === node && outNode.style.position === "absolute")) {
         return;
       }
 
@@ -191,15 +181,13 @@ WidgetClickHook.setupDocumentCallback = function() {
   });
 
   $(document).on("input.discourse-widget", e => {
-    nodeCallback(e.target, INPUT_ATTRIBUTE_NAME, w => w.input(e), {
-      rerender: false
-    });
+    nodeCallback(e.target, INPUT_ATTRIBUTE_NAME, w => w.input(e),
+                 { rerender: false });
   });
 
   $(document).on("change.discourse-widget", e => {
-    nodeCallback(e.target, CHANGE_ATTRIBUTE_NAME, w => w.change(e), {
-      rerender: false
-    });
+    nodeCallback(e.target, CHANGE_ATTRIBUTE_NAME, w => w.change(e),
+                 { rerender: false });
   });
 
   $(document).on("mousedown.discourse-widget", e => {

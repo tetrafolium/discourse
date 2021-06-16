@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import RestAdapter from "discourse/adapters/rest";
 
 export default RestAdapter.extend({

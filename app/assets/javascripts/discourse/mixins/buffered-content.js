@@ -1,15 +1,16 @@
 import EmberObjectProxy from "@ember/object/proxy";
 import Mixin from "@ember/object/mixin";
-import { computed } from "@ember/object";
+import {computed} from "@ember/object";
 
 /* global BufferedProxy: true */
 export function bufferedProperty(property) {
   const mixin = {
-    buffered: computed(property, function() {
-      return EmberObjectProxy.extend(BufferedProxy).create({
-        content: this.get(property)
-      });
-    }),
+    buffered: computed(property,
+                       function() {
+                         return EmberObjectProxy.extend(BufferedProxy).create({
+                           content: this.get(property)
+                         });
+                       }),
 
     rollbackBuffer: function() {
       this.buffered.discardBufferedChanges();

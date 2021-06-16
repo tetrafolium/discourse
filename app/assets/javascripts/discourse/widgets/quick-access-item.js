@@ -1,9 +1,9 @@
-import { h } from "virtual-dom";
+import {h} from "virtual-dom";
 import RawHtml from "discourse/widgets/raw-html";
-import { createWidget } from "discourse/widgets/widget";
-import { emojiUnescape } from "discourse/lib/text";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { escapeExpression } from "discourse/lib/utilities";
+import {createWidget} from "discourse/widgets/widget";
+import {emojiUnescape} from "discourse/lib/text";
+import {iconNode} from "discourse-common/lib/icon-library";
+import {escapeExpression} from "discourse/lib/utilities";
 
 /**
  * This helper widget tries to enforce a consistent look and behavior for any
@@ -46,9 +46,7 @@ createWidget("quick-access-item", {
 
     return h("a", { attributes: { href } }, [
       iconNode(icon),
-      new RawHtml({
-        html: `<div>${this._usernameHtml()}${content}</div>`
-      })
+      new RawHtml({ html: `<div>${this._usernameHtml()}${content}</div>` })
     ]);
   },
 
@@ -69,8 +67,7 @@ createWidget("quick-access-item", {
   _usernameHtml() {
     // Generate an empty `<span>` even if there is no username, because the
     // first `<span>` is styled differently.
-    return this.attrs.username
-      ? `<span>${this.attrs.username}</span> `
-      : "<span></span>";
+    return this.attrs.username ? `<span>${this.attrs.username}</span> `
+                               : "<span></span>";
   }
 });

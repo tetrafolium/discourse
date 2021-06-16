@@ -3,10 +3,7 @@ export function findOrResetCachedTopicList(session, filter) {
   if (lastTopicList && lastTopicList.filter === filter) {
     return lastTopicList;
   } else {
-    session.setProperties({
-      topicList: null,
-      topicListScrollPosition: null
-    });
+    session.setProperties({ topicList: null, topicListScrollPosition: null });
     return false;
   }
 }

@@ -1,5 +1,5 @@
 import UserTopicListRoute from "discourse/routes/user-topic-list";
-import { findOrResetCachedTopicList } from "discourse/lib/cached-topic-list";
+import {findOrResetCachedTopicList} from "discourse/lib/cached-topic-list";
 import UserAction from "discourse/models/user-action";
 
 // A helper to build a user topic list route
@@ -23,18 +23,16 @@ export default (viewName, path, channel) => {
       const filter =
         "topics/" + path + "/" + this.modelFor("user").get("username_lower");
       const lastTopicList = findOrResetCachedTopicList(this.session, filter);
-      return lastTopicList
-        ? lastTopicList
-        : this.store.findFiltered("topicList", { filter });
+      return lastTopicList ? lastTopicList
+                           : this.store.findFiltered("topicList", { filter });
     },
 
     setupController() {
       this._super.apply(this, arguments);
 
       if (channel) {
-        this.controllerFor("user-topics-list").subscribe(
-          `/private-messages/${channel}`
-        );
+        this.controllerFor("user-topics-list")
+          .subscribe(`/private-messages/${channel}`);
       }
 
       this.controllerFor("user-topics-list").setProperties({
@@ -45,11 +43,9 @@ export default (viewName, path, channel) => {
         selected: []
       });
 
-      this.controllerFor("user-private-messages").setProperties({
-        archive: false,
-        pmView: viewName,
-        showToggleBulkSelect: true
-      });
+      this.controllerFor("user-private-messages")
+        .setProperties(
+          { archive: false, pmView: viewName, showToggleBulkSelect: true });
 
       this.searchService.set("contextType", "private_messages");
     },
@@ -58,9 +54,7 @@ export default (viewName, path, channel) => {
       this.controllerFor("user-topics-list").unsubscribe();
 
       this.searchService.set(
-        "searchContext",
-        this.controllerFor("user").get("model.searchContext")
-      );
+        "searchContext", this.controllerFor("user").get("model.searchContext"));
     }
   });
 };

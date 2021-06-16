@@ -1,7 +1,7 @@
-import { later, schedule } from "@ember/runloop";
+import {later, schedule} from "@ember/runloop";
 import Component from "@ember/component";
-import { iconHTML } from "discourse-common/lib/icon-library";
-import discourseComputed, { on } from "discourse-common/utils/decorators";
+import {iconHTML} from "discourse-common/lib/icon-library";
+import discourseComputed, {on} from "discourse-common/utils/decorators";
 
 /*global Resumable:true */
 
@@ -16,25 +16,20 @@ import discourseComputed, { on } from "discourse-common/utils/decorators";
     }}
 **/
 export default Component.extend({
-  tagName: "button",
-  classNames: ["btn", "ru"],
-  classNameBindings: ["isUploading"],
-  attributeBindings: ["translatedTitle:title"],
-  resumable: null,
-  isUploading: false,
-  progress: 0,
-  rerenderTriggers: ["isUploading", "progress"],
-  uploadingIcon: null,
-  progressBar: null,
+  tagName: "button", classNames: ["btn", "ru"],
+    classNameBindings: ["isUploading"],
+    attributeBindings: ["translatedTitle:title"], resumable: null,
+    isUploading: false, progress: 0,
+    rerenderTriggers: ["isUploading", "progress"], uploadingIcon: null,
+    progressBar: null,
 
-  @on("init")
-  _initialize() {
+    @on("init") _initialize() {
     this.resumable = new Resumable({
       target: Discourse.getURL(this.target),
       maxFiles: 1, // only 1 file at a time
       headers: {
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")
-          .content
+        "X-CSRF-Token":
+          document.querySelector("meta[name='csrf-token']").content
       }
     });
 
@@ -76,41 +71,43 @@ export default Component.extend({
         this.error(file.fileName, message);
       });
     });
-  },
+  }
+  ,
 
-  @on("didInsertElement")
-  _assignBrowse() {
+    @on("didInsertElement") _assignBrowse() {
     schedule("afterRender", () => this.resumable.assignBrowse($(this.element)));
-  },
+  }
+  ,
 
-  @on("willDestroyElement")
-  _teardown() {
+    @on("willDestroyElement") _teardown() {
     if (this.resumable) {
       this.resumable.cancel();
       this.resumable = null;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("title", "text")
-  translatedTitle(title, text) {
+    @discourseComputed("title", "text") translatedTitle(title, text) {
     return title ? I18n.t(title) : text;
-  },
+  }
+  ,
 
-  @discourseComputed("isUploading", "progress")
-  text(isUploading, progress) {
+    @discourseComputed("isUploading", "progress") text(isUploading, progress) {
     if (isUploading) {
       return progress + " %";
     } else {
       return this.uploadText;
     }
-  },
+  }
+  ,
 
-  didReceiveAttrs() {
+    didReceiveAttrs() {
     this._super(...arguments);
     this._updateIcon();
-  },
+  }
+  ,
 
-  click() {
+    click() {
     if (this.isUploading) {
       this.resumable.cancel();
       later(() => this._reset());
@@ -118,19 +115,22 @@ export default Component.extend({
     } else {
       return true;
     }
-  },
+  }
+  ,
 
-  _updateIcon() {
+    _updateIcon() {
     const icon = this.isUploading ? "times" : "upload";
     this.set("uploadingIcon", `${iconHTML(icon)}`.htmlSafe());
-  },
+  }
+  ,
 
-  _updateProgressBar() {
+    _updateProgressBar() {
     const pb = `${"width:" + this.progress + "%"}`.htmlSafe();
     this.set("progressBar", pb);
-  },
+  }
+  ,
 
-  _reset() {
+    _reset() {
     this.setProperties({ isUploading: false, progress: 0 });
     this._updateIcon();
     this._updateProgressBar();

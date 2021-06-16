@@ -3,9 +3,8 @@ import DiscourseRoute from "discourse/routes/discourse";
 export default DiscourseRoute.extend({
   beforeModel() {
     const { currentUser } = this;
-    const viewingMe =
-      currentUser &&
-      currentUser.get("username") === this.modelFor("user").get("username");
+    const viewingMe = currentUser && currentUser.get("username") ===
+                                       this.modelFor("user").get("username");
     const destination = viewingMe ? "userActivity" : "user.summary";
 
     // HACK: Something with the way the user card intercepts clicks seems to break how the

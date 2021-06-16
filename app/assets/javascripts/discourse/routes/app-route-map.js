@@ -10,14 +10,11 @@ export default function() {
   this.route("post", { path: "/p/:id" });
 
   // Topic routes
-  this.route(
-    "topic",
-    { path: "/t/:slug/:id", resetNamespace: true },
-    function() {
-      this.route("fromParams", { path: "/" });
-      this.route("fromParamsNear", { path: "/:nearPost" });
-    }
-  );
+  this.route("topic", { path: "/t/:slug/:id", resetNamespace: true },
+             function() {
+               this.route("fromParams", { path: "/" });
+               this.route("fromParamsNear", { path: "/:nearPost" });
+             });
 
   this.route("topicBySlugOrId", { path: "/t/:slugOrId", resetNamespace: true });
 
@@ -27,9 +24,8 @@ export default function() {
 
     // top
     this.route("top");
-    this.route("topCategoryNone", {
-      path: "/c/*category_slug_path_with_id/none/l/top"
-    });
+    this.route("topCategoryNone",
+               { path: "/c/*category_slug_path_with_id/none/l/top" });
     this.route("topCategory", { path: "/c/*category_slug_path_with_id/l/top" });
 
     // top by periods
@@ -40,12 +36,11 @@ export default function() {
       this.route(top + "ParentCategory", { path: "/c/:slug/l/top/" + period });
 
       this.route(top, { path: "/top/" + period });
-      this.route(top + "CategoryNone", {
-        path: "/c/*category_slug_path_with_id/none/l/top/" + period
-      });
-      this.route(top + "Category", {
-        path: "/c/*category_slug_path_with_id/l/top/" + period
-      });
+      this.route(
+        top + "CategoryNone",
+        { path: "/c/*category_slug_path_with_id/none/l/top/" + period });
+      this.route(top + "Category",
+                 { path: "/c/*category_slug_path_with_id/l/top/" + period });
     });
 
     // filters (e.g. bookmarks, posted, read, unread, latest)
@@ -54,12 +49,10 @@ export default function() {
       this.route(filter + "ParentCategory", { path: "/c/:slug/l/" + filter });
 
       this.route(filter, { path: "/" + filter });
-      this.route(filter + "CategoryNone", {
-        path: "/c/*category_slug_path_with_id/none/l/" + filter
-      });
-      this.route(filter + "Category", {
-        path: "/c/*category_slug_path_with_id/l/" + filter
-      });
+      this.route(filter + "CategoryNone",
+                 { path: "/c/*category_slug_path_with_id/none/l/" + filter });
+      this.route(filter + "Category",
+                 { path: "/c/*category_slug_path_with_id/l/" + filter });
     });
 
     this.route("categories");
@@ -109,53 +102,41 @@ export default function() {
     this.route("edit-email");
   });
   this.route(
-    "user",
-    { path: "/u/:username", resetNamespace: true },
-    function() {
+    "user", { path: "/u/:username", resetNamespace: true }, function() {
       this.route("profile-hidden");
       this.route("summary");
-      this.route(
-        "userActivity",
-        { path: "/activity", resetNamespace: true },
-        function() {
-          this.route("topics");
-          this.route("replies");
-          this.route("likesGiven", { path: "likes-given" });
-          this.route("bookmarks");
-          this.route("bookmarksWithReminders", {
-            path: "bookmarks-with-reminders"
-          });
-          this.route("pending");
-          this.route("drafts");
-        }
-      );
+      this.route("userActivity", { path: "/activity", resetNamespace: true },
+                 function() {
+                   this.route("topics");
+                   this.route("replies");
+                   this.route("likesGiven", { path: "likes-given" });
+                   this.route("bookmarks");
+                   this.route("bookmarksWithReminders",
+                              { path: "bookmarks-with-reminders" });
+                   this.route("pending");
+                   this.route("drafts");
+                 });
 
-      this.route(
-        "userNotifications",
-        { path: "/notifications", resetNamespace: true },
-        function() {
-          this.route("responses");
-          this.route("likesReceived", { path: "likes-received" });
-          this.route("mentions");
-          this.route("edits");
-        }
-      );
+      this.route("userNotifications",
+                 { path: "/notifications", resetNamespace: true }, function() {
+                   this.route("responses");
+                   this.route("likesReceived", { path: "likes-received" });
+                   this.route("mentions");
+                   this.route("edits");
+                 });
 
       this.route("badges");
       this.route("deletedPosts", { path: "/deleted-posts" });
 
-      this.route(
-        "userPrivateMessages",
-        { path: "/messages", resetNamespace: true },
-        function() {
-          this.route("sent");
-          this.route("archive");
-          this.route("group", { path: "group/:name" });
-          this.route("groupArchive", { path: "group/:name/archive" });
-          this.route("tags");
-          this.route("tagsShow", { path: "tags/:id" });
-        }
-      );
+      this.route("userPrivateMessages",
+                 { path: "/messages", resetNamespace: true }, function() {
+                   this.route("sent");
+                   this.route("archive");
+                   this.route("group", { path: "group/:name" });
+                   this.route("groupArchive", { path: "group/:name/archive" });
+                   this.route("tags");
+                   this.route("tagsShow", { path: "tags/:id" });
+                 });
 
       this.route("preferences", { resetNamespace: true }, function() {
         this.route("account");
@@ -174,15 +155,11 @@ export default function() {
         this.route("second-factor-backup");
       });
 
-      this.route(
-        "userInvited",
-        { path: "/invited", resetNamespace: true },
-        function() {
-          this.route("show", { path: "/:filter" });
-        }
-      );
-    }
-  );
+      this.route("userInvited", { path: "/invited", resetNamespace: true },
+                 function() {
+                   this.route("show", { path: "/:filter" });
+                 });
+    });
 
   this.route("review", { path: "/review" }, function() {
     this.route("show", { path: "/:reviewable_id" });
@@ -216,49 +193,41 @@ export default function() {
     this.route("show", { path: "/:tag_id" });
 
     Site.currentProp("filters").forEach(filter => {
-      this.route("show" + filter.capitalize(), {
-        path: "/:tag_id/l/" + filter
-      });
+      this.route("show" + filter.capitalize(),
+                 { path: "/:tag_id/l/" + filter });
     });
   });
 
   this.route("tags", { resetNamespace: true }, function() {
-    this.route("showCategory", {
-      path: "/c/*category_slug_path_with_id/:tag_id"
-    });
-    this.route("showCategoryNone", {
-      path: "/c/*category_slug_path_with_id/none/:tag_id"
-    });
+    this.route("showCategory",
+               { path: "/c/*category_slug_path_with_id/:tag_id" });
+    this.route("showCategoryNone",
+               { path: "/c/*category_slug_path_with_id/none/:tag_id" });
 
     Site.currentProp("filters").forEach(filter => {
-      this.route("showCategory" + filter.capitalize(), {
-        path: "/c/*category_slug_path_with_id/:tag_id/l/" + filter
-      });
-      this.route("showCategoryNone" + filter.capitalize(), {
-        path: "/c/*category_slug_path_with_id/none/:tag_id/l/" + filter
-      });
+      this.route(
+        "showCategory" + filter.capitalize(),
+        { path: "/c/*category_slug_path_with_id/:tag_id/l/" + filter });
+      this.route(
+        "showCategoryNone" + filter.capitalize(),
+        { path: "/c/*category_slug_path_with_id/none/:tag_id/l/" + filter });
     });
-    this.route("intersection", {
-      path: "intersection/:tag_id/*additional_tags"
-    });
+    this.route("intersection",
+               { path: "intersection/:tag_id/*additional_tags" });
 
     // legacy routes
     this.route("show", { path: "/:tag_id" });
     Site.currentProp("filters").forEach(filter => {
-      this.route("show" + filter.capitalize(), {
-        path: "/:tag_id/l/" + filter
-      });
+      this.route("show" + filter.capitalize(),
+                 { path: "/:tag_id/l/" + filter });
     });
   });
 
-  this.route(
-    "tagGroups",
-    { path: "/tag_groups", resetNamespace: true },
-    function() {
-      this.route("edit", { path: "/:id" });
-      this.route("new");
-    }
-  );
+  this.route("tagGroups", { path: "/tag_groups", resetNamespace: true },
+             function() {
+               this.route("edit", { path: "/:id" });
+               this.route("new");
+             });
 
   this.route("invites", { path: "/invites", resetNamespace: true }, function() {
     this.route("show", { path: "/:token" });

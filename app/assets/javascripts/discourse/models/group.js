@@ -1,40 +1,38 @@
 import EmberObject from "@ember/object";
-import { equal } from "@ember/object/computed";
-import { isEmpty } from "@ember/utils";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { ajax } from "discourse/lib/ajax";
+import {equal} from "@ember/object/computed";
+import {isEmpty} from "@ember/utils";
+import discourseComputed, {observes} from "discourse-common/utils/decorators";
+import {ajax} from "discourse/lib/ajax";
 import Category from "discourse/models/category";
 import GroupHistory from "discourse/models/group-history";
 import RestModel from "discourse/models/rest";
 import Topic from "discourse/models/topic";
 import User from "discourse/models/user";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 
 const Group = RestModel.extend({
-  user_count: 0,
-  limit: null,
-  offset: null,
+  user_count: 0, limit: null, offset: null,
 
-  request_count: 0,
-  requestersLimit: null,
-  requestersOffset: null,
+    request_count: 0, requestersLimit: null, requestersOffset: null,
 
-  init() {
+    init() {
     this._super(...arguments);
     this.setProperties({ members: [], requesters: [] });
-  },
+  }
+  ,
 
-  @discourseComputed("automatic_membership_email_domains")
-  emailDomains(value) {
+    @discourseComputed("automatic_membership_email_domains")
+    emailDomains(value) {
     return isEmpty(value) ? "" : value;
-  },
+  }
+  ,
 
-  @discourseComputed("automatic")
-  type(automatic) {
+    @discourseComputed("automatic") type(automatic) {
     return automatic ? "automatic" : "custom";
-  },
+  }
+  ,
 
-  findMembers(params, refresh) {
+    findMembers(params, refresh) {
     if (isEmpty(this.name) || !this.can_see_members) {
       return Promise.reject();
     }
@@ -43,22 +41,18 @@ const Group = RestModel.extend({
       this.setProperties({ limit: null, offset: null });
     }
 
-    params = Object.assign(
-      { offset: (this.offset || 0) + (this.limit || 0) },
-      params
-    );
+    params =
+      Object.assign({ offset: (this.offset || 0) + (this.limit || 0) }, params);
 
     return Group.loadMembers(this.name, params).then(result => {
       const ownerIds = new Set();
       result.owners.forEach(owner => ownerIds.add(owner.id));
 
       const members = refresh ? [] : this.members;
-      members.pushObjects(
-        result.members.map(member => {
-          member.owner = ownerIds.has(member.id);
-          return User.create(member);
-        })
-      );
+      members.pushObjects(result.members.map(member => {
+        member.owner = ownerIds.has(member.id);
+        return User.create(member);
+      }));
 
       this.setProperties({
         members,
@@ -67,9 +61,10 @@ const Group = RestModel.extend({
         offset: result.meta.offset
       });
     });
-  },
+  }
+  ,
 
-  findRequesters(params, refresh) {
+    findRequesters(params, refresh) {
     if (isEmpty(this.name) || !this.can_see_members) {
       return Promise.reject();
     }
@@ -78,13 +73,11 @@ const Group = RestModel.extend({
       this.setProperties({ requestersOffset: null, requestersLimit: null });
     }
 
-    params = Object.assign(
-      {
-        offset: (this.requestersOffset || 0) + (this.requestersLimit || 0),
-        requesters: true
-      },
-      params
-    );
+    params = Object.assign({
+      offset: (this.requestersOffset || 0) + (this.requestersLimit || 0),
+      requesters: true
+    },
+                           params);
 
     return Group.loadMembers(this.name, params).then(result => {
       const requesters = refresh ? [] : this.requesters;
@@ -97,86 +90,89 @@ const Group = RestModel.extend({
         requestersOffset: result.meta.offset
       });
     });
-  },
+  }
+  ,
 
-  removeOwner(member) {
-    return ajax(`/admin/groups/${this.id}/owners.json`, {
-      type: "DELETE",
-      data: { user_id: member.id }
-    }).then(() => this.findMembers({}, true));
-  },
+    removeOwner(member) {
+    return ajax(`/admin/groups/${this.id}/owners.json`,
+                { type: "DELETE", data: { user_id: member.id } })
+      .then(() => this.findMembers({}, true));
+  }
+  ,
 
-  removeMember(member, params) {
-    return ajax(`/groups/${this.id}/members.json`, {
-      type: "DELETE",
-      data: { user_id: member.id }
-    }).then(() => this.findMembers(params, true));
-  },
+    removeMember(member, params) {
+    return ajax(`/groups/${this.id}/members.json`,
+                { type: "DELETE", data: { user_id: member.id } })
+      .then(() => this.findMembers(params, true));
+  }
+  ,
 
-  addMembers(usernames, filter) {
-    return ajax(`/groups/${this.id}/members.json`, {
-      type: "PUT",
-      data: { usernames }
-    }).then(response => {
-      if (filter) {
-        this._filterMembers(response);
-      } else {
-        this.findMembers();
-      }
-    });
-  },
+    addMembers(usernames, filter) {
+    return ajax(`/groups/${this.id}/members.json`,
+                { type: "PUT", data: { usernames } })
+      .then(response => {
+        if (filter) {
+          this._filterMembers(response);
+        } else {
+          this.findMembers();
+        }
+      });
+  }
+  ,
 
-  addOwners(usernames, filter) {
-    return ajax(`/admin/groups/${this.id}/owners.json`, {
-      type: "PUT",
-      data: { group: { usernames } }
-    }).then(response => {
-      if (filter) {
-        this._filterMembers(response);
-      } else {
-        this.findMembers({}, true);
-      }
-    });
-  },
+    addOwners(usernames, filter) {
+    return ajax(`/admin/groups/${this.id}/owners.json`,
+                { type: "PUT", data: { group: { usernames } } })
+      .then(response => {
+        if (filter) {
+          this._filterMembers(response);
+        } else {
+          this.findMembers({}, true);
+        }
+      });
+  }
+  ,
 
-  _filterMembers(response) {
+    _filterMembers(response) {
     return this.findMembers({ filter: response.usernames.join(",") });
-  },
+  }
+  ,
 
-  @discourseComputed("display_name", "name")
-  displayName(groupDisplayName, name) {
+    @discourseComputed("display_name", "name") displayName(groupDisplayName,
+                                                           name) {
     return groupDisplayName || name;
-  },
+  }
+  ,
 
-  @discourseComputed("flair_bg_color")
-  flairBackgroundHexColor(flairBgColor) {
+    @discourseComputed("flair_bg_color") flairBackgroundHexColor(flairBgColor) {
     return flairBgColor
-      ? flairBgColor.replace(new RegExp("[^0-9a-fA-F]", "g"), "")
-      : null;
-  },
+             ? flairBgColor.replace(new RegExp("[^0-9a-fA-F]", "g"), "")
+             : null;
+  }
+  ,
 
-  @discourseComputed("flair_color")
-  flairHexColor(flairColor) {
-    return flairColor
-      ? flairColor.replace(new RegExp("[^0-9a-fA-F]", "g"), "")
-      : null;
-  },
+    @discourseComputed("flair_color") flairHexColor(flairColor) {
+    return flairColor ? flairColor.replace(new RegExp("[^0-9a-fA-F]", "g"), "")
+                      : null;
+  }
+  ,
 
-  canEveryoneMention: equal("mentionable_level", 99),
+    canEveryoneMention: equal("mentionable_level", 99),
 
-  @discourseComputed("visibility_level")
-  isPrivate(visibilityLevel) {
+    @discourseComputed("visibility_level") isPrivate(visibilityLevel) {
     return visibilityLevel > 1;
-  },
+  }
+  ,
 
-  @observes("isPrivate", "canEveryoneMention")
-  _updateAllowMembershipRequests() {
+    @observes("isPrivate",
+              "canEveryoneMention") _updateAllowMembershipRequests() {
     if (this.isPrivate || !this.canEveryoneMention) {
       this.set("allow_membership_requests", false);
     }
-  },
+  }
+  ,
 
-  asJSON() {
+    asJSON() {
     const attrs = {
       name: this.name,
       mentionable_level: this.mentionable_level,
@@ -208,49 +204,47 @@ const Group = RestModel.extend({
     }
 
     return attrs;
-  },
+  }
+  ,
 
-  create() {
-    return ajax("/admin/groups", {
-      type: "POST",
-      data: { group: this.asJSON() }
-    }).then(resp => {
-      this.setProperties({
-        id: resp.basic_group.id,
-        usernames: null,
-        ownerUsernames: null
+    create() {
+    return ajax("/admin/groups",
+                { type: "POST", data: { group: this.asJSON() } })
+      .then(resp => {
+        this.setProperties(
+          { id: resp.basic_group.id, usernames: null, ownerUsernames: null });
+
+        this.findMembers();
       });
+  }
+  ,
 
-      this.findMembers();
-    });
-  },
+    save() {
+    return ajax(`/groups/${this.id}`,
+                { type: "PUT", data: { group: this.asJSON() } });
+  }
+  ,
 
-  save() {
-    return ajax(`/groups/${this.id}`, {
-      type: "PUT",
-      data: { group: this.asJSON() }
-    });
-  },
-
-  destroy() {
+    destroy() {
     if (!this.id) {
       return;
     }
     return ajax(`/admin/groups/${this.id}`, { type: "DELETE" });
-  },
+  }
+  ,
 
-  findLogs(offset, filters) {
-    return ajax(`/groups/${this.name}/logs.json`, {
-      data: { offset, filters }
-    }).then(results => {
-      return EmberObject.create({
-        logs: results["logs"].map(log => GroupHistory.create(log)),
-        all_loaded: results["all_loaded"]
+    findLogs(offset, filters) {
+    return ajax(`/groups/${this.name}/logs.json`, { data: { offset, filters } })
+      .then(results => {
+        return EmberObject.create({
+          logs: results["logs"].map(log => GroupHistory.create(log)),
+          all_loaded: results["all_loaded"]
+        });
       });
-    });
-  },
+  }
+  ,
 
-  findPosts(opts) {
+    findPosts(opts) {
     opts = opts || {};
     const type = opts.type || "posts";
     const data = {};
@@ -271,29 +265,27 @@ const Group = RestModel.extend({
         return EmberObject.create(p);
       });
     });
-  },
+  }
+  ,
 
-  setNotification(notification_level, userId) {
+    setNotification(notification_level, userId) {
     this.set("group_user.notification_level", notification_level);
-    return ajax(`/groups/${this.name}/notifications`, {
-      data: { notification_level, user_id: userId },
-      type: "POST"
-    });
-  },
+    return ajax(
+      `/groups/${this.name}/notifications`,
+      { data: { notification_level, user_id: userId }, type: "POST" });
+  }
+  ,
 
-  requestMembership(reason) {
-    return ajax(`/groups/${this.name}/request_membership`, {
-      type: "POST",
-      data: { reason }
-    });
+    requestMembership(reason) {
+    return ajax(`/groups/${this.name}/request_membership`,
+                { type: "POST", data: { reason } });
   }
 });
 
 Group.reopenClass({
   findAll(opts) {
-    return ajax("/groups/search.json", { data: opts }).then(groups =>
-      groups.map(g => Group.create(g))
-    );
+    return ajax("/groups/search.json", { data: opts })
+      .then(groups => groups.map(g => Group.create(g)));
   },
 
   loadMembers(name, opts) {

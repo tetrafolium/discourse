@@ -1,8 +1,8 @@
-import { debounce } from "@ember/runloop";
-import { createWidget } from "discourse/widgets/widget";
+import {debounce} from "@ember/runloop";
+import {createWidget} from "discourse/widgets/widget";
 import transformPost from "discourse/lib/transform-post";
-import { Placeholder } from "discourse/lib/posts-with-placeholders";
-import { addWidgetCleanCallback } from "discourse/components/mount-widget";
+import {Placeholder} from "discourse/lib/posts-with-placeholders";
+import {addWidgetCleanCallback} from "discourse/components/mount-widget";
 
 let transformCallbacks = null;
 export function postTransformCallbacks(transformed) {
@@ -83,13 +83,8 @@ export default createWidget("post-stream", {
 
       const nextPost = i < postArray.length - 1 ? postArray[i + 1] : null;
 
-      const transformed = transformPost(
-        this.currentUser,
-        this.site,
-        post,
-        prevPost,
-        nextPost
-      );
+      const transformed =
+        transformPost(this.currentUser, this.site, post, prevPost, nextPost);
       transformed.canCreatePost = attrs.canCreatePost;
       transformed.mobileView = mobileView;
 
@@ -108,13 +103,9 @@ export default createWidget("post-stream", {
       // Post gap - before
       const beforeGap = before[post.id];
       if (beforeGap) {
-        result.push(
-          this.attach(
-            "post-gap",
-            { pos: "before", postId: post.id, gap: beforeGap },
-            { model: post }
-          )
-        );
+        result.push(this.attach(
+          "post-gap", { pos: "before", postId: post.id, gap: beforeGap },
+          { model: post }));
       }
 
       // Handle time gaps
@@ -134,8 +125,7 @@ export default createWidget("post-stream", {
 
       if (transformed.isSmallAction) {
         result.push(
-          this.attach("post-small-action", transformed, { model: post })
-        );
+          this.attach("post-small-action", transformed, { model: post }));
       } else {
         transformed.showReadIndicator = attrs.showReadIndicator;
         result.push(this.attach("post", transformed, { model: post }));
@@ -144,13 +134,9 @@ export default createWidget("post-stream", {
       // Post gap - after
       const afterGap = after[post.id];
       if (afterGap) {
-        result.push(
-          this.attach(
-            "post-gap",
-            { pos: "after", postId: post.id, gap: afterGap },
-            { model: post }
-          )
-        );
+        result.push(this.attach(
+          "post-gap", { pos: "after", postId: post.id, gap: afterGap },
+          { model: post }));
       }
 
       prevPost = post;

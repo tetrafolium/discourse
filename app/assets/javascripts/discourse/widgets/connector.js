@@ -1,5 +1,5 @@
-import { next } from "@ember/runloop";
-import { setOwner, getOwner } from "@ember/application";
+import {next} from "@ember/runloop";
+import {setOwner, getOwner} from "@ember/application";
 
 export default class Connector {
   constructor(widget, opts) {
@@ -16,9 +16,8 @@ export default class Connector {
       const mounted = widget._findView();
 
       if (opts.component) {
-        const connector = widget.register.lookupFactory(
-          "component:connector-container"
-        );
+        const connector =
+          widget.register.lookupFactory("component:connector-container");
 
         const view = connector.create({
           layoutName: `components/${opts.component}`,

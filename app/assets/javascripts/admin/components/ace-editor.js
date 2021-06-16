@@ -1,43 +1,40 @@
 import Component from "@ember/component";
 import loadScript from "discourse/lib/load-script";
-import { observes } from "discourse-common/utils/decorators";
-import { on } from "@ember/object/evented";
+import {observes} from "discourse-common/utils/decorators";
+import {on} from "@ember/object/evented";
 
 export default Component.extend({
-  mode: "css",
-  classNames: ["ace-wrapper"],
-  _editor: null,
-  _skipContentChangeEvent: null,
-  disabled: false,
+  mode: "css", classNames: ["ace-wrapper"], _editor: null,
+    _skipContentChangeEvent: null, disabled: false,
 
-  @observes("editorId")
-  editorIdChanged() {
+    @observes("editorId") editorIdChanged() {
     if (this.autofocus) {
       this.send("focus");
     }
-  },
+  }
+  ,
 
-  @observes("content")
-  contentChanged() {
+    @observes("content") contentChanged() {
     const content = this.content || "";
     if (this._editor && !this._skipContentChangeEvent) {
       this._editor.getSession().setValue(content);
     }
-  },
+  }
+  ,
 
-  @observes("mode")
-  modeChanged() {
+    @observes("mode") modeChanged() {
     if (this._editor && !this._skipContentChangeEvent) {
       this._editor.getSession().setMode("ace/mode/" + this.mode);
     }
-  },
+  }
+  ,
 
-  @observes("disabled")
-  disabledStateChanged() {
+    @observes("disabled") disabledStateChanged() {
     this.changeDisabledState();
-  },
+  }
+  ,
 
-  changeDisabledState() {
+    changeDisabledState() {
     const editor = this._editor;
     if (editor) {
       const disabled = this.disabled;
@@ -48,28 +45,31 @@ export default Component.extend({
       });
       editor.container.parentNode.setAttribute("data-disabled", disabled);
     }
-  },
+  }
+  ,
 
-  _destroyEditor: on("willDestroyElement", function() {
-    if (this._editor) {
-      this._editor.destroy();
-      this._editor = null;
-    }
-    if (this.appEvents) {
-      // xxx: don't run during qunit tests
-      this.appEvents.off("ace:resize", this, this.resize);
-    }
+    _destroyEditor: on("willDestroyElement",
+                       function() {
+                         if (this._editor) {
+                           this._editor.destroy();
+                           this._editor = null;
+                         }
+                         if (this.appEvents) {
+                           // xxx: don't run during qunit tests
+                           this.appEvents.off("ace:resize", this, this.resize);
+                         }
 
-    $(window).off("ace:resize");
-  }),
+                         $(window).off("ace:resize");
+                       }),
 
-  resize() {
+    resize() {
     if (this._editor) {
       this._editor.resize();
     }
-  },
+  }
+  ,
 
-  didInsertElement() {
+    didInsertElement() {
     this._super(...arguments);
 
     loadScript("/javascripts/ace/ace.js").then(() => {
@@ -95,11 +95,9 @@ export default Component.extend({
         this._editor = editor;
         this.changeDisabledState();
 
-        $(window)
-          .off("ace:resize")
-          .on("ace:resize", () => {
-            this.appEvents.trigger("ace:resize");
-          });
+        $(window).off("ace:resize").on("ace:resize", () => {
+          this.appEvents.trigger("ace:resize");
+        });
 
         if (this.appEvents) {
           // xxx: don't run during qunit tests
@@ -111,14 +109,15 @@ export default Component.extend({
         }
       });
     });
-  },
+  }
+  ,
 
-  actions: {
-    focus() {
-      if (this._editor) {
-        this._editor.focus();
-        this._editor.navigateFileEnd();
+    actions: {
+      focus() {
+        if (this._editor) {
+          this._editor.focus();
+          this._editor.navigateFileEnd();
+        }
       }
     }
-  }
 });

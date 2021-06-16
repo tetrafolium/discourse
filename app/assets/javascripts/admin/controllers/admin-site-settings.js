@@ -1,17 +1,15 @@
-import { isEmpty } from "@ember/utils";
-import { alias } from "@ember/object/computed";
+import {isEmpty} from "@ember/utils";
+import {alias} from "@ember/object/computed";
 import Controller from "@ember/controller";
 import discourseDebounce from "discourse/lib/debounce";
-import { observes } from "discourse-common/utils/decorators";
-import { INPUT_DELAY } from "discourse-common/config/environment";
+import {observes} from "discourse-common/utils/decorators";
+import {INPUT_DELAY} from "discourse-common/config/environment";
 
 export default Controller.extend({
-  filter: null,
-  allSiteSettings: alias("model"),
-  visibleSiteSettings: null,
-  onlyOverridden: false,
+  filter: null, allSiteSettings: alias("model"), visibleSiteSettings: null,
+    onlyOverridden: false,
 
-  filterContentNow(category) {
+    filterContentNow(category) {
     // If we have no content, don't bother filtering anything
     if (!!isEmpty(this.allSiteSettings)) return;
 
@@ -41,15 +39,10 @@ export default Controller.extend({
         if (this.onlyOverridden && !item.get("overridden")) return false;
         if (filter) {
           const setting = item.get("setting").toLowerCase();
-          return (
-            setting.includes(filter) ||
-            setting.replace(/_/g, " ").includes(filter) ||
-            item
-              .get("description")
-              .toLowerCase()
-              .includes(filter) ||
-            (item.get("value") || "").toLowerCase().includes(filter)
-          );
+          return (setting.includes(filter) ||
+                  setting.replace(/_/g, " ").includes(filter) ||
+                  item.get("description").toLowerCase().includes(filter) ||
+                  (item.get("value") || "").toLowerCase().includes(filter));
         } else {
           return true;
         }
@@ -58,9 +51,8 @@ export default Controller.extend({
         matches.pushObjects(siteSettings);
         matchesGroupedByCategory.pushObject({
           nameKey: settingsCategory.nameKey,
-          name: I18n.t(
-            "admin.site_settings.categories." + settingsCategory.nameKey
-          ),
+          name: I18n.t("admin.site_settings.categories." +
+                       settingsCategory.nameKey),
           siteSettings,
           count: siteSettings.length
         });
@@ -72,28 +64,29 @@ export default Controller.extend({
     all.count = all.hasMore ? "30+" : matches.length;
 
     this.set("visibleSiteSettings", matchesGroupedByCategory);
-    this.transitionToRoute(
-      "adminSiteSettingsCategory",
-      category || "all_results"
-    );
-  },
-
-  @observes("filter", "onlyOverridden", "model")
-  filterContent: discourseDebounce(function() {
-    if (this._skipBounce) {
-      this.set("_skipBounce", false);
-    } else {
-      this.filterContentNow();
-    }
-  }, INPUT_DELAY),
-
-  actions: {
-    clearFilter() {
-      this.setProperties({ filter: "", onlyOverridden: false });
-    },
-
-    toggleMenu() {
-      $(".admin-detail").toggleClass("mobile-closed mobile-open");
-    }
+    this.transitionToRoute("adminSiteSettingsCategory",
+                           category || "all_results");
   }
+  ,
+
+    @observes("filter", "onlyOverridden", "model") filterContent:
+      discourseDebounce(
+        function() {
+          if (this._skipBounce) {
+            this.set("_skipBounce", false);
+          } else {
+            this.filterContentNow();
+          }
+        },
+        INPUT_DELAY),
+
+    actions: {
+      clearFilter() {
+        this.setProperties({ filter: "", onlyOverridden: false });
+      },
+
+      toggleMenu() {
+        $(".admin-detail").toggleClass("mobile-closed mobile-open");
+      }
+    }
 });

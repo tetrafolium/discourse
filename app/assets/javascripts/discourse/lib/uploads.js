@@ -1,9 +1,8 @@
-import { isAppleDevice } from "discourse/lib/utilities";
+import {isAppleDevice} from "discourse/lib/utilities";
 
 function isGUID(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
+    value);
 }
 
 export function markdownNameFromFileName(fileName) {
@@ -30,11 +29,8 @@ export function validateUploadedFiles(files, opts) {
 
   // CHROME ONLY: if the image was pasted, sets its name to a default one
   if (typeof Blob !== "undefined" && typeof File !== "undefined") {
-    if (
-      upload instanceof Blob &&
-      !(upload instanceof File) &&
-      upload.type === "image/png"
-    ) {
+    if (upload instanceof Blob && !(upload instanceof File) &&
+        upload.type === "image/png") {
       upload.name = "image.png";
     }
   }
@@ -70,10 +66,8 @@ function validateUploadedFile(file, opts) {
   if (opts.imagesOnly) {
     if (!isImage(name) && !isAuthorizedImage(name, staff)) {
       bootbox.alert(
-        I18n.t("post.errors.upload_not_authorized", {
-          authorized_extensions: authorizedImagesExtensions(staff)
-        })
-      );
+        I18n.t("post.errors.upload_not_authorized",
+               { authorized_extensions: authorizedImagesExtensions(staff) }));
       return false;
     }
   } else if (opts.csvOnly) {
@@ -84,10 +78,8 @@ function validateUploadedFile(file, opts) {
   } else {
     if (!authorizesAllExtensions(staff) && !isAuthorizedFile(name, staff)) {
       bootbox.alert(
-        I18n.t("post.errors.upload_not_authorized", {
-          authorized_extensions: authorizedExtensions(staff)
-        })
-      );
+        I18n.t("post.errors.upload_not_authorized",
+               { authorized_extensions: authorizedExtensions(staff) }));
       return false;
     }
   }
@@ -96,8 +88,7 @@ function validateUploadedFile(file, opts) {
     // ensures that new users can upload a file
     if (user && !user.isAllowedToUploadAFile(opts.type)) {
       bootbox.alert(
-        I18n.t(`post.errors.${opts.type}_upload_not_allowed_for_new_user`)
-      );
+        I18n.t(`post.errors.${opts.type}_upload_not_allowed_for_new_user`));
       return false;
     }
   }
@@ -109,8 +100,7 @@ function validateUploadedFile(file, opts) {
 const IMAGES_EXTENSIONS_REGEX = /(png|jpe?g|gif|svg|ico)/i;
 
 function extensionsToArray(exts) {
-  return exts
-    .toLowerCase()
+  return exts.toLowerCase()
     .replace(/[\s\.]+/g, "")
     .split("|")
     .filter(ext => ext.indexOf("*") === -1);
@@ -122,16 +112,14 @@ function extensions() {
 
 function staffExtensions() {
   return extensionsToArray(
-    Discourse.SiteSettings.authorized_extensions_for_staff
-  );
+    Discourse.SiteSettings.authorized_extensions_for_staff);
 }
 
 function imagesExtensions(staff) {
   let exts = extensions().filter(ext => IMAGES_EXTENSIONS_REGEX.test(ext));
   if (staff) {
-    const staffExts = staffExtensions().filter(ext =>
-      IMAGES_EXTENSIONS_REGEX.test(ext)
-    );
+    const staffExts =
+      staffExtensions().filter(ext => IMAGES_EXTENSIONS_REGEX.test(ext));
     exts = _.union(exts, staffExts);
   }
   return exts;
@@ -166,26 +154,23 @@ export function authorizedExtensions(staff) {
 }
 
 function authorizedImagesExtensions(staff) {
-  return authorizesAllExtensions(staff)
-    ? "png, jpg, jpeg, gif, svg, ico"
-    : imagesExtensions(staff).join(", ");
+  return authorizesAllExtensions(staff) ? "png, jpg, jpeg, gif, svg, ico"
+                                        : imagesExtensions(staff).join(", ");
 }
 
 export function authorizesAllExtensions(staff) {
   return (
     Discourse.SiteSettings.authorized_extensions.indexOf("*") >= 0 ||
     (Discourse.SiteSettings.authorized_extensions_for_staff.indexOf("*") >= 0 &&
-      staff)
-  );
+     staff));
 }
 
 export function authorizesOneOrMoreExtensions(staff) {
   if (authorizesAllExtensions(staff)) return true;
 
-  return (
-    Discourse.SiteSettings.authorized_extensions.split("|").filter(ext => ext)
-      .length > 0
-  );
+  return (Discourse.SiteSettings.authorized_extensions.split("|")
+            .filter(ext => ext)
+            .length > 0);
 }
 
 export function authorizesOneOrMoreImageExtensions(staff) {
@@ -210,18 +195,14 @@ function uploadTypeFromFileName(fileName) {
 }
 
 export function allowsImages(staff) {
-  return (
-    authorizesAllExtensions(staff) ||
-    IMAGES_EXTENSIONS_REGEX.test(authorizedExtensions(staff))
-  );
+  return (authorizesAllExtensions(staff) ||
+          IMAGES_EXTENSIONS_REGEX.test(authorizedExtensions(staff)));
 }
 
 export function allowsAttachments(staff) {
-  return (
-    authorizesAllExtensions(staff) ||
-    authorizedExtensions(staff).split(", ").length >
-      imagesExtensions(staff).length
-  );
+  return (authorizesAllExtensions(staff) ||
+          authorizedExtensions(staff).split(", ").length >
+            imagesExtensions(staff).length);
 }
 
 export function uploadIcon(staff) {
@@ -230,20 +211,18 @@ export function uploadIcon(staff) {
 
 function imageMarkdown(upload) {
   return `![${markdownNameFromFileName(upload.original_filename)}|${
-    upload.thumbnail_width
-  }x${upload.thumbnail_height}](${upload.short_url || upload.url})`;
+    upload.thumbnail_width}x${upload.thumbnail_height}](${
+    upload.short_url || upload.url})`;
 }
 
 function playableMediaMarkdown(upload, type) {
   return `![${markdownNameFromFileName(upload.original_filename)}|${type}](${
-    upload.short_url
-  })`;
+    upload.short_url})`;
 }
 
 function attachmentMarkdown(upload) {
-  return `[${upload.original_filename}|attachment](${
-    upload.short_url
-  }) (${I18n.toHumanSize(upload.filesize)})`;
+  return `[${upload.original_filename}|attachment](${upload.short_url}) (${
+    I18n.toHumanSize(upload.filesize)})`;
 }
 
 export function getUploadMarkdown(upload) {
@@ -261,25 +240,25 @@ export function getUploadMarkdown(upload) {
 export function displayErrorForUpload(data) {
   if (data.jqXHR) {
     switch (data.jqXHR.status) {
-      // cancelled by the user
-      case 0:
-        return;
+    // cancelled by the user
+    case 0:
+      return;
 
-      // entity too large, usually returned from the web server
-      case 413:
-        const type = uploadTypeFromFileName(data.files[0].name);
-        const max_size_kb = Discourse.SiteSettings[`max_${type}_size_kb`];
-        bootbox.alert(I18n.t("post.errors.file_too_large", { max_size_kb }));
-        return;
+    // entity too large, usually returned from the web server
+    case 413:
+      const type = uploadTypeFromFileName(data.files[0].name);
+      const max_size_kb = Discourse.SiteSettings[`max_${type}_size_kb`];
+      bootbox.alert(I18n.t("post.errors.file_too_large", { max_size_kb }));
+      return;
 
-      // the error message is provided by the server
-      case 422:
-        if (data.jqXHR.responseJSON.message) {
-          bootbox.alert(data.jqXHR.responseJSON.message);
-        } else {
-          bootbox.alert(data.jqXHR.responseJSON.errors.join("\n"));
-        }
-        return;
+    // the error message is provided by the server
+    case 422:
+      if (data.jqXHR.responseJSON.message) {
+        bootbox.alert(data.jqXHR.responseJSON.message);
+      } else {
+        bootbox.alert(data.jqXHR.responseJSON.errors.join("\n"));
+      }
+      return;
     }
   } else if (data.errors && data.errors.length > 0) {
     bootbox.alert(data.errors.join("\n"));

@@ -28,8 +28,8 @@ export default DiscourseRoute.extend({
     this.controllerFor("tags.index").setProperties({
       model,
       sortProperties: this.siteSettings.tags_sort_alphabetically
-        ? ["id"]
-        : ["totalCount:desc", "id"]
+                        ? ["id"]
+                        : ["totalCount:desc", "id"]
     });
   },
 

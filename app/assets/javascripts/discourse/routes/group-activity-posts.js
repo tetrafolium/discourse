@@ -1,4 +1,4 @@
-import { get } from "@ember/object";
+import {get} from "@ember/object";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export function buildGroupPage(type) {
@@ -16,11 +16,8 @@ export function buildGroupPage(type) {
 
     setupController(controller, model) {
       let loadedAll = model.length < 20;
-      this.controllerFor("group-activity-posts").setProperties({
-        model,
-        type,
-        canLoadMore: !loadedAll
-      });
+      this.controllerFor("group-activity-posts")
+        .setProperties({ model, type, canLoadMore: !loadedAll });
       this.controllerFor("application").set("showFooter", loadedAll);
     },
 

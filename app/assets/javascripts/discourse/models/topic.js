@@ -1,24 +1,22 @@
-import EmberObject, { get } from "@ember/object";
-import { not, notEmpty, equal, and, or } from "@ember/object/computed";
-import { ajax } from "discourse/lib/ajax";
-import { flushMap } from "discourse/models/store";
+import EmberObject, {get} from "@ember/object";
+import {not, notEmpty, equal, and, or} from "@ember/object/computed";
+import {ajax} from "discourse/lib/ajax";
+import {flushMap} from "discourse/models/store";
 import RestModel from "discourse/models/rest";
-import { propertyEqual, fmt } from "discourse/lib/computed";
-import { longDate } from "discourse/lib/formatter";
-import { isRTL } from "discourse/lib/text-direction";
+import {propertyEqual, fmt} from "discourse/lib/computed";
+import {longDate} from "discourse/lib/formatter";
+import {isRTL} from "discourse/lib/text-direction";
 import ActionSummary from "discourse/models/action-summary";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { censor } from "pretty-text/censored-words";
-import { emojiUnescape } from "discourse/lib/text";
+import {popupAjaxError} from "discourse/lib/ajax-error";
+import {censor} from "pretty-text/censored-words";
+import {emojiUnescape} from "discourse/lib/text";
 import PreloadStore from "preload-store";
-import { userPath } from "discourse/lib/url";
-import discourseComputed, {
-  observes,
-  on
-} from "discourse-common/utils/decorators";
+import {userPath} from "discourse/lib/url";
+import discourseComputed,
+{observes, on} from "discourse-common/utils/decorators";
 import Category from "discourse/models/category";
 import Session from "discourse/models/session";
-import { Promise } from "rsvp";
+import {Promise} from "rsvp";
 import Site from "discourse/models/site";
 import User from "discourse/models/user";
 
@@ -31,45 +29,44 @@ export function loadTopicView(topic, args) {
   delete data.__type;
   delete data.store;
 
-  return PreloadStore.getAndRemove(`topic_${topic.id}`, () =>
-    ajax(jsonUrl, { data })
-  ).then(json => {
-    topic.updateFromJson(json);
-    return json;
-  });
+  return PreloadStore
+    .getAndRemove(`topic_${topic.id}`, () => ajax(jsonUrl, { data }))
+    .then(json => {
+      topic.updateFromJson(json);
+      return json;
+    });
 }
 
 export const ID_CONSTRAINT = /^\d+$/;
 
 const Topic = RestModel.extend({
-  message: null,
-  errorLoading: false,
+  message: null, errorLoading: false,
 
-  @discourseComputed("last_read_post_number", "highest_post_number")
-  visited(lastReadPostNumber, highestPostNumber) {
+    @discourseComputed("last_read_post_number", "highest_post_number")
+    visited(lastReadPostNumber, highestPostNumber) {
     // >= to handle case where there are deleted posts at the end of the topic
     return lastReadPostNumber >= highestPostNumber;
-  },
+  }
+  ,
 
-  @discourseComputed("posters.firstObject")
-  creator(poster) {
+    @discourseComputed("posters.firstObject") creator(poster) {
     return poster && poster.user;
-  },
+  }
+  ,
 
-  @discourseComputed("posters.[]")
-  lastPoster(posters) {
+    @discourseComputed("posters.[]") lastPoster(posters) {
     let user;
     if (posters && posters.length > 0) {
-      const latest = posters.filter(
-        p => p.extras && p.extras.indexOf("latest") >= 0
-      )[0];
+      const latest =
+        posters.filter(p => p.extras && p.extras.indexOf("latest") >= 0)[0];
       user = latest && latest.user;
     }
     return user || this.creator;
-  },
+  }
+  ,
 
-  @discourseComputed("posters.[]", "participants.[]", "allowed_user_count")
-  featuredUsers(posters, participants, allowedUserCount) {
+    @discourseComputed("posters.[]", "participants.[]", "allowed_user_count")
+    featuredUsers(posters, participants, allowedUserCount) {
     let users = posters;
     const maxUserCount = 5;
     const posterCount = users.length;
@@ -97,40 +94,38 @@ const Topic = RestModel.extend({
 
     if (this.isPrivateMessage && allowedUserCount > maxUserCount) {
       users.splice(maxUserCount - 2, 1); // remove second-last avatar
-      users.push({
-        moreCount: `+${allowedUserCount - maxUserCount + 1}`
-      });
+      users.push({ moreCount: `+${allowedUserCount - maxUserCount + 1}` });
     }
 
     return users;
-  },
+  }
+  ,
 
-  @discourseComputed("fancy_title")
-  fancyTitle(title) {
-    let fancyTitle = censor(
-      emojiUnescape(title) || "",
-      Site.currentProp("censored_regexp")
-    );
+    @discourseComputed("fancy_title") fancyTitle(title) {
+    let fancyTitle =
+      censor(emojiUnescape(title) || "", Site.currentProp("censored_regexp"));
 
     if (Discourse.SiteSettings.support_mixed_text_direction) {
       const titleDir = isRTL(title) ? "rtl" : "ltr";
       return `<span dir="${titleDir}">${fancyTitle}</span>`;
     }
     return fancyTitle;
-  },
+  }
+  ,
 
-  // returns createdAt if there's no bumped date
-  @discourseComputed("bumped_at", "createdAt")
-  bumpedAt(bumped_at, createdAt) {
+    // returns createdAt if there's no bumped date
+    @discourseComputed("bumped_at", "createdAt") bumpedAt(bumped_at,
+                                                          createdAt) {
     if (bumped_at) {
       return new Date(bumped_at);
     } else {
       return createdAt;
     }
-  },
+  }
+  ,
 
-  @discourseComputed("bumpedAt", "createdAt")
-  bumpedAtTitle(bumpedAt, createdAt) {
+    @discourseComputed("bumpedAt", "createdAt") bumpedAtTitle(bumpedAt,
+                                                              createdAt) {
     const firstPost = I18n.t("first_post");
     const lastPost = I18n.t("last_post");
     const createdAtDate = longDate(createdAt);
@@ -142,23 +137,20 @@ const Topic = RestModel.extend({
       LAST_POST: lastPost,
       BUMPED_AT: bumpedAtDate
     });
-  },
+  }
+  ,
 
-  @discourseComputed("created_at")
-  createdAt(created_at) {
+    @discourseComputed("created_at") createdAt(created_at) {
     return new Date(created_at);
-  },
+  }
+  ,
 
-  @discourseComputed
-  postStream() {
-    return this.store.createRecord("postStream", {
-      id: this.id,
-      topic: this
-    });
-  },
+    @discourseComputed postStream() {
+    return this.store.createRecord("postStream", { id: this.id, topic: this });
+  }
+  ,
 
-  @discourseComputed("tags")
-  visibleListTags(tags) {
+    @discourseComputed("tags") visibleListTags(tags) {
     if (!tags || !Discourse.SiteSettings.suppress_overlapping_tags_in_list) {
       return tags;
     }
@@ -173,116 +165,113 @@ const Topic = RestModel.extend({
     });
 
     return newTags;
-  },
+  }
+  ,
 
-  @discourseComputed("related_messages")
-  relatedMessages(relatedMessages) {
+    @discourseComputed("related_messages") relatedMessages(relatedMessages) {
     if (relatedMessages) {
       const store = this.store;
 
       return this.set(
         "related_messages",
-        relatedMessages.map(st => store.createRecord("topic", st))
-      );
+        relatedMessages.map(st => store.createRecord("topic", st)));
     }
-  },
+  }
+  ,
 
-  @discourseComputed("suggested_topics")
-  suggestedTopics(suggestedTopics) {
+    @discourseComputed("suggested_topics") suggestedTopics(suggestedTopics) {
     if (suggestedTopics) {
       const store = this.store;
 
       return this.set(
         "suggested_topics",
-        suggestedTopics.map(st => store.createRecord("topic", st))
-      );
+        suggestedTopics.map(st => store.createRecord("topic", st)));
     }
-  },
+  }
+  ,
 
-  @discourseComputed("posts_count")
-  replyCount(postsCount) {
+    @discourseComputed("posts_count") replyCount(postsCount) {
     return postsCount - 1;
-  },
+  }
+  ,
 
-  @discourseComputed
-  details() {
-    return this.store.createRecord("topicDetails", {
-      id: this.id,
-      topic: this
-    });
-  },
+    @discourseComputed details() {
+    return this.store.createRecord("topicDetails",
+                                   { id: this.id, topic: this });
+  }
+  ,
 
-  invisible: not("visible"),
-  deleted: notEmpty("deleted_at"),
+    invisible: not("visible"), deleted: notEmpty("deleted_at"),
 
-  @discourseComputed("id")
-  searchContext(id) {
+    @discourseComputed("id") searchContext(id) {
     return { type: "topic", id };
-  },
+  }
+  ,
 
-  @on("init")
-  @observes("category_id")
-  _categoryIdChanged() {
+    @on("init") @observes("category_id") _categoryIdChanged() {
     this.set("category", Category.findById(this.category_id));
-  },
+  }
+  ,
 
-  @observes("categoryName")
-  _categoryNameChanged() {
+    @observes("categoryName") _categoryNameChanged() {
     const categoryName = this.categoryName;
     let category;
     if (categoryName) {
       category = this.site.get("categories").findBy("name", categoryName);
     }
     this.set("category", category);
-  },
+  }
+  ,
 
-  categoryClass: fmt("category.fullSlug", "category-%@"),
+    categoryClass: fmt("category.fullSlug", "category-%@"),
 
-  @discourseComputed("tags")
-  tagClasses(tags) {
+    @discourseComputed("tags") tagClasses(tags) {
     return tags && tags.map(t => `tag-${t}`).join(" ");
-  },
+  }
+  ,
 
-  @discourseComputed("url")
-  shareUrl(url) {
+    @discourseComputed("url") shareUrl(url) {
     const user = User.current();
     const userQueryString = user ? `?u=${user.get("username_lower")}` : "";
     return `${url}${userQueryString}`;
-  },
+  }
+  ,
 
-  printUrl: fmt("url", "%@/print"),
+    printUrl: fmt("url", "%@/print"),
 
-  @discourseComputed("id", "slug")
-  url(id, slug) {
+    @discourseComputed("id", "slug") url(id, slug) {
     slug = slug || "";
     if (slug.trim().length === 0) {
       slug = "topic";
     }
     return `${Discourse.getURL("/t/")}${slug}/${id}`;
-  },
+  }
+  ,
 
-  // Helper to build a Url with a post number
-  urlForPostNumber(postNumber) {
+    // Helper to build a Url with a post number
+    urlForPostNumber(postNumber) {
     let url = this.url;
     if (postNumber > 0) {
       url += `/${postNumber}`;
     }
     return url;
-  },
+  }
+  ,
 
-  @discourseComputed("new_posts", "unread")
-  totalUnread(newPosts, unread) {
+    @discourseComputed("new_posts", "unread") totalUnread(newPosts, unread) {
     const count = (unread || 0) + (newPosts || 0);
     return count > 0 ? count : null;
-  },
+  }
+  ,
 
-  @discourseComputed("last_read_post_number", "url")
-  lastReadUrl(lastReadPostNumber) {
+    @discourseComputed("last_read_post_number",
+                       "url") lastReadUrl(lastReadPostNumber) {
     return this.urlForPostNumber(lastReadPostNumber);
-  },
+  }
+  ,
 
-  @discourseComputed("last_read_post_number", "highest_post_number", "url")
-  lastUnreadUrl(lastReadPostNumber, highestPostNumber) {
+    @discourseComputed("last_read_post_number", "highest_post_number", "url")
+    lastUnreadUrl(lastReadPostNumber, highestPostNumber) {
     if (highestPostNumber <= lastReadPostNumber) {
       if (this.get("category.navigate_to_first_post_after_read")) {
         return this.urlForPostNumber(1);
@@ -292,34 +281,35 @@ const Topic = RestModel.extend({
     } else {
       return this.urlForPostNumber(lastReadPostNumber + 1);
     }
-  },
+  }
+  ,
 
-  @discourseComputed("highest_post_number", "url")
-  lastPostUrl(highestPostNumber) {
+    @discourseComputed("highest_post_number",
+                       "url") lastPostUrl(highestPostNumber) {
     return this.urlForPostNumber(highestPostNumber);
-  },
+  }
+  ,
 
-  @discourseComputed("url")
-  firstPostUrl() {
+    @discourseComputed("url") firstPostUrl() {
     return this.urlForPostNumber(1);
-  },
+  }
+  ,
 
-  @discourseComputed("url")
-  summaryUrl() {
+    @discourseComputed("url") summaryUrl() {
     const summaryQueryString = this.has_summary ? "?filter=summary" : "";
     return `${this.urlForPostNumber(1)}${summaryQueryString}`;
-  },
+  }
+  ,
 
-  @discourseComputed("last_poster.username")
-  lastPosterUrl(username) {
+    @discourseComputed("last_poster.username") lastPosterUrl(username) {
     return userPath(username);
-  },
+  }
+  ,
 
-  // The amount of new posts to display. It might be different than what the server
-  // tells us if we are still asynchronously flushing our "recently read" data.
-  // So take what the browser has seen into consideration.
-  @discourseComputed("new_posts", "id")
-  displayNewPosts(newPosts, id) {
+    // The amount of new posts to display. It might be different than what the server
+    // tells us if we are still asynchronously flushing our "recently read" data.
+    // So take what the browser has seen into consideration.
+    @discourseComputed("new_posts", "id") displayNewPosts(newPosts, id) {
     const highestSeen = Session.currentProp("highestSeenByTopic")[id];
     if (highestSeen) {
       const delta = highestSeen - this.last_read_post_number;
@@ -332,10 +322,10 @@ const Topic = RestModel.extend({
       }
     }
     return newPosts;
-  },
+  }
+  ,
 
-  @discourseComputed("views")
-  viewsHeat(v) {
+    @discourseComputed("views") viewsHeat(v) {
     if (v >= Discourse.SiteSettings.topic_views_heat_high) {
       return "heatmap-high";
     }
@@ -346,48 +336,46 @@ const Topic = RestModel.extend({
       return "heatmap-low";
     }
     return null;
-  },
+  }
+  ,
 
-  @discourseComputed("archetype")
-  archetypeObject(archetype) {
+    @discourseComputed("archetype") archetypeObject(archetype) {
     return Site.currentProp("archetypes").findBy("id", archetype);
-  },
+  }
+  ,
 
-  isPrivateMessage: equal("archetype", "private_message"),
-  isBanner: equal("archetype", "banner"),
+    isPrivateMessage: equal("archetype", "private_message"),
+    isBanner: equal("archetype", "banner"),
 
-  toggleStatus(property) {
+    toggleStatus(property) {
     this.toggleProperty(property);
     return this.saveStatus(property, !!this.get(property));
-  },
+  }
+  ,
 
-  saveStatus(property, value, until) {
+    saveStatus(property, value, until) {
     if (property === "closed") {
       this.incrementProperty("posts_count");
     }
-    return ajax(`${this.url}/status`, {
-      type: "PUT",
-      data: {
-        status: property,
-        enabled: !!value,
-        until
-      }
-    });
-  },
+    return ajax(
+      `${this.url}/status`,
+      { type: "PUT", data: { status: property, enabled: !!value, until } });
+  }
+  ,
 
-  makeBanner() {
-    return ajax(`/t/${this.id}/make-banner`, { type: "PUT" }).then(() =>
-      this.set("archetype", "banner")
-    );
-  },
+    makeBanner() {
+    return ajax(`/t/${this.id}/make-banner`, { type: "PUT" })
+      .then(() => this.set("archetype", "banner"));
+  }
+  ,
 
-  removeBanner() {
-    return ajax(`/t/${this.id}/remove-banner`, {
-      type: "PUT"
-    }).then(() => this.set("archetype", "regular"));
-  },
+    removeBanner() {
+    return ajax(`/t/${this.id}/remove-banner`, { type: "PUT" })
+      .then(() => this.set("archetype", "regular"));
+  }
+  ,
 
-  toggleBookmark() {
+    toggleBookmark() {
     if (this.bookmarking) {
       return Promise.resolve();
     }
@@ -418,10 +406,8 @@ const Topic = RestModel.extend({
                 post.set("bookmarked", false);
                 updated.push(post.id);
               }
-              if (
-                this.siteSettings.enable_bookmarks_with_reminders &&
-                post.get("bookmarked_with_reminder")
-              ) {
+              if (this.siteSettings.enable_bookmarks_with_reminders &&
+                  post.get("bookmarked_with_reminder")) {
                 post.set("bookmarked_with_reminder", false);
                 updated.push(post.id);
               }
@@ -437,55 +423,49 @@ const Topic = RestModel.extend({
 
     const unbookmarkedPosts = [];
     if (!bookmark && posts) {
-      posts.forEach(
-        post =>
-          (post.get("bookmarked") || post.get("bookmarked_with_reminder")) &&
-          unbookmarkedPosts.push(post)
-      );
+      posts.forEach(post => (post.get("bookmarked") ||
+                             post.get("bookmarked_with_reminder")) &&
+                            unbookmarkedPosts.push(post));
     }
 
     return new Promise(resolve => {
       if (unbookmarkedPosts.length > 1) {
-        bootbox.confirm(
-          I18n.t("bookmarks.confirm_clear"),
-          I18n.t("no_value"),
-          I18n.t("yes_value"),
-          confirmed =>
-            confirmed ? toggleBookmarkOnServer().then(resolve) : resolve()
-        );
+        bootbox.confirm(I18n.t("bookmarks.confirm_clear"), I18n.t("no_value"),
+                        I18n.t("yes_value"),
+                        confirmed => confirmed
+                                       ? toggleBookmarkOnServer().then(resolve)
+                                       : resolve());
       } else {
         toggleBookmarkOnServer().then(resolve);
       }
     });
-  },
+  }
+  ,
 
-  createGroupInvite(group) {
-    return ajax(`/t/${this.id}/invite-group`, {
-      type: "POST",
-      data: { group }
-    });
-  },
+    createGroupInvite(group) {
+    return ajax(`/t/${this.id}/invite-group`,
+                { type: "POST", data: { group } });
+  }
+  ,
 
-  createInvite(user, group_names, custom_message) {
-    return ajax(`/t/${this.id}/invite`, {
-      type: "POST",
-      data: { user, group_names, custom_message }
-    });
-  },
+    createInvite(user, group_names, custom_message) {
+    return ajax(`/t/${this.id}/invite`,
+                { type: "POST", data: { user, group_names, custom_message } });
+  }
+  ,
 
-  generateInviteLink(email, groupNames, topicId) {
+    generateInviteLink(email, groupNames, topicId) {
     return ajax("/invites/link", {
       type: "POST",
       data: { email, group_names: groupNames, topic_id: topicId }
     });
-  },
+  }
+  ,
 
-  // Delete this topic
-  destroy(deleted_by) {
-    return ajax(`/t/${this.id}`, {
-      data: { context: window.location.pathname },
-      type: "DELETE"
-    })
+    // Delete this topic
+    destroy(deleted_by) {
+    return ajax(`/t/${this.id}`,
+                { data: { context: window.location.pathname }, type: "DELETE" })
       .then(() => {
         this.setProperties({
           deleted_at: new Date(),
@@ -495,24 +475,24 @@ const Topic = RestModel.extend({
         });
       })
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  // Recover this topic if deleted
-  recover() {
+    // Recover this topic if deleted
+    recover() {
     this.setProperties({
       deleted_at: null,
       deleted_by: null,
       "details.can_delete": true,
       "details.can_recover": false
     });
-    return ajax(`/t/${this.id}/recover`, {
-      data: { context: window.location.pathname },
-      type: "PUT"
-    });
-  },
+    return ajax(`/t/${this.id}/recover`,
+                { data: { context: window.location.pathname }, type: "PUT" });
+  }
+  ,
 
-  // Update our attributes from a JSON result
-  updateFromJson(json) {
+    // Update our attributes from a JSON result
+    updateFromJson(json) {
     const keys = Object.keys(json);
     if (!json.view_hidden) {
       this.details.updateFromJson(json.details);
@@ -520,69 +500,67 @@ const Topic = RestModel.extend({
       keys.removeObjects(["details", "post_stream"]);
     }
     keys.forEach(key => this.set(key, json[key]));
-  },
+  }
+  ,
 
-  reload() {
-    return ajax(`/t/${this.id}`, { type: "GET" }).then(topic_json =>
-      this.updateFromJson(topic_json)
-    );
-  },
+    reload() {
+    return ajax(`/t/${this.id}`, { type: "GET" })
+      .then(topic_json => this.updateFromJson(topic_json));
+  }
+  ,
 
-  isPinnedUncategorized: and("pinned", "category.isUncategorizedCategory"),
+    isPinnedUncategorized: and("pinned", "category.isUncategorizedCategory"),
 
-  clearPin() {
+    clearPin() {
     // Clear the pin optimistically from the object
     this.setProperties({ pinned: false, unpinned: true });
 
-    ajax(`/t/${this.id}/clear-pin`, {
-      type: "PUT"
-    }).then(null, () => {
+    ajax(`/t/${this.id}/clear-pin`, { type: "PUT" }).then(null, () => {
       // On error, put the pin back
       this.setProperties({ pinned: true, unpinned: false });
     });
-  },
+  }
+  ,
 
-  togglePinnedForUser() {
+    togglePinnedForUser() {
     if (this.pinned) {
       this.clearPin();
     } else {
       this.rePin();
     }
-  },
+  }
+  ,
 
-  rePin() {
+    rePin() {
     // Clear the pin optimistically from the object
     this.setProperties({ pinned: true, unpinned: false });
 
-    ajax(`/t/${this.id}/re-pin`, {
-      type: "PUT"
-    }).then(null, () => {
+    ajax(`/t/${this.id}/re-pin`, { type: "PUT" }).then(null, () => {
       // On error, put the pin back
       this.setProperties({ pinned: true, unpinned: false });
     });
-  },
+  }
+  ,
 
-  @discourseComputed("excerpt")
-  escapedExcerpt(excerpt) {
+    @discourseComputed("excerpt") escapedExcerpt(excerpt) {
     return emojiUnescape(excerpt);
-  },
+  }
+  ,
 
-  hasExcerpt: notEmpty("excerpt"),
+    hasExcerpt: notEmpty("excerpt"),
 
-  @discourseComputed("excerpt")
-  excerptTruncated(excerpt) {
+    @discourseComputed("excerpt") excerptTruncated(excerpt) {
     return excerpt && excerpt.substr(excerpt.length - 8, 8) === "&hellip;";
-  },
+  }
+  ,
 
-  readLastPost: propertyEqual("last_read_post_number", "highest_post_number"),
-  canClearPin: and("pinned", "readLastPost"),
-  canEditTags: or("details.can_edit", "details.can_edit_tags"),
+    readLastPost: propertyEqual("last_read_post_number", "highest_post_number"),
+    canClearPin: and("pinned", "readLastPost"),
+    canEditTags: or("details.can_edit", "details.can_edit_tags"),
 
-  archiveMessage() {
+    archiveMessage() {
     this.set("archiving", true);
-    const promise = ajax(`/t/${this.id}/archive-message`, {
-      type: "PUT"
-    });
+    const promise = ajax(`/t/${this.id}/archive-message`, { type: "PUT" });
 
     promise
       .then(msg => {
@@ -594,9 +572,10 @@ const Topic = RestModel.extend({
       .finally(() => this.set("archiving", false));
 
     return promise;
-  },
+  }
+  ,
 
-  moveToInbox() {
+    moveToInbox() {
     this.set("archiving", true);
     const promise = ajax(`/t/${this.id}/move-to-inbox`, { type: "PUT" });
 
@@ -610,58 +589,52 @@ const Topic = RestModel.extend({
       .finally(() => this.set("archiving", false));
 
     return promise;
-  },
+  }
+  ,
 
-  publish() {
+    publish() {
     return ajax(`/t/${this.id}/publish`, {
-      type: "PUT",
-      data: this.getProperties("destination_category_id")
-    })
+             type: "PUT",
+             data: this.getProperties("destination_category_id")
+           })
       .then(() => this.set("destination_category_id", null))
       .catch(popupAjaxError);
-  },
+  }
+  ,
 
-  updateDestinationCategory(categoryId) {
+    updateDestinationCategory(categoryId) {
     this.set("destination_category_id", categoryId);
-    return ajax(`/t/${this.id}/shared-draft`, {
-      method: "PUT",
-      data: { category_id: categoryId }
-    });
-  },
+    return ajax(`/t/${this.id}/shared-draft`,
+                { method: "PUT", data: { category_id: categoryId } });
+  }
+  ,
 
-  convertTopic(type, opts) {
+    convertTopic(type, opts) {
     let args = { type: "PUT" };
     if (opts && opts.categoryId) {
       args.data = { category_id: opts.categoryId };
     }
     return ajax(`/t/${this.id}/convert-topic/${type}`, args);
-  },
+  }
+  ,
 
-  resetBumpDate() {
-    return ajax(`/t/${this.id}/reset-bump-date`, { type: "PUT" }).catch(
-      popupAjaxError
-    );
-  },
+    resetBumpDate() {
+    return ajax(`/t/${this.id}/reset-bump-date`, { type: "PUT" })
+      .catch(popupAjaxError);
+  }
+  ,
 
-  updateTags(tags) {
+    updateTags(tags) {
     if (!tags || tags.length === 0) {
       tags = [""];
     }
 
-    return ajax(`/t/${this.id}/tags`, {
-      type: "PUT",
-      data: { tags: tags }
-    });
+    return ajax(`/t/${this.id}/tags`, { type: "PUT", data: { tags: tags } });
   }
 });
 
 Topic.reopenClass({
-  NotificationLevel: {
-    WATCHING: 3,
-    TRACKING: 2,
-    REGULAR: 1,
-    MUTED: 0
-  },
+  NotificationLevel: { WATCHING: 3, TRACKING: 2, REGULAR: 1, MUTED: 0 },
 
   createActionSummary(result) {
     if (result.actions_summary) {
@@ -690,15 +663,16 @@ Topic.reopenClass({
     }
 
     return ajax(topic.get("url"), {
-      type: "PUT",
-      data: JSON.stringify(props),
-      contentType: "application/json"
-    }).then(result => {
-      // The title can be cleaned up server side
-      props.title = result.basic_topic.title;
-      props.fancy_title = result.basic_topic.fancy_title;
-      topic.setProperties(props);
-    });
+             type: "PUT",
+             data: JSON.stringify(props),
+             contentType: "application/json"
+           })
+      .then(result => {
+        // The title can be cleaned up server side
+        props.title = result.basic_topic.title;
+        props.fancy_title = result.basic_topic.fancy_title;
+        topic.setProperties(props);
+      });
   },
 
   create() {
@@ -744,9 +718,9 @@ Topic.reopenClass({
 
   changeOwners(topicId, opts) {
     const promise = ajax(`/t/${topicId}/change-owner`, {
-      type: "POST",
-      data: opts
-    }).then(result => {
+                      type: "POST",
+                      data: opts
+                    }).then(result => {
       if (result.success) return result;
       promise.reject(new Error("error changing ownership of posts"));
     });
@@ -755,9 +729,9 @@ Topic.reopenClass({
 
   changeTimestamp(topicId, timestamp) {
     const promise = ajax(`/t/${topicId}/change-timestamp`, {
-      type: "PUT",
-      data: { timestamp }
-    }).then(result => {
+                      type: "PUT",
+                      data: { timestamp }
+                    }).then(result => {
       if (result.success) return result;
       promise.reject(new Error("error updating timestamp of topic"));
     });
@@ -767,10 +741,7 @@ Topic.reopenClass({
   bulkOperation(topics, operation) {
     return ajax("/topics/bulk", {
       type: "PUT",
-      data: {
-        topic_ids: topics.map(t => t.get("id")),
-        operation
-      }
+      data: { topic_ids: topics.map(t => t.get("id")), operation }
     });
   },
 
@@ -782,16 +753,12 @@ Topic.reopenClass({
     }
 
     if (categoryId) data.category_id = categoryId;
-    return ajax("/topics/bulk", {
-      type: "PUT",
-      data
-    });
+    return ajax("/topics/bulk", { type: "PUT", data });
   },
 
   resetNew(category, include_subcategories) {
-    const data = category
-      ? { category_id: category.id, include_subcategories }
-      : {};
+    const data =
+      category ? { category_id: category.id, include_subcategories } : {};
     return ajax("/topics/reset-new", { type: "PUT", data });
   },
 
@@ -810,15 +777,13 @@ function moveResult(result) {
 }
 
 export function movePosts(topicId, data) {
-  return ajax(`/t/${topicId}/move-posts`, { type: "POST", data }).then(
-    moveResult
-  );
+  return ajax(`/t/${topicId}/move-posts`, { type: "POST", data })
+    .then(moveResult);
 }
 
 export function mergeTopic(topicId, data) {
-  return ajax(`/t/${topicId}/merge-topic`, { type: "POST", data }).then(
-    moveResult
-  );
+  return ajax(`/t/${topicId}/merge-topic`, { type: "POST", data })
+    .then(moveResult);
 }
 
 export default Topic;

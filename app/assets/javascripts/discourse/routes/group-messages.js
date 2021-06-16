@@ -10,10 +10,8 @@ export default DiscourseRoute.extend({
   },
 
   afterModel(group) {
-    if (
-      !group.get("is_group_user") &&
-      !(this.currentUser && this.currentUser.admin)
-    ) {
+    if (!group.get("is_group_user") &&
+        !(this.currentUser && this.currentUser.admin)) {
       this.transitionTo("group.members", group);
     }
   }

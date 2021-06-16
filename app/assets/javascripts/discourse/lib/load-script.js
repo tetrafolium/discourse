@@ -1,6 +1,6 @@
-import { run } from "@ember/runloop";
-import { ajax } from "discourse/lib/ajax";
-import { Promise } from "rsvp";
+import {run} from "@ember/runloop";
+import {ajax} from "discourse/lib/ajax";
+import {Promise} from "rsvp";
 
 const _loaded = {};
 const _loading = {};
@@ -17,12 +17,8 @@ function loadWithTag(path, cb) {
 
   s.onload = s.onreadystatechange = function(_, abort) {
     finished = true;
-    if (
-      abort ||
-      !s.readyState ||
-      s.readyState === "loaded" ||
-      s.readyState === "complete"
-    ) {
+    if (abort || !s.readyState || s.readyState === "loaded" ||
+        s.readyState === "complete") {
       s = s.onload = s.onreadystatechange = null;
       if (!abort) {
         run(null, cb);
@@ -85,11 +81,7 @@ export default function loadScript(url, opts) {
     };
 
     if (opts.css) {
-      ajax({
-        url: url,
-        dataType: "text",
-        cache: true
-      }).then(cb);
+      ajax({ url: url, dataType: "text", cache: true }).then(cb);
     } else {
       // Always load JavaScript with script tag to avoid Content Security Policy inline violations
       loadWithTag(url, cb);

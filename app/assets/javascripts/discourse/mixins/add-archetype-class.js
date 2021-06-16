@@ -1,4 +1,4 @@
-import { on, observes } from "discourse-common/utils/decorators";
+import {on, observes} from "discourse-common/utils/decorators";
 
 // Mix this in to a view that has a `archetype` property to automatically
 // add it to the body as the view is entered / left / model is changed.
@@ -6,13 +6,10 @@ import { on, observes } from "discourse-common/utils/decorators";
 export default {
   _cleanUp() {
     $("body").removeClass((_, css) =>
-      (css.match(/\barchetype-\S+/g) || []).join(" ")
-    );
+                            (css.match(/\barchetype-\S+/g) || []).join(" "));
   },
 
-  @observes("archetype")
-  @on("init")
-  _archetypeChanged() {
+  @observes("archetype") @on("init") _archetypeChanged() {
     const archetype = this.archetype;
     this._cleanUp();
 

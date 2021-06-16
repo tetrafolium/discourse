@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
@@ -6,10 +6,7 @@ export default DiscourseRoute.extend({
     return ajax("/about.json").then(result => {
       let activeAdmins = [];
       let activeModerators = [];
-      const yearAgo = moment()
-        .locale("en")
-        .utc()
-        .subtract(1, "year");
+      const yearAgo = moment().locale("en").utc().subtract(1, "year");
       result.about.admins.forEach(r => {
         if (moment(r.last_seen_at) > yearAgo) activeAdmins.push(r);
       });

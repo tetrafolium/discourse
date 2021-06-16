@@ -1,7 +1,7 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import PreloadStore from "preload-store";
-import { ajax } from "discourse/lib/ajax";
-import { userPath } from "discourse/lib/url";
+import {ajax} from "discourse/lib/ajax";
+import {userPath} from "discourse/lib/url";
 
 export default DiscourseRoute.extend({
   titleToken() {
@@ -10,9 +10,8 @@ export default DiscourseRoute.extend({
 
   model(params) {
     if (PreloadStore.get("password_reset")) {
-      return PreloadStore.getAndRemove("password_reset").then(json =>
-        _.merge(params, json)
-      );
+      return PreloadStore.getAndRemove("password_reset")
+        .then(json => _.merge(params, json));
     }
   },
 

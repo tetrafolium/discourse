@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import { iconHTML } from "discourse-common/lib/icon-library";
+import {iconHTML} from "discourse-common/lib/icon-library";
 
 export default Component.extend({
   classNames: ["watched-word"],
@@ -12,17 +12,13 @@ export default Component.extend({
   },
 
   click() {
-    this.word
-      .destroy()
+    this.word.destroy()
       .then(() => {
         this.action(this.word);
       })
       .catch(e => {
-        bootbox.alert(
-          I18n.t("generic_error_with_reason", {
-            error: `http: ${e.status} - ${e.body}`
-          })
-        );
+        bootbox.alert(I18n.t("generic_error_with_reason",
+                             { error: `http: ${e.status} - ${e.body}` }));
       });
   }
 });

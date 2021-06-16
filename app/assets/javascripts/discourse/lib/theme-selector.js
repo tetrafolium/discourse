@@ -1,4 +1,4 @@
-import { ajax } from "discourse/lib/ajax";
+import {ajax} from "discourse/lib/ajax";
 import deprecated from "discourse-common/lib/deprecated";
 
 const keySelector = "meta[name=discourse_theme_ids]";
@@ -8,8 +8,7 @@ export function currentThemeKey() {
   if (console && console.warn && console.trace) {
     // TODO: Remove this code Jan 2019
     deprecated(
-      "'currentThemeKey' is is deprecated use 'currentThemeId' instead. A theme component may require updating."
-    );
+      "'currentThemeKey' is is deprecated use 'currentThemeId' instead. A theme component may require updating.");
   }
 }
 
@@ -34,10 +33,8 @@ export function currentThemeId() {
 export function setLocalTheme(ids, themeSeq) {
   ids = ids.reject(id => !id);
   if (ids && ids.length > 0) {
-    $.cookie("theme_ids", `${ids.join(",")}|${themeSeq}`, {
-      path: "/",
-      expires: 9999
-    });
+    $.cookie("theme_ids", `${ids.join(",")}|${themeSeq}`,
+             { path: "/", expires: 9999 });
   } else {
     $.removeCookie("theme_ids", { path: "/", expires: 1 });
   }
@@ -83,23 +80,21 @@ export function previewTheme(ids = []) {
   if (!ids.includes(currentThemeId())) {
     Discourse.set("assetVersion", "forceRefresh");
 
-    ajax(`/themes/assets/${ids.length > 0 ? ids.join("-") : "default"}`).then(
-      results => {
+    ajax(`/themes/assets/${ids.length > 0 ? ids.join("-") : "default"}`)
+      .then(results => {
         const elem = _.first($(keySelector));
         if (elem) {
           elem.content = ids.join(",");
         }
 
         results.themes.forEach(theme => {
-          const node = $(
-            `link[rel=stylesheet][data-target=${theme.target}]`
-          )[0];
+          const node =
+            $(`link[rel=stylesheet][data-target=${theme.target}]`)[0];
           if (node) {
             refreshCSS(node, null, theme.new_href);
           }
         });
-      }
-    );
+      });
   }
 }
 
